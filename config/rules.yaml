@@ -1,0 +1,14 @@
+family:
+  sons: []
+  husband: {}
+
+email:
+  check_times: ["07:00", "20:00"]
+  timezone: "America/Los_Angeles"
+
+reminders:
+  default_snooze: 1h
+  quiet_hours: ["22:00", "07:00"]
+
+notes:
+  auto_suggest_reminder: true

@@ -1,0 +1,14 @@
+services:
+  openear:
+    build: .
+    container_name: openear
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - openear-data:/app/data
+      - openear-logs:/app/logs
+      - ./config:/app/config:ro
+
+volumes:
+  openear-data:
+  openear-logs:
