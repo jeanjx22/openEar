@@ -449,12 +449,14 @@ Return ONLY the JSON array, nothing else."""
 
         try:
             parsed_list = json.loads(result)
-            if isinstance(parsed_list, dict):
-                parsed_list = [parsed_list]
-            if not isinstance(parsed_list, list):
-                return None
         except json.JSONDecodeError:
-            logger.warning("Failed to parse alert time JSON: %s", result)
+            cleaned = result.strip()
+            if not cleaned.startswith("["):
+                cleaned = f"[{cleaned}]"
+            try:
+                parsed_list = json.loads(cleaned)
+            except json.JSONDecodeError:
+                logger.warning("Failed to parse alert time JSON: %s", result)
             return None
 
         alerts = []
