@@ -9,6 +9,13 @@ email:
 reminders:
   default_snooze: 1h
   quiet_hours: ["22:00", "07:00"]
+  pre_alerts:
+    - offset: 1d_before
+      time: "20:00"
+      message_prefix: "Tomorrow"
+    - offset: morning_of
+      time: "08:00"
+      message_prefix: "Today"
 
 notes:
   auto_suggest_reminder: true

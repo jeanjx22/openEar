@@ -324,15 +324,33 @@ Behavioral rules:
             return "I am temporarily unable to process complex requests. Please try again in a few minutes."
         return result
 
-    async def parse_reminder_time(self, user_input: str) -> dict | None:
+    async def parse_reminder_time(self, user_input: str, timezone: str = "America/Los_Angeles") -> dict | None:
         """Parse natural language time into structured reminder data.
 
+        Uses dateparser for reliable date/time extraction, LLM only for title.
         Returns dict with keys: title, due_at (ISO format), recurrence (optional).
         """
-        system_prompt = """Parse the user's message into a reminder. Return ONLY a JSON object:
-{"title": "<reminder title>", "due_at": "<ISO 8601 datetime>", "recurrence": "<daily|weekly|null>"}
+        import re as _re
 
-Current UTC time context will be provided. All times in the output must be UTC."""
+        import dateparser
+        from zoneinfo import ZoneInfo
+
+        system_prompt = """Extract reminder details from the user's message. Return ONLY a JSON object:
+{"title": "<what to remind about>", "time_phrase": "<the time/date part>", "recurrence": "<daily|weekly|monthly|null>", "pre_alerts": [<list of alert preferences>]}
+
+pre_alerts should contain objects like:
+- {"offset": "1d_before", "time": "20:00", "label": "Tomorrow"} — remind the evening before
+- {"offset": "morning_of", "time": "08:00", "label": "Today"} — remind the morning of
+- {"offset": "1h_before", "label": "In 1 hour"} — remind 1 hour before
+- {"offset": "2d_before", "time": "20:00", "label": "In 2 days"} — remind 2 days before
+
+If the user specifies when to be alerted (e.g. "remind me the day before and morning of"), extract those into pre_alerts.
+If the user does NOT specify alert preferences, set pre_alerts to "ask" so the bot can ask them.
+
+Examples:
+- "remind me couple therapy Monday 4pm, alert me day before and morning of" -> {"title": "Couple therapy", "time_phrase": "Monday at 4pm", "recurrence": null, "pre_alerts": [{"offset": "1d_before", "time": "20:00", "label": "Tomorrow"}, {"offset": "morning_of", "time": "08:00", "label": "Today"}]}
+- "remind me buy groceries tomorrow 5pm" -> {"title": "Buy groceries", "time_phrase": "tomorrow at 5pm", "recurrence": null, "pre_alerts": "ask"}
+- "remind me take vitamins every day 9am, just remind me at the time" -> {"title": "Take vitamins", "time_phrase": "every day at 9am", "recurrence": "daily", "pre_alerts": []}"""
 
         messages = [
             {"role": "system", "content": system_prompt},
@@ -342,7 +360,38 @@ Current UTC time context will be provided. All times in the output must be UTC."
         if result is None:
             return None
         try:
-            return json.loads(result)
+            parsed = json.loads(result)
         except json.JSONDecodeError:
-            logger.warning("Failed to parse reminder time: %s", result)
+            logger.warning("Failed to parse reminder JSON: %s", result)
             return None
+
+        time_phrase = parsed.get("time_phrase", "")
+        normalized = _re.sub(r"\bnext\b", "", time_phrase, flags=_re.IGNORECASE).strip()
+
+        dt = dateparser.parse(
+            normalized,
+            settings={
+                "PREFER_DATES_FROM": "future",
+                "TIMEZONE": timezone,
+                "RETURN_AS_TIMEZONE_AWARE": True,
+            },
+        )
+        if dt is None:
+            dt = dateparser.parse(
+                time_phrase,
+                settings={
+                    "PREFER_DATES_FROM": "future",
+                    "TIMEZONE": timezone,
+                    "RETURN_AS_TIMEZONE_AWARE": True,
+                },
+            )
+        if dt is None:
+            logger.warning("dateparser failed for: %s", time_phrase)
+            return None
+
+        return {
+            "title": parsed.get("title", user_input),
+            "due_at": dt.isoformat(),
+            "recurrence": parsed.get("recurrence"),
+            "pre_alerts": parsed.get("pre_alerts", "ask"),
+        }

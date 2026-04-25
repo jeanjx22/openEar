@@ -60,6 +60,39 @@ def reminder_actions(reminder_id: int) -> InlineKeyboardMarkup:
     )
 
 
+def alert_preferences(reminder_id: int) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "Day before + morning",
+                    callback_data=f"alert_daymorning:{reminder_id}",
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    "Morning of only",
+                    callback_data=f"alert_morning:{reminder_id}",
+                ),
+                InlineKeyboardButton(
+                    "At the time only",
+                    callback_data=f"alert_none:{reminder_id}",
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    "1 hour before",
+                    callback_data=f"alert_1h:{reminder_id}",
+                ),
+                InlineKeyboardButton(
+                    "Custom",
+                    callback_data=f"alert_custom:{reminder_id}",
+                ),
+            ],
+        ]
+    )
+
+
 def note_followup(note_id: int) -> InlineKeyboardMarkup:
     """Inline keyboard for note follow-up suggestions."""
     return InlineKeyboardMarkup(

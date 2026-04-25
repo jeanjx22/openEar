@@ -197,21 +197,18 @@ async def search_news(query: str, max_results: int = 5) -> str:
             if not results:
                 return f"No news found for '{query}'."
 
-            lines = [f"News for '{query}':"]
+            lines = []
             for i, r in enumerate(results, 1):
                 title = r.get("title", "Untitled")
                 source = r.get("source", "")
-                date = r.get("date", "")
-                body = r.get("body", "")[:100]
-                lines.append(f"\n{i}. {title}")
-                if source:
-                    lines.append(f"   Source: {source}")
-                if date:
-                    lines.append(f"   Date: {date}")
+                body = r.get("body", "")[:120]
+                src_tag = f" ({source})" if source else ""
+                lines.append(f"  {i}. {title}{src_tag}")
                 if body:
-                    lines.append(f"   {body}...")
+                    lines.append(f"     {body}...")
+                lines.append("")
 
-            return "\n".join(lines)
+            return "\n".join(lines).strip()
 
     except Exception as e:
         logger.error("News lookup failed: %s", e)

@@ -145,6 +145,18 @@ def main() -> None:
     for handler in bot_handlers.get_handlers():
         app.add_handler(handler)
 
+    async def error_handler(update, context):
+        logger.error("Unhandled exception: %s", context.error, exc_info=context.error)
+        if update and update.effective_message:
+            try:
+                await update.effective_message.reply_text(
+                    "Oops, something went wrong! Please try again 🐰"
+                )
+            except Exception:
+                pass
+
+    app.add_error_handler(error_handler)
+
     # 6. Run bot polling loop (blocks until stopped)
     app.run_polling(drop_pending_updates=False)
 

@@ -67,6 +67,49 @@ class BotHandlers:
         self.health = health_service
         self._pending_reminder_context: dict[int, dict] = {}
 
+    def _create_pre_alerts(self, parent_reminder, pre_alerts, due_at):
+        from datetime import timedelta
+        from zoneinfo import ZoneInfo
+
+        if not pre_alerts or not isinstance(pre_alerts, list):
+            return
+
+        local_tz = ZoneInfo(self.settings.timezone)
+        due_local = due_at.astimezone(local_tz)
+
+        for alert in pre_alerts:
+            offset = alert.get("offset", "")
+            alert_time = alert.get("time", "08:00")
+            label = alert.get("label", "Reminder")
+            h, m = int(alert_time.split(":")[0]), int(alert_time.split(":")[1])
+
+            if offset == "1d_before":
+                alert_dt = (due_local - timedelta(days=1)).replace(hour=h, minute=m, second=0)
+            elif offset == "2d_before":
+                alert_dt = (due_local - timedelta(days=2)).replace(hour=h, minute=m, second=0)
+            elif offset == "morning_of":
+                alert_dt = due_local.replace(hour=h, minute=m, second=0)
+            elif offset == "1h_before":
+                alert_dt = due_local - timedelta(hours=1)
+            else:
+                continue
+
+            alert_utc = alert_dt.astimezone(timezone.utc)
+            parent_title = parent_reminder.title or "Reminder"
+            if alert_utc > datetime.now(timezone.utc):
+                self.reminders.create_reminder(
+                    title=f"{label}: {parent_title}",
+                    due_at=alert_utc,
+                    source="pre_alert",
+                    source_ref=str(parent_reminder.id),
+                )
+
+    def _format_alert_summary(self, pre_alerts):
+        if not pre_alerts or not isinstance(pre_alerts, list):
+            return "At the time only"
+        labels = [a.get("label", a.get("offset", "")) for a in pre_alerts]
+        return " + ".join(labels) + " + at the time"
+
     def get_handlers(self) -> list:
         """Return all handler objects to register with the Application."""
         return [
@@ -241,6 +284,30 @@ class BotHandlers:
         user_message = update.message.text
         user_id = update.effective_user.id
 
+        pending = self._pending_reminder_context.get(user_id)
+        if pending and pending.get("awaiting_custom_alerts"):
+            import dateparser
+            dt = dateparser.parse(
+                user_message,
+                settings={"PREFER_DATES_FROM": "future", "TIMEZONE": self.settings.timezone, "RETURN_AS_TIMEZONE_AWARE": True},
+            )
+            if dt:
+                from datetime import timedelta
+                reminder = self.reminders.get_reminder(pending["reminder_id"])
+                if reminder:
+                    self.reminders.create_reminder(
+                        title=f"Alert: {reminder.title}",
+                        due_at=dt.astimezone(timezone.utc),
+                        source="pre_alert",
+                        source_ref=str(reminder.id),
+                    )
+                    text = formatters.format_reminder(reminder, self.settings.timezone)
+                    await update.message.reply_text(f"🔔 Custom alert set for {formatters.to_local(dt, self.settings.timezone)}!\n⏰ {text}\n🐰")
+                del self._pending_reminder_context[user_id]
+            else:
+                await update.message.reply_text("Couldn't parse that time. Try something like '1 hour before' or 'Sunday at 8pm' 🐰")
+            return
+
         # Classify intent
         intent_data = await self.llm.classify_intent(user_message)
         intent = intent_data.get("intent", "general")
@@ -249,15 +316,24 @@ class BotHandlers:
             result = await get_weather()
             await update.message.reply_text(result)
         elif intent == "stock":
-            # Extract ticker symbol from content
             content = intent_data.get("content", user_message)
-            # Simple extraction: take the first word that looks like a ticker
             words = content.upper().split()
             symbol = next(
                 (w for w in words if w.isalpha() and len(w) <= 5),
                 content.split()[-1] if content.split() else "SPY",
             )
-            result = await get_stock_quote(symbol)
+            import asyncio as _aio
+            quote_task = get_stock_quote(symbol)
+            news_task = _aio.wait_for(
+                search_news(f"{symbol} stock price today", max_results=3),
+                timeout=8.0,
+            )
+            quote = await quote_task
+            try:
+                news = await news_task
+                result = f"{quote}\n\n📰 Why it moved:\n{news}"
+            except (TimeoutError, Exception):
+                result = quote
             await update.message.reply_text(result)
         elif intent == "news":
             content = intent_data.get("content", user_message)
@@ -268,9 +344,9 @@ class BotHandlers:
             tags = intent_data.get("tags", [])
             note = self.notes.save_note(content, tags)
             reply = formatters.format_note(note, self.settings.timezone)
-            await update.message.reply_text(f"Saved! {reply}")
+            await update.message.reply_text(f"📝 Saved! {reply} 🐰")
         elif intent == "reminder":
-            parsed = await self.llm.parse_reminder_time(user_message)
+            parsed = await self.llm.parse_reminder_time(user_message, self.settings.timezone)
             if parsed:
                 try:
                     due_at = datetime.fromisoformat(parsed["due_at"])
@@ -281,19 +357,38 @@ class BotHandlers:
                         due_at=due_at,
                         recurrence=parsed.get("recurrence"),
                     )
-                    text = formatters.format_reminder(
-                        reminder, self.settings.timezone
-                    )
-                    await update.message.reply_text(f"Reminder set! {text}")
+
+                    pre_alerts = parsed.get("pre_alerts", "ask")
+
+                    if pre_alerts == "ask":
+                        self._pending_reminder_context[user_id] = {
+                            "reminder_id": reminder.id,
+                            "title": parsed["title"],
+                            "due_at": due_at,
+                        }
+                        text = formatters.format_reminder(reminder, self.settings.timezone)
+                        await update.message.reply_text(
+                            f"⏰ Reminder set! {text}\n\n"
+                            "How would you like to be alerted? 🐰",
+                            reply_markup=keyboards.alert_preferences(reminder.id),
+                        )
+                    else:
+                        self._create_pre_alerts(reminder, pre_alerts, due_at)
+                        text = formatters.format_reminder(reminder, self.settings.timezone)
+                        alert_desc = self._format_alert_summary(pre_alerts)
+                        await update.message.reply_text(
+                            f"⏰ Reminder set! {text}\n\n"
+                            f"🔔 Alerts: {alert_desc}\n🐰"
+                        )
                 except Exception as e:
                     logger.error("Failed to create reminder: %s", e)
                     await update.message.reply_text(
                         "Sorry, I couldn't parse that reminder. "
-                        "Try something like 'remind me to call doctor tomorrow at 3pm'."
+                        "Try something like 'remind me to call doctor tomorrow at 3pm' 🐰"
                     )
             else:
                 await update.message.reply_text(
-                    "I couldn't understand that reminder. Could you rephrase?"
+                    "I couldn't understand that reminder. Could you rephrase? 🐰"
                 )
         else:
             # General conversation with context management
@@ -323,20 +418,63 @@ class BotHandlers:
         await query.answer()
         data = query.data
 
-        if data.startswith("reminder_done:"):
+        if data.startswith("alert_"):
+            parts = data.split(":")
+            alert_type = parts[0].replace("alert_", "")
+            reminder_id = int(parts[1])
+            reminder = self.reminders.get_reminder(reminder_id)
+            if not reminder:
+                await query.edit_message_text("Reminder not found 🐰")
+                return
+            due_at = reminder.due_at
+            if due_at.tzinfo is None:
+                due_at = due_at.replace(tzinfo=timezone.utc)
+
+            alert_configs = {
+                "daymorning": [
+                    {"offset": "1d_before", "time": "20:00", "label": "Tomorrow"},
+                    {"offset": "morning_of", "time": "08:00", "label": "Today"},
+                ],
+                "morning": [
+                    {"offset": "morning_of", "time": "08:00", "label": "Today"},
+                ],
+                "1h": [
+                    {"offset": "1h_before", "label": "In 1 hour"},
+                ],
+                "none": [],
+            }
+            pre_alerts = alert_configs.get(alert_type, [])
+            if alert_type == "custom":
+                await query.edit_message_text(
+                    "Tell me how you'd like to be alerted.\n"
+                    "e.g., 'remind me 2 days before at 8pm and 1 hour before' 🐰"
+                )
+                self._pending_reminder_context[update.effective_user.id] = {
+                    "reminder_id": reminder_id,
+                    "awaiting_custom_alerts": True,
+                    "due_at": due_at,
+                }
+                return
+
+            self._create_pre_alerts(reminder, pre_alerts, due_at)
+            summary = self._format_alert_summary(pre_alerts)
+            text = formatters.format_reminder(reminder, self.settings.timezone)
+            await query.edit_message_text(f"⏰ {text}\n\n🔔 Alerts: {summary}\n🐰")
+
+        elif data.startswith("reminder_done:"):
             reminder_id = int(data.split(":")[1])
             self.reminders.complete_reminder(reminder_id)
-            await query.edit_message_text("Reminder completed!")
+            await query.edit_message_text("✅ Reminder completed! 🐰")
 
         elif data.startswith("reminder_snooze_1h:"):
             reminder_id = int(data.split(":")[1])
             self.reminders.snooze_reminder(reminder_id, "1h")
-            await query.edit_message_text("Snoozed for 1 hour.")
+            await query.edit_message_text("💤 Snoozed for 1 hour 🐰")
 
         elif data.startswith("reminder_snooze_tomorrow:"):
             reminder_id = int(data.split(":")[1])
             self.reminders.snooze_reminder(reminder_id, "tomorrow")
-            await query.edit_message_text("Snoozed until tomorrow.")
+            await query.edit_message_text("💤 Snoozed until tomorrow 🐰")
 
         elif data.startswith("reminder_repeat_weekly:"):
             reminder_id = int(data.split(":")[1])
@@ -360,7 +498,7 @@ class BotHandlers:
             await query.edit_message_text("Got it, marked as done.")
 
         elif data.startswith("email_dismiss:"):
-            await query.edit_message_text("Dismissed.")
+            await query.edit_message_text("👋 Dismissed 🐰")
 
         elif data.startswith("note_remind:"):
             note_id = int(data.split(":")[1])
