@@ -80,8 +80,9 @@ def main() -> None:
     if not settings.telegram_bot_token:
         logger.error("TELEGRAM_BOT_TOKEN is not set. Exiting.")
         sys.exit(1)
-    if not settings.groq_api_key:
-        logger.error("GROQ_API_KEY is not set. Exiting.")
+    llm_key = settings.cohere_api_key if settings.llm_provider == "cohere" else settings.groq_api_key
+    if not llm_key:
+        logger.error("LLM API key is not set for provider '%s'. Exiting.", settings.llm_provider)
         sys.exit(1)
     if not settings.telegram_allowed_user_ids:
         logger.warning("TELEGRAM_ALLOWED_USER_IDS is empty -- all users will be rejected")
@@ -98,10 +99,39 @@ def main() -> None:
     backup_service = BackupService(settings)
 
     # 5. Build Telegram bot application
-    app = Application.builder().token(settings.telegram_bot_token).build()
+    from src.scheduler.jobs import SchedulerJobs
 
-    # Store allowed user IDs in bot_data for auth_check
-    app.bot_data["allowed_user_ids"] = settings.telegram_allowed_user_ids
+    scheduler_jobs = None
+
+    async def post_init(application):
+        nonlocal scheduler_jobs
+        application.bot_data["allowed_user_ids"] = settings.telegram_allowed_user_ids
+
+        scheduler_jobs = SchedulerJobs(
+            settings=settings,
+            app=application,
+            llm_service=llm_service,
+            email_service=email_service,
+            reminder_service=reminder_service,
+            health_service=health_service,
+            backup_service=backup_service,
+        )
+        scheduler_jobs.setup()
+        scheduler_jobs.start()
+        logger.info("openEar is running.")
+
+    async def post_shutdown(application):
+        if scheduler_jobs:
+            scheduler_jobs.shutdown()
+        logger.info("openEar stopped.")
+
+    app = (
+        Application.builder()
+        .token(settings.telegram_bot_token)
+        .post_init(post_init)
+        .post_shutdown(post_shutdown)
+        .build()
+    )
 
     # Register handlers
     bot_handlers = BotHandlers(
@@ -115,29 +145,8 @@ def main() -> None:
     for handler in bot_handlers.get_handlers():
         app.add_handler(handler)
 
-    # 6. Start APScheduler
-    from src.scheduler.jobs import SchedulerJobs
-
-    scheduler_jobs = SchedulerJobs(
-        settings=settings,
-        app=app,
-        llm_service=llm_service,
-        email_service=email_service,
-        reminder_service=reminder_service,
-        health_service=health_service,
-        backup_service=backup_service,
-    )
-    scheduler_jobs.setup()
-    scheduler_jobs.start()
-
-    logger.info("openEar is running. Press Ctrl+C to stop.")
-
-    # 7. Run bot polling loop (blocks until stopped)
-    try:
-        app.run_polling(drop_pending_updates=True)
-    finally:
-        scheduler_jobs.shutdown()
-        logger.info("openEar stopped.")
+    # 6. Run bot polling loop (blocks until stopped)
+    app.run_polling(drop_pending_updates=False)
 
 
 if __name__ == "__main__":
