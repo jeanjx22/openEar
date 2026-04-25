@@ -60,6 +60,9 @@ class SchedulerJobs:
         self.health = health_service
         self.backup = backup_service
         self.scheduler = AsyncIOScheduler()
+        # Track which reminders have already received a post-event prompt
+        # to avoid re-sending every minute
+        self._post_prompted: set[int] = set()
 
         # The primary chat ID to send scheduled messages to
         # Uses the first allowed user ID
@@ -208,19 +211,49 @@ class SchedulerJobs:
 
         C2: After sending notification, marks reminder as "notified"
         so it will not be picked up again on the next cycle.
+
+        Pre-alert reminders (source="pre_alert") are formatted differently:
+        they look up the parent event via source_ref and show the parent's
+        due time instead of the alert's own due time.
         """
-        # Check quiet hours
+        self.reminders.cleanup_expired_pre_alerts()
+
         if self.reminders.is_quiet_hours():
             return
 
         due = self.reminders.get_due_reminders()
         for reminder in due:
-            text = formatters.format_reminder(reminder, self.settings.timezone)
-            await self._send_to_all(
-                text, reply_markup=keyboards.reminder_actions(reminder.id)
-            )
+            if reminder.source == "pre_alert" and reminder.source_ref:
+                # Look up the parent event
+                try:
+                    parent_id = int(reminder.source_ref)
+                    parent = self.reminders.get_reminder(parent_id)
+                except (ValueError, TypeError):
+                    parent = None
+
+                if parent:
+                    text = formatters.format_pre_alert(
+                        reminder, parent, self.settings.timezone
+                    )
+                    markup = keyboards.pre_alert_actions(
+                        reminder.id, parent.id
+                    )
+                else:
+                    # Parent not found, fall back to standard format
+                    text = formatters.format_reminder(
+                        reminder, self.settings.timezone
+                    )
+                    markup = keyboards.reminder_actions(reminder.id)
+            else:
+                text = formatters.format_reminder(
+                    reminder, self.settings.timezone
+                )
+                markup = keyboards.reminder_actions(reminder.id)
+
+            await self._send_to_all(text, reply_markup=markup)
             # C2: Mark as notified so it won't fire again
             self.reminders.mark_notified(reminder.id)
+
 
     async def _snoozed_reminder_job(self) -> None:
         """Re-activate snoozed reminders whose snooze has expired."""

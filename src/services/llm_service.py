@@ -398,8 +398,12 @@ Examples:
 
     async def parse_alert_time(
         self, user_input: str, event_time: "datetime", timezone_str: str = "America/Los_Angeles"
-    ) -> "datetime | None":
-        """Parse a custom alert time. LLM understands language, code does math."""
+    ) -> "list[dict] | None":
+        """Parse custom alert times. Returns list of {datetime, label} dicts.
+
+        Supports compound requests like 'morning of the event and the night before'.
+        LLM understands language, code does math.
+        """
         from datetime import datetime as dt_type
         from datetime import timedelta, timezone as tz
         from zoneinfo import ZoneInfo
@@ -408,27 +412,32 @@ Examples:
         now_local = now_utc.astimezone(ZoneInfo(timezone_str))
         event_local = event_time.astimezone(ZoneInfo(timezone_str))
 
-        system_prompt = f"""Parse the user's alert time request. Return ONLY a JSON object in one of these formats:
+        system_prompt = f"""Parse the user's alert time request. The user may request ONE or MULTIPLE alerts.
+Return a JSON ARRAY of objects (even for a single alert).
 
-1. Relative to NOW: {{"type": "from_now", "minutes": <number>}}
-   Examples: "1 minute from now" -> {{"type": "from_now", "minutes": 1}}
-             "in 2 hours" -> {{"type": "from_now", "minutes": 120}}
+Each object must be one of these formats:
+1. Relative to NOW: {{"type": "from_now", "minutes": <number>, "label": "<description>"}}
+2. Relative to EVENT: {{"type": "before_event", "minutes": <number>, "label": "<description>"}}
+3. Specific time: {{"type": "absolute", "date": "<YYYY-MM-DD>", "time": "<HH:MM>", "timezone": "{timezone_str}", "label": "<description>"}}
 
-2. Relative to EVENT: {{"type": "before_event", "minutes": <number>}}
-   Examples: "1 hour before" -> {{"type": "before_event", "minutes": 60}}
-             "30 minutes before" -> {{"type": "before_event", "minutes": 30}}
-             "the day before" -> {{"type": "before_event", "minutes": 1440}}
+TIME-OF-DAY DEFINITIONS:
+- "morning" = 08:00
+- "afternoon" = 14:00
+- "evening" = 18:00
+- "night" = 20:00
 
-3. Specific time: {{"type": "absolute", "date": "<YYYY-MM-DD>", "time": "<HH:MM>", "timezone": "{timezone_str}"}}
-   Examples: "Sunday at 8pm" -> {{"type": "absolute", "date": "2026-04-26", "time": "20:00", "timezone": "{timezone_str}"}}
-             "the day before at 8pm" -> {{"type": "absolute", "date": "{(event_local - timedelta(days=1)).strftime('%Y-%m-%d')}", "time": "20:00", "timezone": "{timezone_str}"}}
-             "morning of the event" -> {{"type": "absolute", "date": "{event_local.strftime('%Y-%m-%d')}", "time": "08:00", "timezone": "{timezone_str}"}}
+Examples:
+- "morning of the event" -> [{{"type": "absolute", "date": "{event_local.strftime('%Y-%m-%d')}", "time": "08:00", "timezone": "{timezone_str}", "label": "Morning of"}}]
+- "the night before" -> [{{"type": "absolute", "date": "{(event_local - timedelta(days=1)).strftime('%Y-%m-%d')}", "time": "20:00", "timezone": "{timezone_str}", "label": "Night before"}}]
+- "morning of the event and the night before" -> [{{"type": "absolute", "date": "{event_local.strftime('%Y-%m-%d')}", "time": "08:00", "timezone": "{timezone_str}", "label": "Morning of"}}, {{"type": "absolute", "date": "{(event_local - timedelta(days=1)).strftime('%Y-%m-%d')}", "time": "20:00", "timezone": "{timezone_str}", "label": "Night before"}}]
+- "1 minute from now" -> [{{"type": "from_now", "minutes": 1, "label": "Test alert"}}]
+- "1 hour before" -> [{{"type": "before_event", "minutes": 60, "label": "1 hour before"}}]
 
 CONTEXT:
 - Now: {now_local.strftime("%A %B %d, %Y %I:%M %p")} ({timezone_str})
 - Event: {event_local.strftime("%A %B %d, %Y %I:%M %p")} ({timezone_str})
 
-Return ONLY the JSON object, nothing else."""
+Return ONLY the JSON array, nothing else."""
 
         messages = [
             {"role": "system", "content": system_prompt},
@@ -439,29 +448,38 @@ Return ONLY the JSON object, nothing else."""
             return None
 
         try:
-            parsed = json.loads(result)
+            parsed_list = json.loads(result)
+            if isinstance(parsed_list, dict):
+                parsed_list = [parsed_list]
+            if not isinstance(parsed_list, list):
+                return None
         except json.JSONDecodeError:
             logger.warning("Failed to parse alert time JSON: %s", result)
             return None
 
-        try:
-            alert_type = parsed.get("type")
-            if alert_type == "from_now":
-                minutes = int(parsed.get("minutes", 0))
-                return now_utc + timedelta(minutes=minutes)
-            elif alert_type == "before_event":
-                minutes = int(parsed.get("minutes", 0))
-                return event_time - timedelta(minutes=minutes)
-            elif alert_type == "absolute":
-                date_str = parsed.get("date", "")
-                time_str = parsed.get("time", "08:00")
-                tz_str = parsed.get("timezone", timezone_str)
-                local_dt = dt_type.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
-                local_dt = local_dt.replace(tzinfo=ZoneInfo(tz_str))
-                return local_dt.astimezone(tz.utc)
-            else:
-                logger.warning("Unknown alert type: %s", alert_type)
-                return None
-        except Exception as e:
-            logger.warning("Failed to compute alert time: %s (parsed: %s)", e, parsed)
-            return None
+        alerts = []
+        for parsed in parsed_list:
+            try:
+                alert_type = parsed.get("type")
+                label = parsed.get("label", "Custom")
+                dt_result = None
+                if alert_type == "from_now":
+                    minutes = int(parsed.get("minutes", 0))
+                    dt_result = now_utc + timedelta(minutes=minutes)
+                elif alert_type == "before_event":
+                    minutes = int(parsed.get("minutes", 0))
+                    dt_result = event_time - timedelta(minutes=minutes)
+                elif alert_type == "absolute":
+                    date_str = parsed.get("date", "")
+                    time_str = parsed.get("time", "08:00")
+                    tz_str = parsed.get("timezone", timezone_str)
+                    local_dt = dt_type.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+                    local_dt = local_dt.replace(tzinfo=ZoneInfo(tz_str))
+                    dt_result = local_dt.astimezone(tz.utc)
+
+                if dt_result:
+                    alerts.append({"datetime": dt_result, "label": label})
+            except Exception as e:
+                logger.warning("Failed to compute alert time: %s (parsed: %s)", e, parsed)
+
+        return alerts if alerts else None

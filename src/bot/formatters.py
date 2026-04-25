@@ -68,6 +68,32 @@ def format_reminder_list(
     return "\n".join(lines)
 
 
+def to_local_full(dt: datetime, tz_name: str = "America/Los_Angeles") -> str:
+    """Convert UTC datetime to a full local time string with day name."""
+    tz = ZoneInfo(tz_name)
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    local = dt.astimezone(tz)
+    return local.strftime("%A %b %d, %I:%M %p")
+
+
+def format_pre_alert(alert_reminder, parent_reminder, tz_name: str = "America/Los_Angeles") -> str:
+    """Format a pre-alert notification showing the parent event details.
+
+    Instead of showing the alert's own due time (which is confusing),
+    this shows the parent event's time and the alert label.
+    """
+    parent_due_str = to_local_full(parent_reminder.due_at, tz_name)
+    title = parent_reminder.title or "Reminder"
+    alert_label = alert_reminder.alert_label or "Upcoming"
+    return (
+        f"⏰ Alert: {title}\n"
+        f"📅 Event: {parent_due_str}\n"
+        f"🔔 This is your {alert_label} alert\n"
+        f"🐰"
+    )
+
+
 def format_note(note, tz_name: str = "America/Los_Angeles") -> str:
     """Format a single note for display."""
     created = to_local(note.created_at, tz_name)
