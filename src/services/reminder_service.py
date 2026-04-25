@@ -48,6 +48,7 @@ class ReminderService:
         recurrence: str | None = None,
         source: str = "user_manual",
         source_ref: str | None = None,
+        alert_label: str | None = None,
     ) -> Reminder:
         """Create a new reminder. due_at must be UTC."""
         with get_session() as session:
@@ -58,6 +59,7 @@ class ReminderService:
                 recurrence=recurrence,
                 source=source,
                 source_ref=source_ref,
+                alert_label=alert_label,
                 status="active",
             )
             session.add(reminder)
@@ -77,9 +79,9 @@ class ReminderService:
             return reminder
 
     def get_active_reminders(self) -> list[Reminder]:
-        """Get all active (non-completed, non-snoozed) reminders."""
+        """Get all active or notified (non-completed, non-snoozed) reminders."""
         with get_session() as session:
-            stmt = select(Reminder).where(Reminder.status == "active")
+            stmt = select(Reminder).where(Reminder.status.in_(["active", "notified"]))
             results = list(session.execute(stmt).scalars().all())
             # C1: expunge all before session closes
             for r in results:
@@ -165,6 +167,8 @@ class ReminderService:
                     next_due,
                 )
 
+            # Flush so the status change is persisted before expunge
+            session.flush()
             # C1: expunge before session closes
             session.expunge(reminder)
             return reminder
@@ -188,6 +192,8 @@ class ReminderService:
                 return None
             reminder.status = "snoozed"
             reminder.snoozed_until = datetime.now(timezone.utc) + delta
+            # Flush so the status change is persisted before expunge
+            session.flush()
             # C1: expunge before session closes
             session.expunge(reminder)
             return reminder
@@ -219,6 +225,68 @@ class ReminderService:
         if next_morning <= now_local:
             next_morning += timedelta(days=1)
         return next_morning.astimezone(timezone.utc)
+
+    def cleanup_expired_pre_alerts(self) -> int:
+        """Auto-complete pre-alerts whose due_at has passed."""
+        now = datetime.now(timezone.utc)
+        with get_session() as session:
+            stmt = (
+                select(Reminder)
+                .where(Reminder.source == "pre_alert")
+                .where(Reminder.due_at < now)
+                .where(Reminder.status.in_(["active", "notified"]))
+            )
+            expired = list(session.execute(stmt).scalars().all())
+            for r in expired:
+                r.status = "completed"
+            session.flush()
+            return len(expired)
+
+    def get_alerts_for_reminder(self, parent_id: int) -> list[Reminder]:
+        """Get active pre-alert reminders associated with a parent reminder."""
+        with get_session() as session:
+            stmt = (
+                select(Reminder)
+                .where(Reminder.source == "pre_alert")
+                .where(Reminder.source_ref == str(parent_id))
+                .where(Reminder.status.in_(["active", "notified"]))
+                .order_by(Reminder.due_at.asc())
+            )
+            results = list(session.execute(stmt).scalars().all())
+            for r in results:
+                session.expunge(r)
+            return results
+
+    def get_past_unresolved(self, hours: int = 2) -> list[Reminder]:
+        """Get reminders where due_at is in the past (within last N hours),
+        status is 'active' or 'notified', and source is NOT 'pre_alert'.
+
+        These are main events that have passed without being marked done.
+        """
+        now = datetime.now(timezone.utc)
+        cutoff = now - timedelta(hours=hours)
+        with get_session() as session:
+            stmt = (
+                select(Reminder)
+                .where(Reminder.due_at < now)
+                .where(Reminder.due_at >= cutoff)
+                .where(Reminder.status.in_(["active", "notified"]))
+                .where(Reminder.source != "pre_alert")
+            )
+            results = list(session.execute(stmt).scalars().all())
+            for r in results:
+                session.expunge(r)
+            return results
+
+    def delete_reminder(self, reminder_id: int) -> bool:
+        """Delete a reminder by ID. Returns True if found and deleted."""
+        with get_session() as session:
+            reminder = session.get(Reminder, reminder_id)
+            if reminder:
+                session.delete(reminder)
+                logger.info("Deleted reminder #%d", reminder_id)
+                return True
+            return False
 
     def _calculate_next_due(self, current_due: datetime, recurrence: str) -> datetime:
         """Calculate the next due date based on recurrence pattern."""
