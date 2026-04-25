@@ -10,3 +10,5 @@ yfinance>=0.2
 duckduckgo-search>=5.0
 httpx>=0.27
 python-dotenv>=1.0
+boto3>=1.34
+flask>=3.0

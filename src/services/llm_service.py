@@ -1,0 +1,331 @@
+"""LLM service wrapping Groq API with retry, backoff, and circuit breaker.
+
+Rate limit handling:
+- Exponential backoff: 2s, 4s, 8s, 16s, up to 60s max, 5 attempts
+- Circuit breaker: trips after 3 consecutive rate limit failures within
+  5 minutes. Resets after 10 minutes with a probe call.
+- When circuit is open: classification falls back to whitelist-only,
+  summarization falls back to subject + first 200 chars, chat returns
+  a "temporarily unavailable" message.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import logging
+import time
+from dataclasses import dataclass, field
+
+from groq import AsyncGroq, RateLimitError
+
+from src.config import Settings
+from src.db.database import get_session
+from src.db.models import HealthLog
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class CircuitBreaker:
+    """Simple circuit breaker for Groq rate limits."""
+
+    failure_count: int = 0
+    failure_window_start: float = 0.0
+    is_open: bool = False
+    opened_at: float = 0.0
+    cooldown_seconds: float = 600.0  # 10 minutes
+    failure_threshold: int = 3
+    window_seconds: float = 300.0  # 5 minutes
+
+    def record_failure(self) -> None:
+        now = time.time()
+        if now - self.failure_window_start > self.window_seconds:
+            self.failure_count = 0
+            self.failure_window_start = now
+        self.failure_count += 1
+        if self.failure_count >= self.failure_threshold:
+            self.is_open = True
+            self.opened_at = now
+            logger.warning("Circuit breaker OPEN after %d failures", self.failure_count)
+
+    def record_success(self) -> None:
+        self.failure_count = 0
+        if self.is_open:
+            self.is_open = False
+            logger.info("Circuit breaker CLOSED after successful probe")
+
+    def should_allow(self) -> bool:
+        if not self.is_open:
+            return True
+        elapsed = time.time() - self.opened_at
+        if elapsed >= self.cooldown_seconds:
+            logger.info("Circuit breaker cooldown expired, allowing probe call")
+            return True
+        return False
+
+
+class LLMService:
+    """Async LLM service with Groq backend, retry, and circuit breaker."""
+
+    def __init__(self, settings: Settings) -> None:
+        self.settings = settings
+        self.client = AsyncGroq(api_key=settings.groq_api_key)
+        self.model = settings.groq_model
+        self.circuit_breaker = CircuitBreaker()
+        self._rate_limit_count_24h: list[float] = []
+        self._last_successful_call: float | None = None
+
+    @property
+    def rate_limit_count_24h(self) -> int:
+        """Number of 429 responses in the last 24 hours."""
+        cutoff = time.time() - 86400
+        self._rate_limit_count_24h = [
+            t for t in self._rate_limit_count_24h if t > cutoff
+        ]
+        return len(self._rate_limit_count_24h)
+
+    @property
+    def last_successful_call(self) -> float | None:
+        return self._last_successful_call
+
+    def _log_rate_limit(self, detail: str = "") -> None:
+        """Log a rate limit event to the health_log table."""
+        self._rate_limit_count_24h.append(time.time())
+        try:
+            with get_session() as session:
+                session.add(HealthLog(event_type="groq_429", detail=detail))
+        except Exception as e:
+            logger.error("Failed to log rate limit event: %s", e)
+
+    def _log_circuit_breaker(self, state: str) -> None:
+        """Log circuit breaker state change."""
+        try:
+            with get_session() as session:
+                session.add(
+                    HealthLog(
+                        event_type=f"circuit_breaker_{state}",
+                        detail=f"failures={self.circuit_breaker.failure_count}",
+                    )
+                )
+        except Exception as e:
+            logger.error("Failed to log circuit breaker event: %s", e)
+
+    async def call_groq(
+        self,
+        messages: list[dict[str, str]],
+        model: str | None = None,
+        temperature: float = 0.7,
+    ) -> str | None:
+        """Call Groq API with exponential backoff on rate limits.
+
+        Returns the assistant message content, or None if the circuit
+        breaker is open and the probe fails.
+        """
+        if not self.circuit_breaker.should_allow():
+            logger.warning("Circuit breaker is open, skipping Groq call")
+            return None
+
+        max_retries = 5
+        base_delay = 2.0
+        max_delay = 60.0
+        use_model = model or self.model
+
+        for attempt in range(max_retries):
+            try:
+                response = await self.client.chat.completions.create(
+                    model=use_model,
+                    messages=messages,
+                    temperature=temperature,
+                )
+                self.circuit_breaker.record_success()
+                self._last_successful_call = time.time()
+                return response.choices[0].message.content
+
+            except RateLimitError as e:
+                delay = min(base_delay * (2**attempt), max_delay)
+                logger.warning(
+                    "Groq 429 (attempt %d/%d), retrying in %.1fs: %s",
+                    attempt + 1,
+                    max_retries,
+                    delay,
+                    e,
+                )
+                self._log_rate_limit(str(e))
+
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(delay)
+                else:
+                    self.circuit_breaker.record_failure()
+                    if self.circuit_breaker.is_open:
+                        self._log_circuit_breaker("open")
+                    return None
+
+            except Exception as e:
+                logger.error("Groq API error: %s", e)
+                raise
+
+    async def classify_intent(self, user_message: str) -> dict:
+        """Classify user message intent.
+
+        Returns a dict with keys: intent, content, tags.
+        intent is one of: "reminder", "note", "weather", "stock",
+        "news", "email", "status", "general".
+        """
+        system_prompt = """You are an intent classifier. Given a user message, classify it into one of these intents:
+- "reminder": user wants to set, check, or manage a reminder
+- "note": user wants to save a note or piece of information
+- "weather": user asks about weather
+- "stock": user asks about stocks or market data
+- "news": user asks about news
+- "general": general conversation
+
+Respond with ONLY a JSON object:
+{"intent": "<intent>", "content": "<extracted content>", "tags": ["<tag1>", "<tag2>"]}"""
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message},
+        ]
+        result = await self.call_groq(messages, temperature=0.1)
+        if result is None:
+            return {"intent": "general", "content": user_message, "tags": []}
+
+        try:
+            return json.loads(result)
+        except json.JSONDecodeError:
+            logger.warning("Failed to parse intent JSON: %s", result)
+            return {"intent": "general", "content": user_message, "tags": []}
+
+    async def classify_emails_batch(
+        self, emails: list[dict[str, str]], criteria: list[str]
+    ) -> list[bool]:
+        """Classify a batch of emails as relevant or irrelevant.
+
+        Args:
+            emails: list of dicts with "sender" and "subject" keys
+            criteria: list of relevance criteria (e.g., ["school", "medical"])
+
+        Returns:
+            list of booleans, same order as input. True = relevant.
+        """
+        if not emails:
+            return []
+
+        email_lines = []
+        for i, e in enumerate(emails, 1):
+            email_lines.append(f'{i}. From: {e["sender"]} | Subject: {e["subject"]}')
+
+        system_prompt = f"""Classify each email as RELEVANT or IRRELEVANT based on these criteria: {', '.join(criteria)}.
+Return ONLY a JSON array of booleans in the same order. Example: [true, false, true]
+
+Emails:
+{chr(10).join(email_lines)}"""
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": "Classify these emails."},
+        ]
+        result = await self.call_groq(messages, temperature=0.1)
+        if result is None:
+            # Circuit breaker open: return all False (whitelist-only mode)
+            return [False] * len(emails)
+
+        try:
+            parsed = json.loads(result)
+            if isinstance(parsed, list) and len(parsed) == len(emails):
+                return [bool(x) for x in parsed]
+            logger.warning(
+                "Batch classification returned %d items for %d emails",
+                len(parsed) if isinstance(parsed, list) else -1,
+                len(emails),
+            )
+            return [False] * len(emails)
+        except json.JSONDecodeError:
+            logger.warning("Failed to parse batch classification JSON: %s", result)
+            return [False] * len(emails)
+
+    async def summarize_email(self, sender: str, subject: str, body: str) -> str:
+        """Summarize a single email. Falls back to truncated body if LLM unavailable."""
+        system_prompt = """Summarize this email concisely in 2-3 sentences. Preserve the language of the original email. Extract any action items and deadlines."""
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {
+                "role": "user",
+                "content": f"From: {sender}\nSubject: {subject}\n\n{body[:3000]}",
+            },
+        ]
+        result = await self.call_groq(messages, temperature=0.3)
+        if result is None:
+            # Fallback: subject + truncated body
+            return f"{subject}\n{body[:200]}..."
+        return result
+
+    async def summarize_conversation(self, messages_to_summarize: list[dict]) -> str:
+        """Summarize older conversation messages into a single paragraph."""
+        formatted = "\n".join(
+            f'{m["role"]}: {m["content"]}' for m in messages_to_summarize
+        )
+        system_prompt = """Summarize the following conversation into a single concise paragraph that preserves all key topics, decisions, and action items discussed."""
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": formatted},
+        ]
+        result = await self.call_groq(messages, temperature=0.3)
+        if result is None:
+            # Fallback: just keep the last message content
+            return "Previous conversation context unavailable (LLM temporarily down)."
+        return result
+
+    async def chat(
+        self,
+        user_message: str,
+        conversation_history: list[dict[str, str]],
+        persona: dict,
+    ) -> str:
+        """General conversation with persona-aware system prompt."""
+        persona_name = persona.get("name", "openEar")
+        tone = persona.get("tone", "warm, concise")
+        behaviors = persona.get("behavior", [])
+        behavior_text = "\n".join(f"- {b}" for b in behaviors)
+
+        system_prompt = f"""You are {persona_name}, a personal AI assistant.
+Tone: {tone}
+Language: Respond in whatever language the user writes in.
+
+Behavioral rules:
+{behavior_text}"""
+
+        messages = [{"role": "system", "content": system_prompt}]
+        messages.extend(conversation_history)
+        messages.append({"role": "user", "content": user_message})
+
+        result = await self.call_groq(messages)
+        if result is None:
+            return "I am temporarily unable to process complex requests. Please try again in a few minutes."
+        return result
+
+    async def parse_reminder_time(self, user_input: str) -> dict | None:
+        """Parse natural language time into structured reminder data.
+
+        Returns dict with keys: title, due_at (ISO format), recurrence (optional).
+        """
+        system_prompt = """Parse the user's message into a reminder. Return ONLY a JSON object:
+{"title": "<reminder title>", "due_at": "<ISO 8601 datetime>", "recurrence": "<daily|weekly|null>"}
+
+Current UTC time context will be provided. All times in the output must be UTC."""
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_input},
+        ]
+        result = await self.call_groq(messages, temperature=0.1)
+        if result is None:
+            return None
+        try:
+            return json.loads(result)
+        except json.JSONDecodeError:
+            logger.warning("Failed to parse reminder time: %s", result)
+            return None
