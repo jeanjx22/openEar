@@ -286,27 +286,66 @@ class BotHandlers:
 
         pending = self._pending_reminder_context.get(user_id)
         if pending and pending.get("awaiting_custom_alerts"):
+            import re as _re
+            from datetime import timedelta
+
             import dateparser
-            dt = dateparser.parse(
-                user_message,
-                settings={"PREFER_DATES_FROM": "future", "TIMEZONE": self.settings.timezone, "RETURN_AS_TIMEZONE_AWARE": True},
-            )
-            if dt:
-                from datetime import timedelta
-                reminder = self.reminders.get_reminder(pending["reminder_id"])
-                if reminder:
-                    self.reminders.create_reminder(
-                        title=f"Alert: {reminder.title}",
-                        due_at=dt.astimezone(timezone.utc),
-                        source="pre_alert",
-                        source_ref=str(reminder.id),
-                    )
-                    text = formatters.format_reminder(reminder, self.settings.timezone)
-                    await update.message.reply_text(f"🔔 Custom alert set for {formatters.to_local(dt, self.settings.timezone)}!\n⏰ {text}\n🐰")
+
+            logger.info("Custom alert input from user %s: '%s'", user_id, user_message)
+            reminder = self.reminders.get_reminder(pending["reminder_id"])
+            if not reminder:
                 del self._pending_reminder_context[user_id]
+                await update.message.reply_text("Reminder not found 🐰")
+                return
+
+            due_at = pending["due_at"]
+            alert_dt = None
+
+            relative = _re.search(
+                r"(\d+)\s*(minute|min|hour|hr|day|week)s?\s*(?:before|earlier|prior|from now|from the event)",
+                user_message.lower(),
+            )
+            if relative:
+                amount = int(relative.group(1))
+                unit = relative.group(2)
+                deltas = {"minute": timedelta(minutes=amount), "min": timedelta(minutes=amount),
+                          "hour": timedelta(hours=amount), "hr": timedelta(hours=amount),
+                          "day": timedelta(days=amount), "week": timedelta(weeks=amount)}
+                alert_dt = due_at - deltas.get(unit, timedelta(hours=1))
             else:
-                await update.message.reply_text("Couldn't parse that time. Try something like '1 hour before' or 'Sunday at 8pm' 🐰")
-            return
+                normalized = _re.sub(r"\bnext\b", "", user_message, flags=_re.IGNORECASE).strip()
+                alert_dt = dateparser.parse(
+                    normalized,
+                    settings={"PREFER_DATES_FROM": "future", "TIMEZONE": self.settings.timezone, "RETURN_AS_TIMEZONE_AWARE": True},
+                )
+
+            if alert_dt:
+                if alert_dt.tzinfo is None:
+                    from zoneinfo import ZoneInfo
+                    alert_dt = alert_dt.replace(tzinfo=ZoneInfo(self.settings.timezone))
+                alert_utc = alert_dt.astimezone(timezone.utc)
+                self.reminders.create_reminder(
+                    title=f"Alert: {reminder.title}",
+                    due_at=alert_utc,
+                    source="pre_alert",
+                    source_ref=str(reminder.id),
+                )
+                time_str = formatters.to_local(alert_utc, self.settings.timezone)
+                await update.message.reply_text(f"🔔 Custom alert set for {time_str}!\n⏰ {formatters.format_reminder(reminder, self.settings.timezone)}\n\nWant to add another alert? Reply with a time or say 'done' 🐰")
+                return
+            elif user_message.lower().strip() in ("done", "no", "nope", "that's it"):
+                del self._pending_reminder_context[user_id]
+                await update.message.reply_text("All set! 🐰")
+                return
+            else:
+                await update.message.reply_text(
+                    "Couldn't parse that. Try:\n"
+                    "• '1 hour before'\n"
+                    "• '30 minutes before'\n"
+                    "• 'Sunday at 8pm'\n"
+                    "• 'done' to finish 🐰"
+                )
+                return
 
         # Classify intent
         intent_data = await self.llm.classify_intent(user_message)
