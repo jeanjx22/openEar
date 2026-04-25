@@ -19,8 +19,10 @@ DATA_DIR = PROJECT_ROOT / "data"
 class Settings:
     telegram_bot_token: str = ""
     telegram_allowed_user_ids: set[int] = field(default_factory=set)
+    llm_provider: str = "cohere"
+    llm_model: str = "command-r"
     groq_api_key: str = ""
-    groq_model: str = "llama3-70b-8192"
+    cohere_api_key: str = ""
     gmail_credentials_path: str = "credentials.json"
     gmail_token_path: str = "token.json"
     db_path: str = ""
@@ -83,11 +85,16 @@ def load_settings() -> Settings:
             or os.getenv("TELEGRAM_BOT_TOKEN", "")
         ),
         telegram_allowed_user_ids=allowed_ids,
+        llm_provider=os.getenv("LLM_PROVIDER", "cohere"),
+        llm_model=os.getenv("LLM_MODEL", "command-r"),
         groq_api_key=(
             ssm_secrets.get("groq_api_key", "")
             or os.getenv("GROQ_API_KEY", "")
         ),
-        groq_model=os.getenv("GROQ_MODEL", "llama3-70b-8192"),
+        cohere_api_key=(
+            ssm_secrets.get("cohere_api_key", "")
+            or os.getenv("COHERE_API_KEY", "")
+        ),
         gmail_credentials_path=os.getenv(
             "GMAIL_CREDENTIALS_PATH", "credentials.json"
         ),

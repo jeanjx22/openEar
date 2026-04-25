@@ -21,6 +21,26 @@ import httpx
 logger = logging.getLogger(__name__)
 
 
+def _weather_emoji(code: int) -> str:
+    if code == 0:
+        return "☀️"
+    if code <= 3:
+        return "⛅"
+    if code <= 49:
+        return "🌫️"
+    if code <= 59:
+        return "🌧️"
+    if code <= 69:
+        return "🌨️"
+    if code <= 79:
+        return "❄️"
+    if code <= 84:
+        return "🌧️"
+    if code <= 94:
+        return "⛈️"
+    return "🌪️"
+
+
 async def get_weather(
     latitude: float = 37.39,
     longitude: float = -122.08,
@@ -54,12 +74,18 @@ async def get_weather(
             temp = current.get("temperature_2m", "N/A")
             humidity = current.get("relative_humidity_2m", "N/A")
             wind = current.get("wind_speed_10m", "N/A")
+            weather_code = current.get("weather_code", 0)
+
+            wx_emoji = _weather_emoji(weather_code)
 
             lines = [
-                f"Weather in {city_name}:",
-                f"Now: {temp}F, Humidity: {humidity}%, Wind: {wind} mph",
+                f"{wx_emoji} Weather in {city_name}",
                 "",
-                "Forecast:",
+                f"🌡️ Now: {temp}°F",
+                f"💧 Humidity: {humidity}%",
+                f"🌬️ Wind: {wind} mph",
+                "",
+                "📅 Forecast:",
             ]
 
             dates = daily.get("time", [])
@@ -68,11 +94,13 @@ async def get_weather(
             rain = daily.get("precipitation_probability_max", [])
 
             for i in range(min(3, len(dates))):
+                rain_emoji = "🌧️" if rain[i] > 50 else "☁️" if rain[i] > 20 else "☀️"
                 lines.append(
-                    f"  {dates[i]}: {lows[i]}F - {highs[i]}F, "
-                    f"Rain: {rain[i]}%"
+                    f"  {rain_emoji} {dates[i]}: {lows[i]}°F – {highs[i]}°F "
+                    f"(rain {rain[i]}%)"
                 )
 
+            lines.append("\n🐰")
             return "\n".join(lines)
 
     except Exception as e:
@@ -110,9 +138,12 @@ def _get_stock_quote_sync(symbol: str) -> str:
     name = info.get("shortName", symbol.upper())
     market_cap = info.get("marketCap", 0)
 
-    change_pct = ""
+    change_pct = 0.0
     if prev_close and price != "N/A":
-        change_pct = f" ({((price - prev_close) / prev_close * 100):+.2f}%)"
+        change_pct = (price - prev_close) / prev_close * 100
+
+    trend = "📈" if change_pct > 0 else "📉" if change_pct < 0 else "➡️"
+    change_str = f"{change_pct:+.2f}%" if change_pct else ""
 
     cap_str = ""
     if market_cap:
@@ -124,9 +155,10 @@ def _get_stock_quote_sync(symbol: str) -> str:
             cap_str = f"${market_cap / 1e6:.0f}M"
 
     return (
-        f"{name} ({symbol.upper()})\n"
-        f"Price: ${price:.2f}{change_pct}\n"
-        f"Market Cap: {cap_str}"
+        f"{trend} {name} ({symbol.upper()})\n\n"
+        f"💰 Price: ${price:.2f} ({change_str})\n"
+        f"🏢 Market Cap: {cap_str}\n\n"
+        f"🐰"
     )
 
 

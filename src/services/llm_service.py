@@ -14,10 +14,11 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import re
 import time
 from dataclasses import dataclass, field
 
-from groq import AsyncGroq, RateLimitError
+from openai import AsyncOpenAI, RateLimitError
 
 from src.config import Settings
 from src.db.database import get_session
@@ -66,15 +67,30 @@ class CircuitBreaker:
 
 
 class LLMService:
-    """Async LLM service with Groq backend, retry, and circuit breaker."""
+    """Async LLM service with multi-provider support, retry, and circuit breaker."""
+
+    PROVIDER_CONFIG = {
+        "groq": {
+            "base_url": "https://api.groq.com/openai/v1",
+            "key_field": "groq_api_key",
+        },
+        "cohere": {
+            "base_url": "https://api.cohere.com/compatibility/v1",
+            "key_field": "cohere_api_key",
+        },
+    }
 
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
-        self.client = AsyncGroq(api_key=settings.groq_api_key)
-        self.model = settings.groq_model
+        provider = settings.llm_provider
+        config = self.PROVIDER_CONFIG.get(provider, self.PROVIDER_CONFIG["cohere"])
+        api_key = getattr(settings, config["key_field"], "")
+        self.client = AsyncOpenAI(api_key=api_key, base_url=config["base_url"])
+        self.model = settings.llm_model
         self.circuit_breaker = CircuitBreaker()
         self._rate_limit_count_24h: list[float] = []
         self._last_successful_call: float | None = None
+        logger.info("LLM provider: %s, model: %s", provider, self.model)
 
     @property
     def rate_limit_count_24h(self) -> int:
@@ -140,7 +156,8 @@ class LLMService:
                 )
                 self.circuit_breaker.record_success()
                 self._last_successful_call = time.time()
-                return response.choices[0].message.content
+                content = response.choices[0].message.content
+                return re.sub(r"<think>.*?</think>\s*", "", content, flags=re.DOTALL).strip() if content else content
 
             except RateLimitError as e:
                 delay = min(base_delay * (2**attempt), max_delay)
