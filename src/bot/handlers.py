@@ -1,0 +1,532 @@
+"""Telegram bot handlers for openEar.
+
+Every handler checks auth first. Messages from unauthorized users
+are silently dropped.
+
+Conversation context management:
+- Keeps the last 20 messages as active context per user (N5)
+- When message 21 arrives, messages 1-10 are summarized by the LLM
+- Summary is stored as a context_summary role entry
+- User is notified when summarization occurs
+
+N1: This file is implemented across Steps 3D, 3E, and 3F.
+N4: Uses normal import for Reminder model (no __import__ hack).
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+from datetime import datetime, timezone
+
+from telegram import Update
+from telegram.ext import (
+    CallbackQueryHandler,
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
+)
+
+from src.auth import auth_check
+from src.bot import formatters, keyboards
+from src.config import Settings
+from src.db.database import get_session
+from src.db.models import Conversation, Reminder  # N4: normal import
+from src.services.email_service import EmailService, EmailServiceUnavailable
+from src.services.health_service import HealthService
+from src.services.info_service import get_stock_quote, get_weather, search_news
+from src.services.llm_service import LLMService
+from src.services.note_service import NoteService
+from src.services.reminder_service import ReminderService
+
+logger = logging.getLogger(__name__)
+
+# Maximum active messages in conversation context before summarization
+MAX_ACTIVE_MESSAGES = 20
+SUMMARIZE_BATCH_SIZE = 10
+
+
+class BotHandlers:
+    """Registers and implements all Telegram bot handlers."""
+
+    def __init__(
+        self,
+        settings: Settings,
+        llm_service: LLMService,
+        email_service: EmailService,
+        reminder_service: ReminderService,
+        note_service: NoteService,
+        health_service: HealthService,
+    ) -> None:
+        self.settings = settings
+        self.llm = llm_service
+        self.email = email_service
+        self.reminders = reminder_service
+        self.notes = note_service
+        self.health = health_service
+        self._pending_reminder_context: dict[int, dict] = {}
+
+    def get_handlers(self) -> list:
+        """Return all handler objects to register with the Application."""
+        return [
+            CommandHandler("start", self.cmd_start),
+            CommandHandler("help", self.cmd_help),
+            CommandHandler("status", self.cmd_status),
+            CommandHandler("briefing", self.cmd_briefing),
+            CommandHandler("reminders", self.cmd_list_reminders),
+            CommandHandler("notes", self.cmd_list_notes),
+            CommandHandler("note", self.cmd_save_note),
+            CallbackQueryHandler(self.callback_handler),
+            MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message),
+        ]
+
+    # ---- Command Handlers (Step 3D) ----
+
+    async def cmd_start(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        if not await auth_check(update, context):
+            return
+        name = self.settings.persona.get("name", "openEar")
+        emoji = self.settings.persona.get("emoji", "")
+        await update.message.reply_text(
+            f"Hi! I'm {name} {emoji}, your personal assistant.\n\n"
+            "I can help with:\n"
+            "- Email briefings (/briefing)\n"
+            "- Reminders (/reminders)\n"
+            "- Notes (/note <text>)\n"
+            "- Weather, stocks, news (just ask)\n"
+            "- General conversation\n\n"
+            "Type /help for more details."
+        )
+
+    async def cmd_help(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        if not await auth_check(update, context):
+            return
+        await update.message.reply_text(
+            "Commands:\n"
+            "/start - Introduction\n"
+            "/briefing - Check emails now\n"
+            "/reminders - List active reminders\n"
+            "/notes - List saved notes\n"
+            "/note <text> - Save a note\n"
+            "/status - System health\n"
+            "/help - This message\n\n"
+            "Or just talk to me naturally!"
+        )
+
+    async def cmd_status(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        if not await auth_check(update, context):
+            return
+
+        groq_status = (
+            "CIRCUIT_OPEN"
+            if self.llm.circuit_breaker.is_open
+            else "OK"
+        )
+        gmail_status = (
+            f"DISCONNECTED -- {self.email.pause_reason}"
+            if self.email.is_paused
+            else "Connected"
+        )
+        last_email = (
+            self.email.last_check.strftime("%Y-%m-%d %H:%M UTC")
+            if self.email.last_check
+            else "Never"
+        )
+        last_groq = (
+            datetime.fromtimestamp(
+                self.llm.last_successful_call, tz=timezone.utc
+            ).strftime("%Y-%m-%d %H:%M UTC")
+            if self.llm.last_successful_call
+            else "Never"
+        )
+        circuit_state = "OPEN" if self.llm.circuit_breaker.is_open else "CLOSED"
+
+        status = self.health.format_status(
+            groq_status=groq_status,
+            groq_429_count=self.llm.rate_limit_count_24h,
+            gmail_status=gmail_status,
+            last_email_check=last_email,
+            last_groq_call=last_groq,
+            circuit_breaker_state=circuit_state,
+        )
+        await update.message.reply_text(status)
+
+    async def cmd_briefing(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        if not await auth_check(update, context):
+            return
+        await update.message.reply_text("Checking emails...")
+        try:
+            emails = await self.email.process_emails()
+            text = formatters.format_briefing(emails, self.settings.timezone)
+            await update.message.reply_text(text)
+
+            # Send action keyboards for each important email
+            for i, email in enumerate(emails):
+                if email.get("summary"):
+                    await update.message.reply_text(
+                        f"Actions for: {email['subject']}",
+                        reply_markup=keyboards.briefing_actions(i),
+                    )
+        except EmailServiceUnavailable as e:
+            await update.message.reply_text(
+                f"Email service is currently unavailable: {e}\n"
+                "Please re-authenticate via scripts/reauth_gmail.py or "
+                "scripts/setup_gmail.py."
+            )
+
+    async def cmd_list_reminders(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        if not await auth_check(update, context):
+            return
+        reminders = self.reminders.get_active_reminders()
+        text = formatters.format_reminder_list(reminders, self.settings.timezone)
+        await update.message.reply_text(text)
+
+    async def cmd_list_notes(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        if not await auth_check(update, context):
+            return
+        notes = self.notes.get_all_notes()
+        text = formatters.format_note_list(notes, self.settings.timezone)
+        await update.message.reply_text(text)
+
+    async def cmd_save_note(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        if not await auth_check(update, context):
+            return
+        text = update.message.text
+        # Strip the /note prefix
+        content = text[len("/note") :].strip()
+        if not content:
+            await update.message.reply_text("Usage: /note <your note text>")
+            return
+
+        # Use LLM to extract tags
+        intent = await self.llm.classify_intent(content)
+        tags = intent.get("tags", [])
+
+        note = self.notes.save_note(content, tags)
+        reply = formatters.format_note(note, self.settings.timezone)
+
+        # Check for recurring pattern to suggest reminder
+        has_recurring = any(
+            word in content.lower()
+            for word in ["every", "weekly", "daily", "monthly", "each"]
+        )
+        markup = keyboards.note_followup(note.id) if has_recurring else None
+        await update.message.reply_text(
+            f"Saved! {reply}", reply_markup=markup
+        )
+
+    # ---- Message Handler (general conversation + intent routing) (Step 3E) ----
+
+    async def handle_message(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        if not await auth_check(update, context):
+            return
+
+        user_message = update.message.text
+        user_id = update.effective_user.id
+
+        # Classify intent
+        intent_data = await self.llm.classify_intent(user_message)
+        intent = intent_data.get("intent", "general")
+
+        if intent == "weather":
+            result = await get_weather()
+            await update.message.reply_text(result)
+        elif intent == "stock":
+            # Extract ticker symbol from content
+            content = intent_data.get("content", user_message)
+            # Simple extraction: take the first word that looks like a ticker
+            words = content.upper().split()
+            symbol = next(
+                (w for w in words if w.isalpha() and len(w) <= 5),
+                content.split()[-1] if content.split() else "SPY",
+            )
+            result = await get_stock_quote(symbol)
+            await update.message.reply_text(result)
+        elif intent == "news":
+            content = intent_data.get("content", user_message)
+            result = await search_news(content)
+            await update.message.reply_text(result)
+        elif intent == "note":
+            content = intent_data.get("content", user_message)
+            tags = intent_data.get("tags", [])
+            note = self.notes.save_note(content, tags)
+            reply = formatters.format_note(note, self.settings.timezone)
+            await update.message.reply_text(f"Saved! {reply}")
+        elif intent == "reminder":
+            parsed = await self.llm.parse_reminder_time(user_message)
+            if parsed:
+                try:
+                    due_at = datetime.fromisoformat(parsed["due_at"])
+                    if due_at.tzinfo is None:
+                        due_at = due_at.replace(tzinfo=timezone.utc)
+                    reminder = self.reminders.create_reminder(
+                        title=parsed["title"],
+                        due_at=due_at,
+                        recurrence=parsed.get("recurrence"),
+                    )
+                    text = formatters.format_reminder(
+                        reminder, self.settings.timezone
+                    )
+                    await update.message.reply_text(f"Reminder set! {text}")
+                except Exception as e:
+                    logger.error("Failed to create reminder: %s", e)
+                    await update.message.reply_text(
+                        "Sorry, I couldn't parse that reminder. "
+                        "Try something like 'remind me to call doctor tomorrow at 3pm'."
+                    )
+            else:
+                await update.message.reply_text(
+                    "I couldn't understand that reminder. Could you rephrase?"
+                )
+        else:
+            # General conversation with context management
+            # N5: pass user_id for per-user context
+            history = await self._get_conversation_context(user_id)
+            response = await self.llm.chat(
+                user_message, history, self.settings.persona
+            )
+            await update.message.reply_text(response)
+
+            # Store conversation turn (N5: with user_id)
+            self._store_conversation("user", user_message, user_id)
+            self._store_conversation("assistant", response, user_id)
+
+            # Check if summarization is needed
+            await self._maybe_summarize_context(update, user_id)
+
+    # ---- Callback Query Handler (Step 3F) ----
+
+    async def callback_handler(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        if not await auth_check(update, context):
+            return
+
+        query = update.callback_query
+        await query.answer()
+        data = query.data
+
+        if data.startswith("reminder_done:"):
+            reminder_id = int(data.split(":")[1])
+            self.reminders.complete_reminder(reminder_id)
+            await query.edit_message_text("Reminder completed!")
+
+        elif data.startswith("reminder_snooze_1h:"):
+            reminder_id = int(data.split(":")[1])
+            self.reminders.snooze_reminder(reminder_id, "1h")
+            await query.edit_message_text("Snoozed for 1 hour.")
+
+        elif data.startswith("reminder_snooze_tomorrow:"):
+            reminder_id = int(data.split(":")[1])
+            self.reminders.snooze_reminder(reminder_id, "tomorrow")
+            await query.edit_message_text("Snoozed until tomorrow.")
+
+        elif data.startswith("reminder_repeat_weekly:"):
+            reminder_id = int(data.split(":")[1])
+            # N4: use Reminder imported at module top
+            with get_session() as session:
+                reminder = session.get(Reminder, reminder_id)
+                if reminder:
+                    reminder.recurrence = "weekly"
+            await query.edit_message_text("Set to repeat weekly!")
+
+        elif data.startswith("email_remind:"):
+            email_idx = int(data.split(":")[1])
+            self._pending_reminder_context[update.effective_user.id] = {
+                "email_index": email_idx,
+            }
+            await query.edit_message_text(
+                "When should I remind you? (e.g., 'tomorrow at 3pm')"
+            )
+
+        elif data.startswith("email_done:"):
+            await query.edit_message_text("Got it, marked as done.")
+
+        elif data.startswith("email_dismiss:"):
+            await query.edit_message_text("Dismissed.")
+
+        elif data.startswith("note_remind:"):
+            note_id = int(data.split(":")[1])
+            await query.edit_message_text(
+                "When should I remind you about this note? "
+                "(e.g., 'every Thursday at 6:30pm')"
+            )
+
+        elif data == "confirm":
+            await query.edit_message_text("Confirmed.")
+
+        elif data == "cancel":
+            await query.edit_message_text("Cancelled.")
+
+    # ---- Conversation Context Management (Step 3F) ----
+
+    def _store_conversation(self, role: str, content: str, user_id: int = 0) -> None:
+        """Store a conversation message in the database.
+
+        N5: Includes user_id for per-user conversation tracking.
+        """
+        with get_session() as session:
+            session.add(Conversation(role=role, content=content, user_id=user_id))
+
+    async def _get_conversation_context(self, user_id: int = 0) -> list[dict[str, str]]:
+        """Get conversation history for LLM context.
+
+        Returns context_summary entries (if any) followed by the most
+        recent messages, up to MAX_ACTIVE_MESSAGES total.
+
+        N5: Filters by user_id for per-user context isolation.
+        """
+        with get_session() as session:
+            from sqlalchemy import select
+
+            # Get any existing summary for this user
+            summaries = (
+                session.execute(
+                    select(Conversation)
+                    .where(Conversation.role == "context_summary")
+                    .where(Conversation.user_id == user_id)
+                    .order_by(Conversation.timestamp.desc())
+                    .limit(1)
+                )
+                .scalars()
+                .all()
+            )
+
+            # Get recent messages (excluding summaries) for this user
+            recent = (
+                session.execute(
+                    select(Conversation)
+                    .where(Conversation.role.in_(["user", "assistant"]))
+                    .where(Conversation.user_id == user_id)
+                    .order_by(Conversation.timestamp.desc())
+                    .limit(MAX_ACTIVE_MESSAGES)
+                )
+                .scalars()
+                .all()
+            )
+            recent.reverse()
+
+            # C1: expunge all before session closes
+            for s in summaries:
+                session.expunge(s)
+            for msg in recent:
+                session.expunge(msg)
+
+        context = []
+        for s in summaries:
+            context.append({"role": "system", "content": f"Previous context: {s.content}"})
+        for msg in recent:
+            context.append({"role": msg.role, "content": msg.content})
+        return context
+
+    async def _maybe_summarize_context(self, update: Update, user_id: int = 0) -> None:
+        """Summarize older messages if conversation exceeds threshold.
+
+        When message count exceeds MAX_ACTIVE_MESSAGES, the oldest
+        SUMMARIZE_BATCH_SIZE messages are summarized by the LLM and
+        stored as a context_summary entry.
+
+        N5: Filters by user_id for per-user context.
+        """
+        with get_session() as session:
+            from sqlalchemy import func, select
+
+            count = session.execute(
+                select(func.count(Conversation.id)).where(
+                    Conversation.role.in_(["user", "assistant"]),
+                    Conversation.user_id == user_id,
+                )
+            ).scalar()
+
+        if count and count > MAX_ACTIVE_MESSAGES:
+            # Get the oldest messages to summarize
+            with get_session() as session:
+                from sqlalchemy import select
+
+                oldest = (
+                    session.execute(
+                        select(Conversation)
+                        .where(Conversation.role.in_(["user", "assistant"]))
+                        .where(Conversation.user_id == user_id)
+                        .order_by(Conversation.timestamp.asc())
+                        .limit(SUMMARIZE_BATCH_SIZE)
+                    )
+                    .scalars()
+                    .all()
+                )
+
+                if not oldest:
+                    return
+
+                messages_to_summarize = [
+                    {"role": m.role, "content": m.content} for m in oldest
+                ]
+                oldest_ids = [m.id for m in oldest]
+
+            # If circuit breaker is open, fall back to simple truncation
+            if self.llm.circuit_breaker.is_open:
+                with get_session() as session:
+                    for oid in oldest_ids:
+                        obj = session.get(Conversation, oid)
+                        if obj:
+                            session.delete(obj)
+                return
+
+            summary = await self.llm.summarize_conversation(messages_to_summarize)
+
+            with get_session() as session:
+                # Merge with existing summary if present
+                from sqlalchemy import select
+
+                existing = (
+                    session.execute(
+                        select(Conversation)
+                        .where(Conversation.role == "context_summary")
+                        .where(Conversation.user_id == user_id)
+                        .order_by(Conversation.timestamp.desc())
+                        .limit(1)
+                    )
+                    .scalar_one_or_none()
+                )
+                if existing:
+                    existing.content = f"{existing.content}\n\n{summary}"
+                else:
+                    session.add(
+                        Conversation(
+                            role="context_summary",
+                            content=summary,
+                            user_id=user_id,
+                        )
+                    )
+
+                # Delete the summarized messages
+                for oid in oldest_ids:
+                    obj = session.get(Conversation, oid)
+                    if obj:
+                        session.delete(obj)
+
+            # Notify user
+            try:
+                await update.message.reply_text(
+                    "Older messages in this conversation have been summarized "
+                    "to stay within my context window."
+                )
+            except Exception:
+                pass

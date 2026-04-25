@@ -3,11 +3,21 @@ services:
     build: .
     container_name: openear
     restart: unless-stopped
+    # C8: In production, this .env contains ONLY non-sensitive values
+    # (LOG_LEVEL, AWS_REGION, GROQ_MODEL). Secrets come from SSM at
+    # startup via boto3. For local dev, .env may include secrets.
     env_file: .env
     volumes:
       - openear-data:/app/data
       - openear-logs:/app/logs
       - ./config:/app/config:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      - TZ=America/Los_Angeles
 
 volumes:
   openear-data:
