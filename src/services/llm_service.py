@@ -395,3 +395,73 @@ Examples:
             "recurrence": parsed.get("recurrence"),
             "pre_alerts": parsed.get("pre_alerts", "ask"),
         }
+
+    async def parse_alert_time(
+        self, user_input: str, event_time: "datetime", timezone_str: str = "America/Los_Angeles"
+    ) -> "datetime | None":
+        """Parse a custom alert time. LLM understands language, code does math."""
+        from datetime import datetime as dt_type
+        from datetime import timedelta, timezone as tz
+        from zoneinfo import ZoneInfo
+
+        now_utc = dt_type.now(tz.utc)
+        now_local = now_utc.astimezone(ZoneInfo(timezone_str))
+        event_local = event_time.astimezone(ZoneInfo(timezone_str))
+
+        system_prompt = f"""Parse the user's alert time request. Return ONLY a JSON object in one of these formats:
+
+1. Relative to NOW: {{"type": "from_now", "minutes": <number>}}
+   Examples: "1 minute from now" -> {{"type": "from_now", "minutes": 1}}
+             "in 2 hours" -> {{"type": "from_now", "minutes": 120}}
+
+2. Relative to EVENT: {{"type": "before_event", "minutes": <number>}}
+   Examples: "1 hour before" -> {{"type": "before_event", "minutes": 60}}
+             "30 minutes before" -> {{"type": "before_event", "minutes": 30}}
+             "the day before" -> {{"type": "before_event", "minutes": 1440}}
+
+3. Specific time: {{"type": "absolute", "date": "<YYYY-MM-DD>", "time": "<HH:MM>", "timezone": "{timezone_str}"}}
+   Examples: "Sunday at 8pm" -> {{"type": "absolute", "date": "2026-04-26", "time": "20:00", "timezone": "{timezone_str}"}}
+             "the day before at 8pm" -> {{"type": "absolute", "date": "{(event_local - timedelta(days=1)).strftime('%Y-%m-%d')}", "time": "20:00", "timezone": "{timezone_str}"}}
+             "morning of the event" -> {{"type": "absolute", "date": "{event_local.strftime('%Y-%m-%d')}", "time": "08:00", "timezone": "{timezone_str}"}}
+
+CONTEXT:
+- Now: {now_local.strftime("%A %B %d, %Y %I:%M %p")} ({timezone_str})
+- Event: {event_local.strftime("%A %B %d, %Y %I:%M %p")} ({timezone_str})
+
+Return ONLY the JSON object, nothing else."""
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_input},
+        ]
+        result = await self.call_groq(messages, temperature=0.1)
+        if not result:
+            return None
+
+        try:
+            parsed = json.loads(result)
+        except json.JSONDecodeError:
+            logger.warning("Failed to parse alert time JSON: %s", result)
+            return None
+
+        try:
+            alert_type = parsed.get("type")
+            if alert_type == "from_now":
+                minutes = int(parsed.get("minutes", 0))
+                return now_utc + timedelta(minutes=minutes)
+            elif alert_type == "before_event":
+                minutes = int(parsed.get("minutes", 0))
+                return event_time - timedelta(minutes=minutes)
+            elif alert_type == "absolute":
+                date_str = parsed.get("date", "")
+                time_str = parsed.get("time", "08:00")
+                tz_str = parsed.get("timezone", timezone_str)
+                local_dt = dt_type.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+                local_dt = local_dt.replace(tzinfo=ZoneInfo(tz_str))
+                return local_dt.astimezone(tz.utc)
+            else:
+                logger.warning("Unknown alert type: %s", alert_type)
+                return None
+        except Exception as e:
+            logger.warning("Failed to compute alert time: %s (parsed: %s)", e, parsed)
+            return None
