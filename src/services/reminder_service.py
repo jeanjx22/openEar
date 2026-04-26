@@ -99,7 +99,7 @@ class ReminderService:
 
         Excludes completed and past events that were never acknowledged.
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         with get_session() as session:
             stmt = (
                 select(Reminder)
@@ -121,8 +121,9 @@ class ReminderService:
 
         C2: Only returns reminders with status="active". Once a reminder
         is notified via mark_notified(), it will not appear here again.
+        Uses naive UTC for SQLite compatibility.
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(timezone.utc).replace(tzinfo=None).replace(tzinfo=None)
         with get_session() as session:
             stmt = (
                 select(Reminder)
@@ -137,7 +138,7 @@ class ReminderService:
 
     def get_snoozed_due(self) -> list[Reminder]:
         """Get snoozed reminders whose snooze has expired."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         with get_session() as session:
             stmt = (
                 select(Reminder)
@@ -276,7 +277,7 @@ class ReminderService:
         Under normal operation alerts are deleted immediately after firing via
         delete_fired_alert(). This catches stragglers from crashes or restarts.
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         cutoff = now - timedelta(hours=1)
         with get_session() as session:
             stmt = (
@@ -302,7 +303,7 @@ class ReminderService:
         This prevents stale events from lingering in the active list
         long after they have passed.
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         cutoff = now - timedelta(hours=grace_hours)
         with get_session() as session:
             stmt = (
@@ -342,7 +343,7 @@ class ReminderService:
 
         These are main events that have passed without being marked done.
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         cutoff = now - timedelta(hours=hours)
         with get_session() as session:
             stmt = (
