@@ -17,7 +17,9 @@ from __future__ import annotations
 
 import json
 import logging
+from dataclasses import dataclass
 from datetime import datetime, timezone
+from enum import Enum, auto
 
 from telegram import Update
 from telegram.ext import (
@@ -47,6 +49,21 @@ MAX_ACTIVE_MESSAGES = 20
 SUMMARIZE_BATCH_SIZE = 10
 
 
+class UserMode(Enum):
+    IDLE = auto()
+    AWAITING_ALERT_TIME = auto()
+    AWAITING_RESCHEDULE = auto()
+
+
+@dataclass
+class UserState:
+    """Per-user conversation state."""
+    mode: UserMode = UserMode.IDLE
+    reminder_id: int | None = None      # which reminder we are operating on
+    due_at: datetime | None = None       # event time (for alert computation)
+    reminder_title: str | None = None    # cached for display without DB lookup
+
+
 class BotHandlers:
     """Registers and implements all Telegram bot handlers."""
 
@@ -65,7 +82,8 @@ class BotHandlers:
         self.reminders = reminder_service
         self.notes = note_service
         self.health = health_service
-        self._pending_reminder_context: dict[int, dict] = {}
+        # TODO: Add TTL expiration for stale states (intentionally deferred)
+        self._user_states: dict[int, UserState] = {}
 
     def _create_pre_alerts(self, parent_reminder, pre_alerts, due_at):
         from datetime import timedelta
@@ -118,20 +136,18 @@ class BotHandlers:
                 parts.append(label)
         return " + ".join(parts)
 
-    def _clear_pending_context(self, user_id: int, reason: str) -> dict | None:
-        """Clear any pending reminder context for a user and log it.
+    def _get_state(self, user_id: int) -> UserState:
+        """Get or create the per-user conversation state."""
+        return self._user_states.setdefault(user_id, UserState())
 
-        Returns the old context if one existed, None otherwise.
-        """
-        old = self._pending_reminder_context.pop(user_id, None)
-        if old:
+    def _reset_state(self, user_id: int, reason: str) -> None:
+        """Reset user state to IDLE and log the transition."""
+        old = self._user_states.pop(user_id, None)
+        if old and old.mode != UserMode.IDLE:
             logger.info(
-                "Cleared pending context for user %d (reason: %s): reminder_id=%s",
-                user_id,
-                reason,
-                old.get("reminder_id", old.get("email_index", "?")),
+                "Reset state for user %d (reason: %s): was %s, reminder_id=%s",
+                user_id, reason, old.mode.name, old.reminder_id,
             )
-        return old
 
     def get_handlers(self) -> list:
         """Return all handler objects to register with the Application."""
@@ -347,6 +363,12 @@ class BotHandlers:
 
     # ---- Message Handler (general conversation + intent routing) (Step 3E) ----
 
+    # Explicit exit phrases -- the user saying "I'm done configuring alerts."
+    _DONE_PHRASES = frozenset({
+        "done", "no", "nope", "that's it", "that's all",
+        "no more", "nothing else", "i'm good", "all set",
+    })
+
     async def handle_message(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
@@ -356,16 +378,134 @@ class BotHandlers:
 
         user_message = update.message.text
         user_id = update.effective_user.id
+        state = self._get_state(user_id)
 
-        pending = self._pending_reminder_context.get(user_id)
-        if pending and pending.get("awaiting_reschedule"):
-            reminder_id = pending["reminder_id"]
-            reminder = self.reminders.get_reminder(reminder_id)
-            if not reminder:
-                self._clear_pending_context(user_id, "reschedule reminder not found")
-                await update.message.reply_text("Reminder not found 🐰")
-                return
+        # --- State-based routing (no intent classification) ---
 
+        if state.mode == UserMode.AWAITING_RESCHEDULE:
+            await self._handle_reschedule_input(update, user_id, user_message, state)
+            return
+
+        if state.mode == UserMode.AWAITING_ALERT_TIME:
+            await self._handle_alert_time_input(update, user_id, user_message, state)
+            return
+
+        # --- IDLE: classify intent normally ---
+        await self._handle_idle_message(update, user_id, user_message)
+
+    async def _handle_alert_time_input(
+        self, update: Update, user_id: int, user_message: str, state: UserState,
+    ) -> None:
+        """Handle text input while in AWAITING_ALERT_TIME state.
+
+        ALL text goes to parse_alert_time. If parsing fails, we ask the user
+        to disambiguate with a keyboard -- never guess from content.
+        """
+        lower = user_message.lower().strip()
+
+        # Exit phrase: user explicitly says they are done
+        if lower in self._DONE_PHRASES:
+            self._reset_state(user_id, "user said done")
+            await update.message.reply_text("All set!")
+            return
+
+        # Verify the reminder still exists
+        reminder = self.reminders.get_reminder(state.reminder_id)
+        if not reminder:
+            self._reset_state(user_id, "reminder no longer exists")
+            await update.message.reply_text("That reminder no longer exists.")
+            return
+
+        # Send everything to parse_alert_time -- LLM decides if it's a valid time
+        alerts = await self.llm.parse_alert_time(
+            user_message, state.due_at, self.settings.timezone
+        )
+
+        if alerts:
+            # Successfully parsed -- create the alert(s)
+            created = []
+            for alert in alerts:
+                alert_utc = alert["datetime"].astimezone(timezone.utc)
+                label = alert.get("label", "Custom")
+                self.reminders.create_reminder(
+                    title=f"Alert: {reminder.title}",
+                    due_at=alert_utc,
+                    source="pre_alert",
+                    source_ref=str(reminder.id),
+                    alert_label=label,
+                )
+                created.append(
+                    f"  {label} -- {formatters.to_local(alert_utc, self.settings.timezone)}"
+                )
+
+            alert_list = "\n".join(created)
+            await update.message.reply_text(
+                f"Alert set!\n{alert_list}\n\n"
+                f"{formatters.format_reminder(reminder, self.settings.timezone)}\n\n"
+                "Want to add more alerts? Reply with a time or say 'done'."
+            )
+            # Stay in AWAITING_ALERT_TIME
+        else:
+            # LLM could not parse it as an alert time.
+            # Ask the user to disambiguate -- do NOT guess from content.
+            await update.message.reply_text(
+                "I couldn't parse that as an alert time.\n"
+                "Did you mean to set a new reminder instead?",
+                reply_markup=keyboards.disambiguate_alert_or_reminder(
+                    state.reminder_id
+                ),
+            )
+            # Stay in AWAITING_ALERT_TIME until user taps a button
+
+    async def _handle_reschedule_input(
+        self, update: Update, user_id: int, user_message: str, state: UserState,
+    ) -> None:
+        """Handle text input while in AWAITING_RESCHEDULE state."""
+        reminder = self.reminders.get_reminder(state.reminder_id)
+        if not reminder:
+            self._reset_state(user_id, "reschedule reminder not found")
+            await update.message.reply_text("Reminder not found.")
+            return
+
+        parsed = await self.llm.parse_reminder_time(user_message, self.settings.timezone)
+        if parsed:
+            try:
+                due_at = datetime.fromisoformat(parsed["due_at"])
+                if due_at.tzinfo is None:
+                    from zoneinfo import ZoneInfo
+                    due_at = due_at.replace(tzinfo=ZoneInfo(self.settings.timezone))
+                due_at_utc = due_at.astimezone(timezone.utc)
+
+                with get_session() as session:
+                    r = session.get(Reminder, state.reminder_id)
+                    if r:
+                        r.due_at = due_at_utc
+                        r.status = "active"
+
+                self._reset_state(user_id, "reschedule completed")
+                time_str = formatters.to_local(due_at_utc, self.settings.timezone)
+                await update.message.reply_text(
+                    f"Rescheduled '{reminder.title}' to {time_str}."
+                )
+            except Exception as e:
+                logger.error("Failed to reschedule: %s", e)
+                await update.message.reply_text(
+                    "Sorry, I couldn't understand that time. Try again?"
+                )
+        else:
+            await update.message.reply_text(
+                "Sorry, I couldn't understand that time. Try again?"
+            )
+
+    async def _handle_idle_message(
+        self, update: Update, user_id: int, user_message: str,
+    ) -> None:
+        """Handle text input in IDLE state -- runs intent classification."""
+        # Check for email_remind pending state (email index tracking)
+        state = self._get_state(user_id)
+        if state.reminder_id is not None and state.mode == UserMode.IDLE and state.reminder_title == "__email_remind__":
+            # This is the email_remind flow: user is providing a time for an email reminder
+            email_idx = state.reminder_id
             parsed = await self.llm.parse_reminder_time(user_message, self.settings.timezone)
             if parsed:
                 try:
@@ -374,82 +514,24 @@ class BotHandlers:
                         from zoneinfo import ZoneInfo
                         due_at = due_at.replace(tzinfo=ZoneInfo(self.settings.timezone))
                     due_at_utc = due_at.astimezone(timezone.utc)
-
-                    with get_session() as session:
-                        r = session.get(Reminder, reminder_id)
-                        if r:
-                            r.due_at = due_at_utc
-                            r.status = "active"
-
-                    self._clear_pending_context(user_id, "reschedule completed")
+                    title = parsed.get("title", f"Follow up on email #{email_idx}")
+                    self.reminders.create_reminder(title=title, due_at=due_at_utc)
+                    self._reset_state(user_id, "email remind completed")
                     time_str = formatters.to_local(due_at_utc, self.settings.timezone)
                     await update.message.reply_text(
-                        f"Rescheduled '{reminder.title}' to {time_str} 🐰"
+                        f"Reminder set for {time_str}."
                     )
                 except Exception as e:
-                    logger.error("Failed to reschedule: %s", e)
+                    logger.error("Failed to create email reminder: %s", e)
+                    self._reset_state(user_id, "email remind failed")
                     await update.message.reply_text(
-                        "Sorry, I couldn't understand that time. Try again? 🐰"
+                        "Sorry, I couldn't understand that time. Try again?"
                     )
             else:
                 await update.message.reply_text(
-                    "Sorry, I couldn't understand that time. Try again? 🐰"
+                    "Sorry, I couldn't understand that time. Try again?"
                 )
             return
-
-        if pending and pending.get("awaiting_custom_alerts"):
-            # Safeguard: verify the reminder still exists in DB
-            pending_reminder_id = pending["reminder_id"]
-            pending_reminder = self.reminders.get_reminder(pending_reminder_id)
-            if not pending_reminder:
-                self._clear_pending_context(user_id, "pending reminder no longer exists")
-                await update.message.reply_text("Reminder not found 🐰")
-                return
-
-            lower_msg = user_message.lower().strip()
-            new_intent_signals = ["remind me to ", "remind me about ", "set a reminder",
-                                  "what's the weather", "how's ", "how is ",
-                                  "/start", "/help", "/status", "/reminders", "/notes",
-                                  "/briefing", "note:", "note "]
-            if any(lower_msg.startswith(s) for s in new_intent_signals):
-                old_title = pending_reminder.title or "Reminder"
-                self._clear_pending_context(user_id, "new intent detected")
-                await update.message.reply_text(
-                    f"Exited alert setup for {old_title}. Processing your new request... 🐰"
-                )
-                # Fall through to normal intent classification below
-            else:
-                if lower_msg in ("done", "no", "nope", "that's it", "that's all"):
-                    self._clear_pending_context(user_id, "user said done")
-                    await update.message.reply_text("All set! 🐰")
-                    return
-
-                due_at = pending["due_at"]
-                alerts = await self.llm.parse_alert_time(
-                    user_message, due_at, self.settings.timezone
-                )
-                if alerts:
-                    created = []
-                    for alert in alerts:
-                        alert_utc = alert["datetime"].astimezone(timezone.utc)
-                        label = alert.get("label", "Custom")
-                        self.reminders.create_reminder(
-                            title=f"Alert: {pending_reminder.title}",
-                            due_at=alert_utc,
-                            source="pre_alert",
-                            source_ref=str(pending_reminder.id),
-                            alert_label=label,
-                        )
-                        created.append(f"  🔔 {label} — {formatters.to_local(alert_utc, self.settings.timezone)}")
-                    alert_list = "\n".join(created)
-                    await update.message.reply_text(
-                        f"Alerts set!\n{alert_list}\n\n"
-                        f"⏰ {formatters.format_reminder(pending_reminder, self.settings.timezone)}\n\n"
-                        "Want to add more? Reply with a time or say 'done' 🐰"
-                    )
-                else:
-                    await update.message.reply_text("Sorry, I couldn't understand that time. Try again? 🐰")
-                return
 
         # Classify intent
         intent_data = await self.llm.classify_intent(user_message)
@@ -474,7 +556,7 @@ class BotHandlers:
             quote = await quote_task
             try:
                 news = await news_task
-                result = f"{quote}\n\n📰 Why it moved:\n{news}"
+                result = f"{quote}\n\n Why it moved:\n{news}"
             except (TimeoutError, Exception):
                 result = quote
             await update.message.reply_text(result)
@@ -487,7 +569,7 @@ class BotHandlers:
             tags = intent_data.get("tags", [])
             note = self.notes.save_note(content, tags)
             reply = formatters.format_note(note, self.settings.timezone)
-            await update.message.reply_text(f"📝 Saved! {reply} 🐰")
+            await update.message.reply_text(f"Saved! {reply}")
         elif intent == "reminder":
             parsed = await self.llm.parse_reminder_time(user_message, self.settings.timezone)
             if parsed:
@@ -506,16 +588,17 @@ class BotHandlers:
                     pre_alerts = parsed.get("pre_alerts", "ask")
 
                     if pre_alerts == "ask":
-                        self._clear_pending_context(user_id, "new reminder created (ask alerts)")
-                        self._pending_reminder_context[user_id] = {
-                            "reminder_id": reminder.id,
-                            "title": parsed["title"],
-                            "due_at": due_at_utc,
-                        }
+                        self._reset_state(user_id, "new reminder created (ask alerts)")
+                        self._user_states[user_id] = UserState(
+                            mode=UserMode.IDLE,
+                            reminder_id=reminder.id,
+                            due_at=due_at_utc,
+                            reminder_title=parsed["title"],
+                        )
                         text = formatters.format_reminder(reminder, self.settings.timezone)
                         await update.message.reply_text(
-                            f"⏰ Reminder set! {text}\n\n"
-                            "How would you like to be alerted? 🐰",
+                            f"Reminder set! {text}\n\n"
+                            "How would you like to be alerted?",
                             reply_markup=keyboards.alert_preferences(reminder.id),
                         )
                     else:
@@ -523,18 +606,18 @@ class BotHandlers:
                         text = formatters.format_reminder(reminder, self.settings.timezone)
                         alert_desc = self._format_alert_summary(pre_alerts)
                         await update.message.reply_text(
-                            f"⏰ Reminder set! {text}\n\n"
-                            f"🔔 Alerts: {alert_desc}\n🐰"
+                            f"Reminder set! {text}\n\n"
+                            f"Alerts: {alert_desc}"
                         )
                 except Exception as e:
                     logger.error("Failed to create reminder: %s", e)
                     await update.message.reply_text(
                         "Sorry, I couldn't parse that reminder. "
-                        "Try something like 'remind me to call doctor tomorrow at 3pm' 🐰"
+                        "Try something like 'remind me to call doctor tomorrow at 3pm'"
                     )
             else:
                 await update.message.reply_text(
-                    "I couldn't understand that reminder. Could you rephrase? 🐰"
+                    "I couldn't understand that reminder. Could you rephrase?"
                 )
         else:
             # General conversation with context management
@@ -569,20 +652,22 @@ class BotHandlers:
             parent_id = int(data.split(":")[1])
             parent = self.reminders.get_reminder(parent_id)
             if not parent:
-                await query.edit_message_text("Reminder not found 🐰")
+                await query.edit_message_text("Reminder not found.")
                 return
             due_at = parent.due_at
             if due_at.tzinfo is None:
                 due_at = due_at.replace(tzinfo=timezone.utc)
-            self._clear_pending_context(update.effective_user.id, "alert_more callback")
-            self._pending_reminder_context[update.effective_user.id] = {
-                "reminder_id": parent_id,
-                "awaiting_custom_alerts": True,
-                "due_at": due_at,
-            }
+            user_id = update.effective_user.id
+            self._reset_state(user_id, "alert_more callback")
+            self._user_states[user_id] = UserState(
+                mode=UserMode.AWAITING_ALERT_TIME,
+                reminder_id=parent_id,
+                due_at=due_at,
+                reminder_title=parent.title,
+            )
             await query.edit_message_text(
                 f"Adding alerts for: {parent.title}\n"
-                "Tell me when you'd like to be alerted 🐰"
+                "Tell me when you'd like to be alerted."
             )
 
         elif data.startswith("alert_"):
@@ -612,20 +697,23 @@ class BotHandlers:
             }
             pre_alerts = alert_configs.get(alert_type, [])
             if alert_type == "custom":
+                user_id = update.effective_user.id
+                self._reset_state(user_id, "alert_custom callback")
+                self._user_states[user_id] = UserState(
+                    mode=UserMode.AWAITING_ALERT_TIME,
+                    reminder_id=reminder_id,
+                    due_at=due_at,
+                    reminder_title=reminder.title,
+                )
                 await query.edit_message_text(
                     "Tell me how you'd like to be alerted.\n"
-                    "e.g., 'remind me 2 days before at 8pm and 1 hour before' 🐰"
+                    "e.g., 'the morning of' or '2 hours before'\n"
+                    "Say 'done' when finished."
                 )
-                self._clear_pending_context(update.effective_user.id, "alert_custom callback")
-                self._pending_reminder_context[update.effective_user.id] = {
-                    "reminder_id": reminder_id,
-                    "awaiting_custom_alerts": True,
-                    "due_at": due_at,
-                }
                 return
 
             # Preset alert paths: self-contained, uses reminder_id from callback_data
-            self._clear_pending_context(update.effective_user.id, "preset alert selected")
+            self._reset_state(update.effective_user.id, "preset alert selected")
             self._create_pre_alerts(reminder, pre_alerts, due_at)
             summary = self._format_alert_summary(pre_alerts)
             text = formatters.format_reminder(reminder, self.settings.timezone)
@@ -682,24 +770,26 @@ class BotHandlers:
             reminder_id = int(data.split(":")[1])
             reminder = self.reminders.get_reminder(reminder_id)
             if not reminder:
-                await query.edit_message_text("Reminder not found 🐰")
+                await query.edit_message_text("Reminder not found.")
                 return
             due_at = reminder.due_at
             if due_at.tzinfo is None:
                 due_at = due_at.replace(tzinfo=timezone.utc)
-            self._clear_pending_context(update.effective_user.id, "add_alert callback")
-            self._pending_reminder_context[update.effective_user.id] = {
-                "reminder_id": reminder_id,
-                "awaiting_custom_alerts": True,
-                "due_at": due_at,
-            }
+            user_id = update.effective_user.id
+            self._reset_state(user_id, "add_alert callback")
+            self._user_states[user_id] = UserState(
+                mode=UserMode.AWAITING_ALERT_TIME,
+                reminder_id=reminder_id,
+                due_at=due_at,
+                reminder_title=reminder.title,
+            )
             due_str = formatters.to_local(due_at, self.settings.timezone)
             await query.edit_message_text(
                 f"Add alert for: {reminder.title}\n"
                 f"Event time: {due_str}\n\n"
                 "Tell me when you'd like to be alerted.\n"
                 "e.g., '2 hours before' or 'the morning of at 9am'\n"
-                "Say 'done' when finished 🐰"
+                "Say 'done' when finished."
             )
 
         elif data.startswith("delete_alerts:"):
@@ -746,11 +836,13 @@ class BotHandlers:
             if not reminder:
                 await query.edit_message_text("Reminder not found 🐰")
                 return
-            self._clear_pending_context(update.effective_user.id, "post_reschedule callback")
-            self._pending_reminder_context[update.effective_user.id] = {
-                "reminder_id": reminder_id,
-                "awaiting_reschedule": True,
-            }
+            user_id = update.effective_user.id
+            self._reset_state(user_id, "post_reschedule callback")
+            self._user_states[user_id] = UserState(
+                mode=UserMode.AWAITING_RESCHEDULE,
+                reminder_id=reminder_id,
+                reminder_title=reminder.title,
+            )
             await query.edit_message_text(
                 f"When should I reschedule '{reminder.title}'?\n"
                 "e.g., 'tomorrow at 3pm' or 'next Monday at 10am' 🐰"
@@ -758,10 +850,13 @@ class BotHandlers:
 
         elif data.startswith("email_remind:"):
             email_idx = int(data.split(":")[1])
-            self._clear_pending_context(update.effective_user.id, "email_remind callback")
-            self._pending_reminder_context[update.effective_user.id] = {
-                "email_index": email_idx,
-            }
+            user_id = update.effective_user.id
+            self._reset_state(user_id, "email_remind callback")
+            self._user_states[user_id] = UserState(
+                mode=UserMode.IDLE,
+                reminder_id=email_idx,
+                reminder_title="__email_remind__",
+            )
             await query.edit_message_text(
                 "When should I remind you? (e.g., 'tomorrow at 3pm')"
             )
@@ -771,6 +866,26 @@ class BotHandlers:
 
         elif data.startswith("email_dismiss:"):
             await query.edit_message_text("👋 Dismissed 🐰")
+
+        elif data.startswith("disambig_new_reminder:"):
+            # User confirmed they want a new reminder, not an alert
+            user_id = update.effective_user.id
+            self._reset_state(user_id, "user chose new reminder")
+            await query.edit_message_text(
+                "OK, exited alert setup. Send me your new reminder."
+            )
+            # Next text message will go through IDLE -> classify_intent
+
+        elif data.startswith("disambig_retry_alert:"):
+            # User wants to try again with alert time
+            await query.edit_message_text(
+                "No problem. Try again with something like:\n"
+                "  'the morning of'\n"
+                "  '2 hours before'\n"
+                "  '1 minute from now'\n"
+                "Or say 'done' to finish."
+            )
+            # Stay in AWAITING_ALERT_TIME -- state unchanged
 
         elif data.startswith("note_remind:"):
             note_id = int(data.split(":")[1])

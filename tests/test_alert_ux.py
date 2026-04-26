@@ -490,8 +490,8 @@ class TestSetMoreAlertsFlow:
 
     @pytest.mark.asyncio
     async def test_alert_custom_enters_custom_flow(self):
-        """Tapping 'Custom' on alert_preferences stores awaiting_custom_alerts."""
-        from src.bot.handlers import BotHandlers
+        """Tapping 'Custom' on alert_preferences sets AWAITING_ALERT_TIME state."""
+        from src.bot.handlers import BotHandlers, UserMode, UserState
 
         parent = _make_reminder(
             id=10,
@@ -530,21 +530,16 @@ class TestSetMoreAlertsFlow:
         with patch("src.bot.handlers.auth_check", new_callable=AsyncMock, return_value=True):
             await handlers.callback_handler(mock_update, mock_context)
 
-        # Verify the pending context was set for custom alerts
-        pending = handlers._pending_reminder_context.get(12345)
-        assert pending is not None
-        assert pending["awaiting_custom_alerts"] is True
-        assert pending["reminder_id"] == 10
+        # Verify user state was set for custom alerts
+        state = handlers._user_states.get(12345)
+        assert state is not None
+        assert state.mode == UserMode.AWAITING_ALERT_TIME
+        assert state.reminder_id == 10
 
     @pytest.mark.asyncio
-    async def test_alert_more_shadowed_by_generic_alert_branch(self):
-        """Documents that alert_more: is currently caught by the generic alert_ branch.
-
-        This test verifies the current behavior (not ideal, but correct to document).
-        The ``alert_more:`` callback_data matches ``data.startswith("alert_")``
-        before reaching the dedicated ``elif data.startswith("alert_more:")``.
-        """
-        from src.bot.handlers import BotHandlers
+    async def test_alert_more_enters_custom_flow(self):
+        """Tapping 'Set more alerts' sets AWAITING_ALERT_TIME state via alert_more handler."""
+        from src.bot.handlers import BotHandlers, UserMode, UserState
 
         parent = _make_reminder(
             id=10,
@@ -582,10 +577,10 @@ class TestSetMoreAlertsFlow:
         with patch("src.bot.handlers.auth_check", new_callable=AsyncMock, return_value=True):
             await handlers.callback_handler(mock_update, mock_context)
 
-        pending = handlers._pending_reminder_context.get(12345)
-        assert pending is not None, "alert_more: should set pending context"
-        assert pending["awaiting_custom_alerts"] is True
-        assert pending["reminder_id"] == 10
+        state = handlers._user_states.get(12345)
+        assert state is not None, "alert_more: should set user state"
+        assert state.mode == UserMode.AWAITING_ALERT_TIME
+        assert state.reminder_id == 10
 
 
 # ===================================================================
@@ -763,14 +758,37 @@ class TestSendToAll:
 
 
 # ===================================================================
-# 6. _clear_pending_context tests
+# 6. _reset_state tests
 # ===================================================================
 
 
-class TestClearPendingContext:
-    """Test _clear_pending_context removes old context and returns it."""
+class TestResetState:
+    """Test _reset_state removes user state and logs the transition."""
 
-    def test_clears_and_returns_existing_context(self):
+    def test_resets_existing_state(self):
+        from src.bot.handlers import BotHandlers, UserMode, UserState
+
+        handlers = BotHandlers(
+            settings=MagicMock(),
+            llm_service=MagicMock(),
+            email_service=MagicMock(),
+            reminder_service=MagicMock(),
+            note_service=MagicMock(),
+            health_service=MagicMock(),
+        )
+
+        handlers._user_states[12345] = UserState(
+            mode=UserMode.AWAITING_ALERT_TIME,
+            reminder_id=42,
+            due_at=datetime(2026, 5, 1, 18, 0, tzinfo=timezone.utc),
+            reminder_title="Test",
+        )
+
+        handlers._reset_state(12345, "test reason")
+
+        assert 12345 not in handlers._user_states
+
+    def test_no_error_when_no_state(self):
         from src.bot.handlers import BotHandlers
 
         handlers = BotHandlers(
@@ -782,36 +800,12 @@ class TestClearPendingContext:
             health_service=MagicMock(),
         )
 
-        handlers._pending_reminder_context[12345] = {
-            "reminder_id": 42,
-            "awaiting_custom_alerts": True,
-            "due_at": datetime(2026, 5, 1, 18, 0, tzinfo=timezone.utc),
-        }
-
-        old = handlers._clear_pending_context(12345, "test reason")
-
-        assert old is not None
-        assert old["reminder_id"] == 42
-        assert 12345 not in handlers._pending_reminder_context
-
-    def test_returns_none_when_no_context(self):
-        from src.bot.handlers import BotHandlers
-
-        handlers = BotHandlers(
-            settings=MagicMock(),
-            llm_service=MagicMock(),
-            email_service=MagicMock(),
-            reminder_service=MagicMock(),
-            note_service=MagicMock(),
-            health_service=MagicMock(),
-        )
-
-        old = handlers._clear_pending_context(99999, "no context")
-
-        assert old is None
+        # Should not raise
+        handlers._reset_state(99999, "no state")
+        assert 99999 not in handlers._user_states
 
     def test_does_not_affect_other_users(self):
-        from src.bot.handlers import BotHandlers
+        from src.bot.handlers import BotHandlers, UserMode, UserState
 
         handlers = BotHandlers(
             settings=MagicMock(),
@@ -822,29 +816,34 @@ class TestClearPendingContext:
             health_service=MagicMock(),
         )
 
-        handlers._pending_reminder_context[111] = {"reminder_id": 1}
-        handlers._pending_reminder_context[222] = {"reminder_id": 2}
+        handlers._user_states[111] = UserState(
+            mode=UserMode.AWAITING_ALERT_TIME, reminder_id=1,
+        )
+        handlers._user_states[222] = UserState(
+            mode=UserMode.AWAITING_RESCHEDULE, reminder_id=2,
+        )
 
-        handlers._clear_pending_context(111, "clearing user 111")
+        handlers._reset_state(111, "clearing user 111")
 
-        assert 111 not in handlers._pending_reminder_context
-        assert 222 in handlers._pending_reminder_context
-        assert handlers._pending_reminder_context[222]["reminder_id"] == 2
+        assert 111 not in handlers._user_states
+        assert 222 in handlers._user_states
+        assert handlers._user_states[222].reminder_id == 2
 
 
 # ===================================================================
-# 7. New intent detection clears pending context
+# 7. AWAITING_ALERT_TIME disambiguation tests
 # ===================================================================
 
 
-class TestNewIntentClearsPendingContext:
-    """When a user sends a new intent signal while in the custom alert
-    flow, the pending context should be cleared and the new intent
-    processed."""
+class TestAwaitingAlertTimeDisambiguation:
+    """When user sends non-alert text while in AWAITING_ALERT_TIME state,
+    parse_alert_time is called. If it fails, a disambiguation keyboard is
+    shown and the state remains AWAITING_ALERT_TIME (user must tap a button
+    or say 'done' to exit)."""
 
     @pytest.mark.asyncio
-    async def test_remind_me_clears_custom_alert_context(self):
-        from src.bot.handlers import BotHandlers
+    async def test_unparseable_text_shows_disambiguation(self):
+        from src.bot.handlers import BotHandlers, UserMode, UserState
 
         parent = _make_reminder(
             id=10,
@@ -860,8 +859,8 @@ class TestNewIntentClearsPendingContext:
         mock_reminder_svc.get_reminder.return_value = parent
 
         mock_llm = AsyncMock()
-        mock_llm.classify_intent = AsyncMock(return_value={"intent": "reminder"})
-        mock_llm.parse_reminder_time = AsyncMock(return_value=None)
+        # parse_alert_time returns None -> can't parse as alert time
+        mock_llm.parse_alert_time = AsyncMock(return_value=None)
 
         handlers = BotHandlers(
             settings=mock_settings,
@@ -872,12 +871,13 @@ class TestNewIntentClearsPendingContext:
             health_service=MagicMock(),
         )
 
-        # Simulate being in the custom alert flow
-        handlers._pending_reminder_context[12345] = {
-            "reminder_id": 10,
-            "awaiting_custom_alerts": True,
-            "due_at": datetime(2026, 5, 1, 18, 0, tzinfo=timezone.utc),
-        }
+        # Simulate being in AWAITING_ALERT_TIME state
+        handlers._user_states[12345] = UserState(
+            mode=UserMode.AWAITING_ALERT_TIME,
+            reminder_id=10,
+            due_at=datetime(2026, 5, 1, 18, 0, tzinfo=timezone.utc),
+            reminder_title="Old event",
+        )
 
         mock_update = MagicMock()
         mock_update.effective_user.id = 12345
@@ -891,18 +891,23 @@ class TestNewIntentClearsPendingContext:
         with patch("src.bot.handlers.auth_check", new_callable=AsyncMock, return_value=True):
             await handlers.handle_message(mock_update, mock_context)
 
-        # Pending context should have been cleared
-        assert 12345 not in handlers._pending_reminder_context
+        # State should remain AWAITING_ALERT_TIME (disambiguation shown)
+        state = handlers._user_states.get(12345)
+        assert state is not None
+        assert state.mode == UserMode.AWAITING_ALERT_TIME
 
-        # The exit message should have been sent
+        # Disambiguation message should have been sent with a keyboard
         reply_calls = mock_update.message.reply_text.call_args_list
-        exit_msg = reply_calls[0].args[0]
-        assert "Exited alert setup" in exit_msg
-        assert "Old event" in exit_msg
+        assert len(reply_calls) == 1
+        msg = reply_calls[0].args[0]
+        assert "couldn't parse" in msg.lower() or "new reminder" in msg.lower()
+        # Should include a reply_markup (disambiguation keyboard)
+        assert reply_calls[0].kwargs.get("reply_markup") is not None
 
     @pytest.mark.asyncio
-    async def test_weather_query_clears_custom_alert_context(self):
-        from src.bot.handlers import BotHandlers
+    async def test_done_phrase_resets_state(self):
+        """Saying 'done' while in AWAITING_ALERT_TIME resets state to IDLE."""
+        from src.bot.handlers import BotHandlers, UserMode, UserState
 
         parent = _make_reminder(
             id=10,
@@ -917,36 +922,37 @@ class TestNewIntentClearsPendingContext:
         mock_reminder_svc = MagicMock()
         mock_reminder_svc.get_reminder.return_value = parent
 
-        mock_llm = AsyncMock()
-        mock_llm.classify_intent = AsyncMock(return_value={"intent": "weather"})
-
         handlers = BotHandlers(
             settings=mock_settings,
-            llm_service=mock_llm,
+            llm_service=AsyncMock(),
             email_service=MagicMock(),
             reminder_service=mock_reminder_svc,
             note_service=MagicMock(),
             health_service=MagicMock(),
         )
 
-        handlers._pending_reminder_context[12345] = {
-            "reminder_id": 10,
-            "awaiting_custom_alerts": True,
-            "due_at": datetime(2026, 5, 1, 18, 0, tzinfo=timezone.utc),
-        }
+        handlers._user_states[12345] = UserState(
+            mode=UserMode.AWAITING_ALERT_TIME,
+            reminder_id=10,
+            due_at=datetime(2026, 5, 1, 18, 0, tzinfo=timezone.utc),
+            reminder_title="Meeting",
+        )
 
         mock_update = MagicMock()
         mock_update.effective_user.id = 12345
         mock_update.effective_chat.id = 12345
-        mock_update.message.text = "what's the weather like?"
+        mock_update.message.text = "done"
         mock_update.message.reply_text = AsyncMock()
 
         mock_context = MagicMock()
         mock_context.bot_data = {}
 
-        with patch("src.bot.handlers.auth_check", new_callable=AsyncMock, return_value=True), \
-             patch("src.bot.handlers.get_weather", new_callable=AsyncMock, return_value="Sunny, 72F"):
+        with patch("src.bot.handlers.auth_check", new_callable=AsyncMock, return_value=True):
             await handlers.handle_message(mock_update, mock_context)
 
-        # Pending context should have been cleared
-        assert 12345 not in handlers._pending_reminder_context
+        # State should have been cleared
+        assert 12345 not in handlers._user_states
+
+        # "All set!" confirmation should have been sent
+        reply_calls = mock_update.message.reply_text.call_args_list
+        assert any("All set" in call.args[0] for call in reply_calls)

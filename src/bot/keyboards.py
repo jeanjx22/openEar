@@ -203,6 +203,28 @@ def delete_alert_actions(alerts: list, tz_name: str = "America/Los_Angeles") -> 
     return InlineKeyboardMarkup(rows)
 
 
+def disambiguate_alert_or_reminder(reminder_id: int) -> InlineKeyboardMarkup:
+    """Keyboard shown when parse_alert_time fails in AWAITING_ALERT_TIME state.
+
+    Lets the user explicitly choose: exit to create a new reminder,
+    or stay and retry the alert time input.
+    """
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "Yes, new reminder",
+                    callback_data=f"disambig_new_reminder:{reminder_id}",
+                ),
+                InlineKeyboardButton(
+                    "No, try again",
+                    callback_data=f"disambig_retry_alert:{reminder_id}",
+                ),
+            ]
+        ]
+    )
+
+
 def confirm_cancel() -> InlineKeyboardMarkup:
     """Generic confirm/cancel keyboard."""
     return InlineKeyboardMarkup(

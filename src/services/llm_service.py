@@ -457,7 +457,7 @@ Return ONLY the JSON array, nothing else."""
                 parsed_list = json.loads(cleaned)
             except json.JSONDecodeError:
                 logger.warning("Failed to parse alert time JSON: %s", result)
-            return None
+                return None
 
         alerts = []
         for parsed in parsed_list:
