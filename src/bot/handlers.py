@@ -407,7 +407,8 @@ class BotHandlers:
                 return
 
             lower_msg = user_message.lower().strip()
-            new_intent_signals = ["remind me", "what's the weather", "how's", "how is",
+            new_intent_signals = ["remind me to ", "remind me about ", "set a reminder",
+                                  "what's the weather", "how's ", "how is ",
                                   "/start", "/help", "/status", "/reminders", "/notes",
                                   "/briefing", "note:", "note "]
             if any(lower_msg.startswith(s) for s in new_intent_signals):
