@@ -222,9 +222,6 @@ class SchedulerJobs:
         they look up the parent event via source_ref and show the parent's
         due time instead of the alert's own due time.
         """
-        self.reminders.cleanup_expired_pre_alerts()
-        self.reminders.auto_complete_past_events(grace_hours=2)
-
         if self.reminders.is_quiet_hours():
             return
 
@@ -261,6 +258,9 @@ class SchedulerJobs:
             # C2: Mark as notified so it won't fire again
             self.reminders.mark_notified(reminder.id)
 
+        # Cleanup AFTER firing — so due alerts fire before being cleaned
+        self.reminders.cleanup_expired_pre_alerts()
+        self.reminders.auto_complete_past_events(grace_hours=2)
 
     async def _snoozed_reminder_job(self) -> None:
         """Re-activate snoozed reminders whose snooze has expired."""
