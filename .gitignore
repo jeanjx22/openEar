@@ -31,3 +31,4 @@ Thumbs.db
 credentials.json
 token.json
 token.pickle
+client_secret_*.json
