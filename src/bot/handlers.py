@@ -285,40 +285,32 @@ class BotHandlers:
         if not await auth_check(update, context):
             return
         self._track_chat(update, context)
-        reminders = self.reminders.get_active_reminders()
-        if not reminders:
+
+        # Only show future reminders or recently notified ones
+        parent_reminders = self.reminders.get_future_reminders()
+
+        if not parent_reminders:
             await update.message.reply_text("No active reminders.")
             return
 
-        # Separate parent events from pre-alerts
-        parent_reminders = [r for r in reminders if r.source != "pre_alert"]
-        standalone_alerts = [r for r in reminders if r.source == "pre_alert"]
+        cards = ["\U0001f4cb Your reminders:\n"]
+        reminder_meta = []  # (reminder, has_alerts) for keyboard buttons
 
-        if not parent_reminders and not standalone_alerts:
-            await update.message.reply_text("No active reminders.")
-            return
-
-        lines = [f"Active reminders ({len(parent_reminders)}):\n"]
-        for r in parent_reminders:
-            due_str = formatters.to_local(r.due_at, self.settings.timezone)
-            lines.append(f"  #{r.id}: {r.title} - {due_str}")
-            # Show associated alerts
+        for i, r in enumerate(parent_reminders, 1):
             alerts = self.reminders.get_alerts_for_reminder(r.id)
             active_alerts = [a for a in alerts if a.status in ("active", "notified")]
-            if active_alerts:
-                for alert in active_alerts:
-                    alert_time = formatters.to_local(alert.due_at, self.settings.timezone)
-                    lines.append(f"    -> {alert.title} ({alert_time})")
-            lines.append("")
+            card = formatters.format_reminder_card(r, active_alerts, self.settings.timezone)
+            cards.append(f"{i}. {card}\n")
+            reminder_meta.append((r, len(active_alerts) > 0))
 
-        text = "\n".join(lines)
+        text = "\n".join(cards)
         await update.message.reply_text(text)
 
-        # Send manage-alerts buttons for each parent reminder
-        for r in parent_reminders:
+        # Send inline keyboard for each reminder
+        for r, has_alerts in reminder_meta:
             await update.message.reply_text(
-                f"Manage alerts for: {r.title}",
-                reply_markup=keyboards.manage_alerts(r.id),
+                f"{r.title}",
+                reply_markup=keyboards.reminder_list_actions(r.id, has_alerts),
             )
 
     async def cmd_list_notes(
@@ -619,6 +611,8 @@ class BotHandlers:
                 await update.message.reply_text(
                     "I couldn't understand that reminder. Could you rephrase?"
                 )
+        elif intent == "modify":
+            await self._handle_modify_reminder(update, user_id, user_message, intent_data)
         else:
             # General conversation with context management
             # N5: pass user_id for per-user context
@@ -634,6 +628,144 @@ class BotHandlers:
 
             # Check if summarization is needed
             await self._maybe_summarize_context(update, user_id)
+
+    # ---- Modify Reminder Handler ----
+
+    async def _handle_modify_reminder(
+        self, update: Update, user_id: int, user_message: str, intent_data: dict,
+    ) -> None:
+        """Handle natural language reminder modification requests.
+
+        Fetches active reminders, asks the LLM which one the user means
+        and what to do, then executes the modification.
+        """
+        # Get active parent reminders (exclude pre-alerts)
+        all_reminders = self.reminders.get_active_reminders()
+        parent_reminders = [r for r in all_reminders if r.source != "pre_alert"]
+
+        if not parent_reminders:
+            await update.message.reply_text(
+                "You don't have any active reminders to modify."
+            )
+            return
+
+        # Build a list of reminders for the LLM
+        reminder_dicts = []
+        for r in parent_reminders:
+            due_str = formatters.to_local(r.due_at, self.settings.timezone)
+            reminder_dicts.append({
+                "id": r.id,
+                "title": r.title,
+                "due_at": due_str,
+            })
+
+        # Ask LLM to match the reminder and parse the modification
+        modification = await self.llm.parse_modification(
+            user_message, reminder_dicts, self.settings.timezone
+        )
+
+        if modification is None:
+            await update.message.reply_text(
+                "Sorry, I couldn't process that modification right now. "
+                "Please try again in a moment."
+            )
+            return
+
+        reminder_id = modification.get("reminder_id")
+        action = modification.get("action", "none")
+
+        if reminder_id is None or action == "none":
+            # LLM could not match any reminder
+            lines = ["I couldn't find a matching reminder. Here are your active reminders:\n"]
+            for r in parent_reminders:
+                due_str = formatters.to_local(r.due_at, self.settings.timezone)
+                lines.append(f"  #{r.id}: {r.title} - {due_str}")
+            await update.message.reply_text("\n".join(lines))
+            return
+
+        reminder = self.reminders.get_reminder(reminder_id)
+        if not reminder:
+            await update.message.reply_text(
+                f"Reminder #{reminder_id} not found. It may have been completed or deleted."
+            )
+            return
+
+        if action == "cancel":
+            # Complete (cancel) the reminder and its pre-alerts
+            self.reminders.complete_reminder(reminder_id)
+            # Also complete any pre-alerts
+            alerts = self.reminders.get_alerts_for_reminder(reminder_id)
+            for alert in alerts:
+                self.reminders.complete_reminder(alert.id)
+            await update.message.reply_text(
+                f"Cancelled reminder: {reminder.title}"
+            )
+
+        elif action == "reschedule":
+            new_time_iso = modification.get("new_time")
+            if not new_time_iso:
+                # Could not parse the new time -- enter reschedule flow
+                self._reset_state(user_id, "modify reschedule needs time")
+                self._user_states[user_id] = UserState(
+                    mode=UserMode.AWAITING_RESCHEDULE,
+                    reminder_id=reminder_id,
+                    reminder_title=reminder.title,
+                )
+                await update.message.reply_text(
+                    f"When should I reschedule '{reminder.title}'?\n"
+                    "e.g., 'tomorrow at 3pm' or 'next Monday at 10am'"
+                )
+                return
+
+            try:
+                new_due = datetime.fromisoformat(new_time_iso)
+                if new_due.tzinfo is None:
+                    from zoneinfo import ZoneInfo
+                    new_due = new_due.replace(tzinfo=ZoneInfo(self.settings.timezone))
+                new_due_utc = new_due.astimezone(timezone.utc)
+
+                updated = self.reminders.update_reminder_time(reminder_id, new_due_utc)
+                if updated:
+                    time_str = formatters.to_local(new_due_utc, self.settings.timezone)
+                    await update.message.reply_text(
+                        f"Rescheduled '{updated.title}' to {time_str}.\n"
+                        "Previous alerts have been cleared.",
+                        reply_markup=keyboards.alert_preferences(updated.id),
+                    )
+                else:
+                    await update.message.reply_text("Could not update that reminder.")
+            except Exception as e:
+                logger.error("Failed to reschedule via modify: %s", e)
+                await update.message.reply_text(
+                    "Sorry, I couldn't parse that new time. Could you try again?"
+                )
+
+        elif action == "change_alert":
+            # Enter the alert configuration flow for this reminder
+            due_at = reminder.due_at
+            if due_at.tzinfo is None:
+                due_at = due_at.replace(tzinfo=timezone.utc)
+            self._reset_state(user_id, "modify change_alert")
+            self._user_states[user_id] = UserState(
+                mode=UserMode.AWAITING_ALERT_TIME,
+                reminder_id=reminder_id,
+                due_at=due_at,
+                reminder_title=reminder.title,
+            )
+            due_str = formatters.to_local(due_at, self.settings.timezone)
+            await update.message.reply_text(
+                f"Changing alerts for: {reminder.title}\n"
+                f"Event time: {due_str}\n\n"
+                "Tell me when you'd like to be alerted.\n"
+                "e.g., '2 hours before' or 'the morning of at 9am'\n"
+                "Say 'done' when finished."
+            )
+
+        else:
+            await update.message.reply_text(
+                f"I'm not sure what to do with '{reminder.title}'. "
+                "Try saying 'reschedule', 'cancel', or 'change alerts'."
+            )
 
     # ---- Callback Query Handler (Step 3F) ----
 

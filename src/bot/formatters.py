@@ -94,6 +94,41 @@ def format_pre_alert(alert_reminder, parent_reminder, tz_name: str = "America/Lo
     )
 
 
+def format_reminder_card(reminder, alerts: list, tz_name: str = "America/Los_Angeles") -> str:
+    """Format a single reminder card for the /reminders list.
+
+    Shows the title, due date/time in local timezone, and a summary
+    of associated alerts (pre-alerts) with their times.
+    """
+    tz = ZoneInfo(tz_name)
+    due_dt = reminder.due_at
+    if due_dt.tzinfo is None:
+        due_dt = due_dt.replace(tzinfo=timezone.utc)
+    local_due = due_dt.astimezone(tz)
+    due_str = local_due.strftime("%a %b %d, %-I:%M %p")
+
+    lines = []
+    lines.append(f"\U0001f5d3 {reminder.title}")
+    lines.append(f"\U0001f4c5 {due_str}")
+
+    if alerts:
+        alert_parts = []
+        for a in alerts:
+            label = a.alert_label or "Alert"
+            a_due = a.due_at
+            if a_due.tzinfo is None:
+                a_due = a_due.replace(tzinfo=timezone.utc)
+            a_local = a_due.astimezone(tz)
+            day_name = a_local.strftime("%a")
+            time_str = a_local.strftime("%-I%p").lower()
+            alert_parts.append(f"{label} ({day_name} {time_str})")
+        lines.append(f"\U0001f514 {' \u00b7 '.join(alert_parts)}")
+    else:
+        lines.append("\U0001f514 No alerts set")
+
+    return "\n".join(lines)
+
+
 def format_note(note, tz_name: str = "America/Los_Angeles") -> str:
     """Format a single note for display."""
     created = to_local(note.created_at, tz_name)

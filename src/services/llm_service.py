@@ -186,19 +186,28 @@ class LLMService:
         """Classify user message intent.
 
         Returns a dict with keys: intent, content, tags.
-        intent is one of: "reminder", "note", "weather", "stock",
-        "news", "email", "status", "general".
+        intent is one of: "reminder", "modify", "note", "weather",
+        "stock", "news", "email", "status", "general".
+
+        For "modify" intent, also returns "action" key with one of:
+        "reschedule", "cancel", "change_alert".
         """
         system_prompt = """You are an intent classifier. Given a user message, classify it into one of these intents:
-- "reminder": user wants to set, check, or manage a reminder
+- "reminder": user wants to set a NEW reminder
+- "modify": user wants to change, move, reschedule, cancel, or update an EXISTING reminder
 - "note": user wants to save a note or piece of information
 - "weather": user asks about weather
 - "stock": user asks about stocks or market data
 - "news": user asks about news
 - "general": general conversation
 
+For "modify" intent, also include an "action" field:
+- "reschedule": move/change the time of a reminder
+- "cancel": cancel/delete a reminder
+- "change_alert": change alert settings for a reminder
+
 Respond with ONLY a JSON object:
-{"intent": "<intent>", "content": "<extracted content>", "tags": ["<tag1>", "<tag2>"]}"""
+{"intent": "<intent>", "content": "<extracted content>", "action": "<reschedule|cancel|change_alert if modify>", "tags": ["<tag1>", "<tag2>"]}"""
 
         messages = [
             {"role": "system", "content": system_prompt},
@@ -395,6 +404,93 @@ Examples:
             "recurrence": parsed.get("recurrence"),
             "pre_alerts": parsed.get("pre_alerts", "ask"),
         }
+
+    async def parse_modification(
+        self, user_message: str, reminders: list[dict], timezone_str: str = "America/Los_Angeles"
+    ) -> dict | None:
+        """Determine which reminder to modify and how, given user message and active reminders.
+
+        Args:
+            user_message: the user's natural language modification request
+            reminders: list of dicts with keys: id, title, due_at (ISO string)
+            timezone_str: user's timezone
+
+        Returns:
+            dict with keys: reminder_id, action (reschedule|cancel|change_alert),
+            new_time (ISO datetime string if reschedule), details (any extra info).
+            Returns None if LLM is unavailable or parsing fails.
+        """
+        import dateparser
+        from zoneinfo import ZoneInfo
+
+        reminder_lines = []
+        for r in reminders:
+            reminder_lines.append(f"  ID={r['id']}: \"{r['title']}\" due at {r['due_at']}")
+        reminder_list_str = "\n".join(reminder_lines) if reminder_lines else "  (none)"
+
+        system_prompt = f"""You are a reminder modification assistant. The user wants to modify an existing reminder.
+
+Here are the user's current active reminders:
+{reminder_list_str}
+
+Based on the user's message, determine:
+1. Which reminder they are referring to (best match by title/description)
+2. What action to take: "reschedule" (change time), "cancel" (delete it), or "change_alert" (modify alert settings)
+3. If rescheduling, extract the new time phrase
+
+Return ONLY a JSON object:
+{{"reminder_id": <id of best matching reminder>, "action": "<reschedule|cancel|change_alert>", "time_phrase": "<new time/date phrase if rescheduling, else null>", "details": "<any additional info>"}}
+
+If no reminder matches at all, return:
+{{"reminder_id": null, "action": "none", "time_phrase": null, "details": "No matching reminder found"}}"""
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message},
+        ]
+        result = await self.call_groq(messages, temperature=0.1)
+        if result is None:
+            return None
+
+        try:
+            parsed = json.loads(result)
+        except json.JSONDecodeError:
+            logger.warning("Failed to parse modification JSON: %s", result)
+            return None
+
+        # If rescheduling, resolve the time_phrase to an ISO datetime
+        if parsed.get("action") == "reschedule" and parsed.get("time_phrase"):
+            import re as _re
+
+            time_phrase = parsed["time_phrase"]
+            normalized = _re.sub(r"\bnext\b", "", time_phrase, flags=_re.IGNORECASE).strip()
+
+            dt = dateparser.parse(
+                normalized,
+                settings={
+                    "PREFER_DATES_FROM": "future",
+                    "TIMEZONE": timezone_str,
+                    "RETURN_AS_TIMEZONE_AWARE": True,
+                },
+            )
+            if dt is None:
+                dt = dateparser.parse(
+                    time_phrase,
+                    settings={
+                        "PREFER_DATES_FROM": "future",
+                        "TIMEZONE": timezone_str,
+                        "RETURN_AS_TIMEZONE_AWARE": True,
+                    },
+                )
+            if dt is not None:
+                parsed["new_time"] = dt.isoformat()
+            else:
+                parsed["new_time"] = None
+                logger.warning("dateparser failed for modification time: %s", time_phrase)
+        else:
+            parsed["new_time"] = None
+
+        return parsed
 
     async def parse_alert_time(
         self, user_input: str, event_time: "datetime", timezone_str: str = "America/Los_Angeles"

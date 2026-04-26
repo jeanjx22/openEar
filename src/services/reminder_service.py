@@ -88,6 +88,32 @@ class ReminderService:
                 session.expunge(r)
             return results
 
+    def get_future_reminders(self) -> list[Reminder]:
+        """Get parent reminders that are in the future or recently notified.
+
+        Returns non-pre_alert reminders where:
+        - due_at is in the future (regardless of status), OR
+        - status is "notified" (just fired, not yet acknowledged)
+
+        Excludes completed and past events that were never acknowledged.
+        """
+        now = datetime.now(timezone.utc)
+        with get_session() as session:
+            stmt = (
+                select(Reminder)
+                .where(Reminder.source != "pre_alert")
+                .where(
+                    (Reminder.due_at > now)
+                    | (Reminder.status == "notified")
+                )
+                .where(Reminder.status.in_(["active", "notified"]))
+                .order_by(Reminder.due_at.asc())
+            )
+            results = list(session.execute(stmt).scalars().all())
+            for r in results:
+                session.expunge(r)
+            return results
+
     def get_due_reminders(self) -> list[Reminder]:
         """Get reminders that are due now (due_at <= now, status=active).
 
@@ -242,6 +268,32 @@ class ReminderService:
             session.flush()
             return len(expired)
 
+    def auto_complete_past_events(self, grace_hours: int = 2) -> int:
+        """Mark non-pre_alert reminders as completed when their due_at
+        is more than grace_hours in the past and status is active or notified.
+
+        This prevents stale events from lingering in the active list
+        long after they have passed.
+        """
+        now = datetime.now(timezone.utc)
+        cutoff = now - timedelta(hours=grace_hours)
+        with get_session() as session:
+            stmt = (
+                select(Reminder)
+                .where(Reminder.source != "pre_alert")
+                .where(Reminder.due_at < cutoff)
+                .where(Reminder.status.in_(["active", "notified"]))
+            )
+            expired = list(session.execute(stmt).scalars().all())
+            for r in expired:
+                r.status = "completed"
+                logger.info(
+                    "Auto-completed past event #%d: %s (due %s)",
+                    r.id, r.title, r.due_at,
+                )
+            session.flush()
+            return len(expired)
+
     def get_alerts_for_reminder(self, parent_id: int) -> list[Reminder]:
         """Get active pre-alert reminders associated with a parent reminder."""
         with get_session() as session:
@@ -277,6 +329,39 @@ class ReminderService:
             for r in results:
                 session.expunge(r)
             return results
+
+    def update_reminder_time(self, reminder_id: int, new_due_at: datetime) -> Reminder | None:
+        """Update the due_at of an existing reminder and delete its pre-alerts.
+
+        Deletes all existing pre-alerts for this reminder, updates the due time,
+        and resets the status to active. new_due_at must be UTC.
+        Returns the updated reminder, or None if not found.
+        """
+        with get_session() as session:
+            reminder = session.get(Reminder, reminder_id)
+            if not reminder:
+                return None
+
+            # Delete existing pre-alerts for this reminder
+            stmt = (
+                select(Reminder)
+                .where(Reminder.source == "pre_alert")
+                .where(Reminder.source_ref == str(reminder_id))
+            )
+            old_alerts = list(session.execute(stmt).scalars().all())
+            for alert in old_alerts:
+                session.delete(alert)
+
+            # Update the reminder time and reset status
+            reminder.due_at = new_due_at
+            reminder.status = "active"
+            session.flush()
+            session.expunge(reminder)
+            logger.info(
+                "Updated reminder #%d time to %s (deleted %d pre-alerts)",
+                reminder_id, new_due_at, len(old_alerts),
+            )
+        return reminder
 
     def delete_reminder(self, reminder_id: int) -> bool:
         """Delete a reminder by ID. Returns True if found and deleted."""

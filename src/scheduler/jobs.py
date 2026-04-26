@@ -223,6 +223,7 @@ class SchedulerJobs:
         due time instead of the alert's own due time.
         """
         self.reminders.cleanup_expired_pre_alerts()
+        self.reminders.auto_complete_past_events(grace_hours=2)
 
         if self.reminders.is_quiet_hours():
             return

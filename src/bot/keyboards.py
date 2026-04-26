@@ -225,6 +225,39 @@ def disambiguate_alert_or_reminder(reminder_id: int) -> InlineKeyboardMarkup:
     )
 
 
+def reminder_list_actions(reminder_id: int, has_alerts: bool) -> InlineKeyboardMarkup:
+    """Inline keyboard for each reminder card in the /reminders list.
+
+    Shows 'Manage alerts' if the reminder already has alerts,
+    or 'Add alerts' if it has none. Always shows Done and Reschedule.
+    """
+    if has_alerts:
+        alert_btn = InlineKeyboardButton(
+            "Manage alerts",
+            callback_data=f"manage_alerts:{reminder_id}",
+        )
+    else:
+        alert_btn = InlineKeyboardButton(
+            "Add alerts",
+            callback_data=f"add_alert:{reminder_id}",
+        )
+    return InlineKeyboardMarkup(
+        [
+            [
+                alert_btn,
+                InlineKeyboardButton(
+                    "Done",
+                    callback_data=f"reminder_done:{reminder_id}",
+                ),
+                InlineKeyboardButton(
+                    "Reschedule",
+                    callback_data=f"post_reschedule:{reminder_id}",
+                ),
+            ]
+        ]
+    )
+
+
 def confirm_cancel() -> InlineKeyboardMarkup:
     """Generic confirm/cancel keyboard."""
     return InlineKeyboardMarkup(
