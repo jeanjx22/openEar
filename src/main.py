@@ -106,6 +106,13 @@ def main() -> None:
     async def post_init(application):
         nonlocal scheduler_jobs
         application.bot_data["allowed_user_ids"] = settings.telegram_allowed_user_ids
+        # Seed active_chat_ids with individual user IDs so scheduled
+        # messages are delivered even before any user sends a message.
+        # Group chat IDs are added dynamically by handlers._track_chat
+        # as users interact with the bot in group chats.
+        application.bot_data["active_chat_ids"] = set(
+            settings.telegram_allowed_user_ids
+        )
 
         scheduler_jobs = SchedulerJobs(
             settings=settings,

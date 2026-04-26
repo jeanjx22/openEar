@@ -417,6 +417,7 @@ class TestPreAlertFiresWithParentInfo:
         mock_app = MagicMock()
         mock_bot = AsyncMock()
         mock_app.bot = mock_bot
+        mock_app.bot_data = {"active_chat_ids": {12345}}
 
         jobs = SchedulerJobs(
             settings=mock_settings,

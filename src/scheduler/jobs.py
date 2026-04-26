@@ -64,17 +64,23 @@ class SchedulerJobs:
         # to avoid re-sending every minute
         self._post_prompted: set[int] = set()
 
-        # The primary chat ID to send scheduled messages to
-        # Uses the first allowed user ID
-        self._chat_ids = list(settings.telegram_allowed_user_ids)
-
     async def _send_to_all(self, text: str, reply_markup=None) -> None:
-        """Send a message to all allowed users.
+        """Send a message to all active chats (DMs and group chats).
+
+        Uses active_chat_ids tracked by handlers -- this includes every
+        chat (DM or group) where an authorized user has interacted with
+        the bot.  Falls back to telegram_allowed_user_ids if no chats
+        have been recorded yet (e.g., right after a restart before any
+        user sends a message).
 
         C5: Catches Forbidden errors (user hasn't sent /start to the bot)
         and logs a clear warning instead of silently failing.
         """
-        for chat_id in self._chat_ids:
+        chat_ids = self.app.bot_data.get("active_chat_ids", set())
+        if not chat_ids:
+            # Fallback: no user has interacted yet since restart
+            chat_ids = self.settings.telegram_allowed_user_ids
+        for chat_id in chat_ids:
             try:
                 await self.app.bot.send_message(
                     chat_id=chat_id,

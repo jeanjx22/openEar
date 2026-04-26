@@ -118,6 +118,21 @@ class BotHandlers:
                 parts.append(label)
         return " + ".join(parts)
 
+    def _clear_pending_context(self, user_id: int, reason: str) -> dict | None:
+        """Clear any pending reminder context for a user and log it.
+
+        Returns the old context if one existed, None otherwise.
+        """
+        old = self._pending_reminder_context.pop(user_id, None)
+        if old:
+            logger.info(
+                "Cleared pending context for user %d (reason: %s): reminder_id=%s",
+                user_id,
+                reason,
+                old.get("reminder_id", old.get("email_index", "?")),
+            )
+        return old
+
     def get_handlers(self) -> list:
         """Return all handler objects to register with the Application."""
         return [
@@ -134,11 +149,22 @@ class BotHandlers:
 
     # ---- Command Handlers (Step 3D) ----
 
+    def _track_chat(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Record the chat_id so scheduled messages reach this chat.
+
+        Captures both DM and group chat IDs. This is called at the top
+        of every handler so that scheduler jobs (reminders, briefings,
+        heartbeats) are delivered to every chat the bot is active in.
+        """
+        chat_id = update.effective_chat.id
+        context.bot_data.setdefault("active_chat_ids", set()).add(chat_id)
+
     async def cmd_start(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
         if not await auth_check(update, context):
             return
+        self._track_chat(update, context)
         name = self.settings.persona.get("name", "openEar")
         emoji = self.settings.persona.get("emoji", "")
         await update.message.reply_text(
@@ -157,6 +183,7 @@ class BotHandlers:
     ) -> None:
         if not await auth_check(update, context):
             return
+        self._track_chat(update, context)
         await update.message.reply_text(
             "Commands:\n"
             "/start - Introduction\n"
@@ -174,6 +201,7 @@ class BotHandlers:
     ) -> None:
         if not await auth_check(update, context):
             return
+        self._track_chat(update, context)
 
         groq_status = (
             "CIRCUIT_OPEN"
@@ -214,6 +242,7 @@ class BotHandlers:
     ) -> None:
         if not await auth_check(update, context):
             return
+        self._track_chat(update, context)
         await update.message.reply_text("Checking emails...")
         try:
             emails = await self.email.process_emails()
@@ -239,6 +268,7 @@ class BotHandlers:
     ) -> None:
         if not await auth_check(update, context):
             return
+        self._track_chat(update, context)
         reminders = self.reminders.get_active_reminders()
         if not reminders:
             await update.message.reply_text("No active reminders.")
@@ -280,6 +310,7 @@ class BotHandlers:
     ) -> None:
         if not await auth_check(update, context):
             return
+        self._track_chat(update, context)
         notes = self.notes.get_all_notes()
         text = formatters.format_note_list(notes, self.settings.timezone)
         await update.message.reply_text(text)
@@ -289,6 +320,7 @@ class BotHandlers:
     ) -> None:
         if not await auth_check(update, context):
             return
+        self._track_chat(update, context)
         text = update.message.text
         # Strip the /note prefix
         content = text[len("/note") :].strip()
@@ -320,6 +352,7 @@ class BotHandlers:
     ) -> None:
         if not await auth_check(update, context):
             return
+        self._track_chat(update, context)
 
         user_message = update.message.text
         user_id = update.effective_user.id
@@ -329,7 +362,7 @@ class BotHandlers:
             reminder_id = pending["reminder_id"]
             reminder = self.reminders.get_reminder(reminder_id)
             if not reminder:
-                del self._pending_reminder_context[user_id]
+                self._clear_pending_context(user_id, "reschedule reminder not found")
                 await update.message.reply_text("Reminder not found 🐰")
                 return
 
@@ -348,7 +381,7 @@ class BotHandlers:
                             r.due_at = due_at_utc
                             r.status = "active"
 
-                    del self._pending_reminder_context[user_id]
+                    self._clear_pending_context(user_id, "reschedule completed")
                     time_str = formatters.to_local(due_at_utc, self.settings.timezone)
                     await update.message.reply_text(
                         f"Rescheduled '{reminder.title}' to {time_str} 🐰"
@@ -365,22 +398,28 @@ class BotHandlers:
             return
 
         if pending and pending.get("awaiting_custom_alerts"):
+            # Safeguard: verify the reminder still exists in DB
+            pending_reminder_id = pending["reminder_id"]
+            pending_reminder = self.reminders.get_reminder(pending_reminder_id)
+            if not pending_reminder:
+                self._clear_pending_context(user_id, "pending reminder no longer exists")
+                await update.message.reply_text("Reminder not found 🐰")
+                return
+
             lower_msg = user_message.lower().strip()
             new_intent_signals = ["remind me", "what's the weather", "how's", "how is",
                                   "/start", "/help", "/status", "/reminders", "/notes",
                                   "/briefing", "note:", "note "]
             if any(lower_msg.startswith(s) for s in new_intent_signals):
-                del self._pending_reminder_context[user_id]
+                old_title = pending_reminder.title or "Reminder"
+                self._clear_pending_context(user_id, "new intent detected")
+                await update.message.reply_text(
+                    f"Exited alert setup for {old_title}. Processing your new request... 🐰"
+                )
                 # Fall through to normal intent classification below
             else:
-                reminder = self.reminders.get_reminder(pending["reminder_id"])
-                if not reminder:
-                    del self._pending_reminder_context[user_id]
-                    await update.message.reply_text("Reminder not found 🐰")
-                    return
-
                 if lower_msg in ("done", "no", "nope", "that's it", "that's all"):
-                    del self._pending_reminder_context[user_id]
+                    self._clear_pending_context(user_id, "user said done")
                     await update.message.reply_text("All set! 🐰")
                     return
 
@@ -394,17 +433,17 @@ class BotHandlers:
                         alert_utc = alert["datetime"].astimezone(timezone.utc)
                         label = alert.get("label", "Custom")
                         self.reminders.create_reminder(
-                            title=f"Alert: {reminder.title}",
+                            title=f"Alert: {pending_reminder.title}",
                             due_at=alert_utc,
                             source="pre_alert",
-                            source_ref=str(reminder.id),
+                            source_ref=str(pending_reminder.id),
                             alert_label=label,
                         )
                         created.append(f"  🔔 {label} — {formatters.to_local(alert_utc, self.settings.timezone)}")
                     alert_list = "\n".join(created)
                     await update.message.reply_text(
                         f"Alerts set!\n{alert_list}\n\n"
-                        f"⏰ {formatters.format_reminder(reminder, self.settings.timezone)}\n\n"
+                        f"⏰ {formatters.format_reminder(pending_reminder, self.settings.timezone)}\n\n"
                         "Want to add more? Reply with a time or say 'done' 🐰"
                     )
                 else:
@@ -466,6 +505,7 @@ class BotHandlers:
                     pre_alerts = parsed.get("pre_alerts", "ask")
 
                     if pre_alerts == "ask":
+                        self._clear_pending_context(user_id, "new reminder created (ask alerts)")
                         self._pending_reminder_context[user_id] = {
                             "reminder_id": reminder.id,
                             "title": parsed["title"],
@@ -518,6 +558,7 @@ class BotHandlers:
     ) -> None:
         if not await auth_check(update, context):
             return
+        self._track_chat(update, context)
 
         query = update.callback_query
         await query.answer()
@@ -532,6 +573,7 @@ class BotHandlers:
             due_at = parent.due_at
             if due_at.tzinfo is None:
                 due_at = due_at.replace(tzinfo=timezone.utc)
+            self._clear_pending_context(update.effective_user.id, "alert_more callback")
             self._pending_reminder_context[update.effective_user.id] = {
                 "reminder_id": parent_id,
                 "awaiting_custom_alerts": True,
@@ -573,6 +615,7 @@ class BotHandlers:
                     "Tell me how you'd like to be alerted.\n"
                     "e.g., 'remind me 2 days before at 8pm and 1 hour before' 🐰"
                 )
+                self._clear_pending_context(update.effective_user.id, "alert_custom callback")
                 self._pending_reminder_context[update.effective_user.id] = {
                     "reminder_id": reminder_id,
                     "awaiting_custom_alerts": True,
@@ -580,6 +623,8 @@ class BotHandlers:
                 }
                 return
 
+            # Preset alert paths: self-contained, uses reminder_id from callback_data
+            self._clear_pending_context(update.effective_user.id, "preset alert selected")
             self._create_pre_alerts(reminder, pre_alerts, due_at)
             summary = self._format_alert_summary(pre_alerts)
             text = formatters.format_reminder(reminder, self.settings.timezone)
@@ -641,6 +686,7 @@ class BotHandlers:
             due_at = reminder.due_at
             if due_at.tzinfo is None:
                 due_at = due_at.replace(tzinfo=timezone.utc)
+            self._clear_pending_context(update.effective_user.id, "add_alert callback")
             self._pending_reminder_context[update.effective_user.id] = {
                 "reminder_id": reminder_id,
                 "awaiting_custom_alerts": True,
@@ -699,6 +745,7 @@ class BotHandlers:
             if not reminder:
                 await query.edit_message_text("Reminder not found 🐰")
                 return
+            self._clear_pending_context(update.effective_user.id, "post_reschedule callback")
             self._pending_reminder_context[update.effective_user.id] = {
                 "reminder_id": reminder_id,
                 "awaiting_reschedule": True,
@@ -710,6 +757,7 @@ class BotHandlers:
 
         elif data.startswith("email_remind:"):
             email_idx = int(data.split(":")[1])
+            self._clear_pending_context(update.effective_user.id, "email_remind callback")
             self._pending_reminder_context[update.effective_user.id] = {
                 "email_index": email_idx,
             }
