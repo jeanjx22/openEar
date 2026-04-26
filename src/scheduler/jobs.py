@@ -8,7 +8,11 @@ Jobs:
 - Snoozed reminders: runs every minute to wake expired snoozes
 - Heartbeat file: writes /tmp/openear_heartbeat every 60s (C4)
 
-C2: _reminder_check_job marks reminders as "notified" after sending.
+Fire-and-delete model for alerts:
+- Pre-alerts (source="pre_alert") are one-shot notifications. After
+  firing, the alert record is DELETED from the DB (not marked notified).
+- Regular reminders are marked "notified" (C2) so the user can act on them.
+
 C4: _heartbeat_file_job writes heartbeat file for Docker HEALTHCHECK.
 C5: _send_to_all catches Forbidden errors with clear warning.
 """
@@ -215,12 +219,11 @@ class SchedulerJobs:
     async def _reminder_check_job(self) -> None:
         """Check for due reminders and send notifications.
 
-        C2: After sending notification, marks reminder as "notified"
-        so it will not be picked up again on the next cycle.
+        Pre-alert reminders (source="pre_alert") are one-shot: after
+        firing the notification, the alert record is DELETED from the DB.
 
-        Pre-alert reminders (source="pre_alert") are formatted differently:
-        they look up the parent event via source_ref and show the parent's
-        due time instead of the alert's own due time.
+        Regular reminders are marked as "notified" (C2) so they won't
+        fire again but remain in the DB for user actions (Done/Snooze).
         """
         if self.reminders.is_quiet_hours():
             return
@@ -248,19 +251,23 @@ class SchedulerJobs:
                         reminder, self.settings.timezone
                     )
                     markup = keyboards.reminder_actions(reminder.id)
+
+                await self._send_to_all(text, reply_markup=markup)
+                # Fire-and-delete: alert served its purpose, remove it
+                self.reminders.delete_fired_alert(reminder.id)
             else:
                 text = formatters.format_reminder(
                     reminder, self.settings.timezone
                 )
                 markup = keyboards.reminder_actions(reminder.id)
+                await self._send_to_all(text, reply_markup=markup)
+                # C2: Mark as notified so it won't fire again
+                self.reminders.mark_notified(reminder.id)
 
-            await self._send_to_all(text, reply_markup=markup)
-            # C2: Mark as notified so it won't fire again
-            self.reminders.mark_notified(reminder.id)
-
-        # Cleanup AFTER firing — so due alerts fire before being cleaned
-        self.reminders.cleanup_expired_pre_alerts()
+        # Periodic maintenance
         self.reminders.auto_complete_past_events(grace_hours=2)
+        # Safety net: delete stale alerts that survived a crash/restart
+        self.reminders.cleanup_expired_pre_alerts()
 
     async def _snoozed_reminder_job(self) -> None:
         """Re-activate snoozed reminders whose snooze has expired."""

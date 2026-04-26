@@ -5,11 +5,13 @@ converts UTC to the user's local timezone for comparison.
 Quiet hours spanning midnight are handled correctly:
     if start > end: is_quiet = (now >= start or now < end)
 
-C2 fix: After sending a notification, the scheduler calls
-mark_notified() to transition the reminder from "active" to
-"notified". get_due_reminders() only returns "active" reminders,
-preventing infinite re-notification. User actions (Done/Snooze)
-transition from "notified".
+Two kinds of records:
+- Reminders (entities): have status active/notified/completed/snoozed.
+  C2: mark_notified() prevents re-firing; user actions transition from
+  "notified".
+- Alerts (one-shot notifications, source="pre_alert"): created with
+  status "active", then DELETED after firing via delete_fired_alert().
+  Immutable -- only created or deleted, never modified.
 """
 
 from __future__ import annotations
@@ -252,20 +254,45 @@ class ReminderService:
             next_morning += timedelta(days=1)
         return next_morning.astimezone(timezone.utc)
 
+    def delete_fired_alert(self, reminder_id: int) -> bool:
+        """Delete a pre-alert record from DB after it has been fired.
+
+        Alerts are immutable one-shot notifications: once fired, they are
+        deleted rather than transitioned to a different status.
+        Returns True if found and deleted, False otherwise.
+        """
+        with get_session() as session:
+            reminder = session.get(Reminder, reminder_id)
+            if reminder and reminder.source == "pre_alert":
+                session.delete(reminder)
+                logger.info("Deleted fired alert #%d", reminder_id)
+                return True
+            return False
+
     def cleanup_expired_pre_alerts(self) -> int:
-        """Auto-complete pre-alerts whose due_at has passed."""
+        """Safety-net cleanup for pre-alerts that were not deleted after firing.
+
+        Only deletes pre-alerts whose due_at is more than 1 hour in the past.
+        Under normal operation alerts are deleted immediately after firing via
+        delete_fired_alert(). This catches stragglers from crashes or restarts.
+        """
         now = datetime.now(timezone.utc)
+        cutoff = now - timedelta(hours=1)
         with get_session() as session:
             stmt = (
                 select(Reminder)
                 .where(Reminder.source == "pre_alert")
-                .where(Reminder.due_at < now)
+                .where(Reminder.due_at < cutoff)
                 .where(Reminder.status.in_(["active", "notified"]))
             )
             expired = list(session.execute(stmt).scalars().all())
             for r in expired:
-                r.status = "completed"
+                session.delete(r)
             session.flush()
+            if expired:
+                logger.info(
+                    "Safety-net cleanup: deleted %d stale pre-alerts", len(expired)
+                )
             return len(expired)
 
     def auto_complete_past_events(self, grace_hours: int = 2) -> int:

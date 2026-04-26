@@ -691,12 +691,12 @@ class BotHandlers:
             return
 
         if action == "cancel":
-            # Complete (cancel) the reminder and its pre-alerts
+            # Complete (cancel) the reminder and delete its pre-alerts
             self.reminders.complete_reminder(reminder_id)
-            # Also complete any pre-alerts
+            # Delete pre-alerts -- they are one-shot, no status transitions
             alerts = self.reminders.get_alerts_for_reminder(reminder_id)
             for alert in alerts:
-                self.reminders.complete_reminder(alert.id)
+                self.reminders.delete_reminder(alert.id)
             await update.message.reply_text(
                 f"Cancelled reminder: {reminder.title}"
             )

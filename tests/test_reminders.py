@@ -575,8 +575,8 @@ class TestInsertEmailIgnoreDuplicate:
 
 
 class TestCleanupExpiredPreAlerts:
-    def test_marks_past_pre_alerts_completed(self, service: ReminderService):
-        past = datetime.now(timezone.utc) - timedelta(hours=1)
+    def test_deletes_past_pre_alerts(self, service: ReminderService):
+        past = datetime.now(timezone.utc) - timedelta(hours=2)
         alert = service.create_reminder(
             title="Alert: Meeting",
             due_at=past,
@@ -588,8 +588,8 @@ class TestCleanupExpiredPreAlerts:
         count = service.cleanup_expired_pre_alerts()
 
         assert count == 1
-        updated = service.get_reminder(alert.id)
-        assert updated.status == "completed"
+        deleted = service.get_reminder(alert.id)
+        assert deleted is None
 
     def test_does_not_complete_future_pre_alerts(self, service: ReminderService):
         future = datetime.now(timezone.utc) + timedelta(hours=2)
