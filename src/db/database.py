@@ -65,6 +65,7 @@ def insert_email_ignore_duplicate(session: Session, email_obj) -> bool:
 
     from src.db.models import Email
 
+    from datetime import datetime, timezone
     stmt = sqlite_insert(Email).values(
         gmail_id=email_obj.gmail_id,
         sender=email_obj.sender,
@@ -72,7 +73,7 @@ def insert_email_ignore_duplicate(session: Session, email_obj) -> bool:
         summary=email_obj.summary,
         is_important=email_obj.is_important,
         received_at=email_obj.received_at,
-        processed_at=email_obj.processed_at,
+        processed_at=email_obj.processed_at or datetime.now(timezone.utc),
     ).on_conflict_do_nothing(index_elements=["gmail_id"])
 
     result = session.execute(stmt)
