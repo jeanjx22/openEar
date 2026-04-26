@@ -529,11 +529,20 @@ Examples:
 - "1 minute from now" -> [{{"type": "from_now", "minutes": 1, "label": "Test alert"}}]
 - "1 hour before" -> [{{"type": "before_event", "minutes": 60, "label": "1 hour before"}}]
 
+IMPORTANT - NOT an alert time (return empty array []):
+- If the message describes a NEW event/task (has a title like "remind me to...", "meet therapist", "call doctor"), return []
+- Alert times are ONLY about WHEN to notify, not WHAT to do
+- "remind me 1 hour before" = alert time (WHEN to notify)
+- "remind me to call doctor Monday 3pm" = NEW event (NOT an alert time, return [])
+- "next Monday at 3pm" with no event description = alert time
+- "meet therapist Monday 3pm" = NEW event (return [])
+
 CONTEXT:
 - Now: {now_local.strftime("%A %B %d, %Y %I:%M %p")} ({timezone_str})
-- Event: {event_local.strftime("%A %B %d, %Y %I:%M %p")} ({timezone_str})
+- Event being configured: "{event_local.strftime('%A %B %d, %Y %I:%M %p')}"
+- We are setting NOTIFICATION times for this event, not creating new events
 
-Return ONLY the JSON array, nothing else."""
+Return ONLY the JSON array, nothing else. Return [] if input is not an alert time."""
 
         messages = [
             {"role": "system", "content": system_prompt},
