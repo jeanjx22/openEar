@@ -586,3 +586,367 @@ class TestSetMoreAlertsFlow:
         assert pending is not None, "alert_more: should set pending context"
         assert pending["awaiting_custom_alerts"] is True
         assert pending["reminder_id"] == 10
+
+
+# ===================================================================
+# 5. _track_chat and _send_to_all tests
+# ===================================================================
+
+
+class TestTrackChat:
+    """Test that _track_chat stores chat_id in bot_data."""
+
+    def test_track_chat_stores_chat_id(self):
+        from src.bot.handlers import BotHandlers
+
+        handlers = BotHandlers(
+            settings=MagicMock(),
+            llm_service=MagicMock(),
+            email_service=MagicMock(),
+            reminder_service=MagicMock(),
+            note_service=MagicMock(),
+            health_service=MagicMock(),
+        )
+
+        mock_update = MagicMock()
+        mock_update.effective_chat.id = 99999
+
+        mock_context = MagicMock()
+        mock_context.bot_data = {}
+
+        handlers._track_chat(mock_update, mock_context)
+
+        assert "active_chat_ids" in mock_context.bot_data
+        assert 99999 in mock_context.bot_data["active_chat_ids"]
+
+    def test_track_chat_accumulates_multiple_ids(self):
+        from src.bot.handlers import BotHandlers
+
+        handlers = BotHandlers(
+            settings=MagicMock(),
+            llm_service=MagicMock(),
+            email_service=MagicMock(),
+            reminder_service=MagicMock(),
+            note_service=MagicMock(),
+            health_service=MagicMock(),
+        )
+
+        mock_context = MagicMock()
+        mock_context.bot_data = {}
+
+        for chat_id in [111, 222, 333]:
+            mock_update = MagicMock()
+            mock_update.effective_chat.id = chat_id
+            handlers._track_chat(mock_update, mock_context)
+
+        assert mock_context.bot_data["active_chat_ids"] == {111, 222, 333}
+
+    def test_track_chat_deduplicates(self):
+        from src.bot.handlers import BotHandlers
+
+        handlers = BotHandlers(
+            settings=MagicMock(),
+            llm_service=MagicMock(),
+            email_service=MagicMock(),
+            reminder_service=MagicMock(),
+            note_service=MagicMock(),
+            health_service=MagicMock(),
+        )
+
+        mock_context = MagicMock()
+        mock_context.bot_data = {}
+
+        mock_update = MagicMock()
+        mock_update.effective_chat.id = 555
+
+        handlers._track_chat(mock_update, mock_context)
+        handlers._track_chat(mock_update, mock_context)
+
+        assert len(mock_context.bot_data["active_chat_ids"]) == 1
+
+
+class TestSendToAll:
+    """Test _send_to_all message dispatch logic."""
+
+    @pytest.mark.asyncio
+    async def test_send_to_all_uses_active_chat_ids(self):
+        from src.scheduler.jobs import SchedulerJobs
+
+        mock_bot = AsyncMock()
+        mock_app = MagicMock()
+        mock_app.bot = mock_bot
+        mock_app.bot_data = {"active_chat_ids": {100, 200}}
+
+        mock_settings = MagicMock()
+        mock_settings.telegram_allowed_user_ids = [999]
+
+        jobs = SchedulerJobs(
+            settings=mock_settings,
+            app=mock_app,
+            llm_service=MagicMock(),
+            email_service=MagicMock(),
+            reminder_service=MagicMock(),
+            health_service=MagicMock(),
+            backup_service=MagicMock(),
+        )
+
+        await jobs._send_to_all("Hello")
+
+        assert mock_bot.send_message.call_count == 2
+        sent_chat_ids = {
+            call.kwargs["chat_id"]
+            for call in mock_bot.send_message.call_args_list
+        }
+        assert sent_chat_ids == {100, 200}
+
+    @pytest.mark.asyncio
+    async def test_send_to_all_falls_back_to_allowed_user_ids(self):
+        from src.scheduler.jobs import SchedulerJobs
+
+        mock_bot = AsyncMock()
+        mock_app = MagicMock()
+        mock_app.bot = mock_bot
+        # No active_chat_ids recorded yet
+        mock_app.bot_data = {}
+
+        mock_settings = MagicMock()
+        mock_settings.telegram_allowed_user_ids = [777, 888]
+
+        jobs = SchedulerJobs(
+            settings=mock_settings,
+            app=mock_app,
+            llm_service=MagicMock(),
+            email_service=MagicMock(),
+            reminder_service=MagicMock(),
+            health_service=MagicMock(),
+            backup_service=MagicMock(),
+        )
+
+        await jobs._send_to_all("Fallback test")
+
+        assert mock_bot.send_message.call_count == 2
+        sent_chat_ids = {
+            call.kwargs["chat_id"]
+            for call in mock_bot.send_message.call_args_list
+        }
+        assert sent_chat_ids == {777, 888}
+
+    @pytest.mark.asyncio
+    async def test_send_to_all_falls_back_when_active_set_empty(self):
+        from src.scheduler.jobs import SchedulerJobs
+
+        mock_bot = AsyncMock()
+        mock_app = MagicMock()
+        mock_app.bot = mock_bot
+        # active_chat_ids exists but is empty
+        mock_app.bot_data = {"active_chat_ids": set()}
+
+        mock_settings = MagicMock()
+        mock_settings.telegram_allowed_user_ids = [444]
+
+        jobs = SchedulerJobs(
+            settings=mock_settings,
+            app=mock_app,
+            llm_service=MagicMock(),
+            email_service=MagicMock(),
+            reminder_service=MagicMock(),
+            health_service=MagicMock(),
+            backup_service=MagicMock(),
+        )
+
+        await jobs._send_to_all("Empty set fallback")
+
+        assert mock_bot.send_message.call_count == 1
+        mock_bot.send_message.assert_called_once_with(
+            chat_id=444, text="Empty set fallback", reply_markup=None,
+        )
+
+
+# ===================================================================
+# 6. _clear_pending_context tests
+# ===================================================================
+
+
+class TestClearPendingContext:
+    """Test _clear_pending_context removes old context and returns it."""
+
+    def test_clears_and_returns_existing_context(self):
+        from src.bot.handlers import BotHandlers
+
+        handlers = BotHandlers(
+            settings=MagicMock(),
+            llm_service=MagicMock(),
+            email_service=MagicMock(),
+            reminder_service=MagicMock(),
+            note_service=MagicMock(),
+            health_service=MagicMock(),
+        )
+
+        handlers._pending_reminder_context[12345] = {
+            "reminder_id": 42,
+            "awaiting_custom_alerts": True,
+            "due_at": datetime(2026, 5, 1, 18, 0, tzinfo=timezone.utc),
+        }
+
+        old = handlers._clear_pending_context(12345, "test reason")
+
+        assert old is not None
+        assert old["reminder_id"] == 42
+        assert 12345 not in handlers._pending_reminder_context
+
+    def test_returns_none_when_no_context(self):
+        from src.bot.handlers import BotHandlers
+
+        handlers = BotHandlers(
+            settings=MagicMock(),
+            llm_service=MagicMock(),
+            email_service=MagicMock(),
+            reminder_service=MagicMock(),
+            note_service=MagicMock(),
+            health_service=MagicMock(),
+        )
+
+        old = handlers._clear_pending_context(99999, "no context")
+
+        assert old is None
+
+    def test_does_not_affect_other_users(self):
+        from src.bot.handlers import BotHandlers
+
+        handlers = BotHandlers(
+            settings=MagicMock(),
+            llm_service=MagicMock(),
+            email_service=MagicMock(),
+            reminder_service=MagicMock(),
+            note_service=MagicMock(),
+            health_service=MagicMock(),
+        )
+
+        handlers._pending_reminder_context[111] = {"reminder_id": 1}
+        handlers._pending_reminder_context[222] = {"reminder_id": 2}
+
+        handlers._clear_pending_context(111, "clearing user 111")
+
+        assert 111 not in handlers._pending_reminder_context
+        assert 222 in handlers._pending_reminder_context
+        assert handlers._pending_reminder_context[222]["reminder_id"] == 2
+
+
+# ===================================================================
+# 7. New intent detection clears pending context
+# ===================================================================
+
+
+class TestNewIntentClearsPendingContext:
+    """When a user sends a new intent signal while in the custom alert
+    flow, the pending context should be cleared and the new intent
+    processed."""
+
+    @pytest.mark.asyncio
+    async def test_remind_me_clears_custom_alert_context(self):
+        from src.bot.handlers import BotHandlers
+
+        parent = _make_reminder(
+            id=10,
+            title="Old event",
+            due_at=datetime(2026, 5, 1, 18, 0, tzinfo=timezone.utc),
+        )
+
+        mock_settings = MagicMock()
+        mock_settings.timezone = "America/Los_Angeles"
+        mock_settings.persona = {"name": "openEar", "emoji": ""}
+
+        mock_reminder_svc = MagicMock()
+        mock_reminder_svc.get_reminder.return_value = parent
+
+        mock_llm = AsyncMock()
+        mock_llm.classify_intent = AsyncMock(return_value={"intent": "reminder"})
+        mock_llm.parse_reminder_time = AsyncMock(return_value=None)
+
+        handlers = BotHandlers(
+            settings=mock_settings,
+            llm_service=mock_llm,
+            email_service=MagicMock(),
+            reminder_service=mock_reminder_svc,
+            note_service=MagicMock(),
+            health_service=MagicMock(),
+        )
+
+        # Simulate being in the custom alert flow
+        handlers._pending_reminder_context[12345] = {
+            "reminder_id": 10,
+            "awaiting_custom_alerts": True,
+            "due_at": datetime(2026, 5, 1, 18, 0, tzinfo=timezone.utc),
+        }
+
+        mock_update = MagicMock()
+        mock_update.effective_user.id = 12345
+        mock_update.effective_chat.id = 12345
+        mock_update.message.text = "remind me to call doctor tomorrow"
+        mock_update.message.reply_text = AsyncMock()
+
+        mock_context = MagicMock()
+        mock_context.bot_data = {}
+
+        with patch("src.bot.handlers.auth_check", new_callable=AsyncMock, return_value=True):
+            await handlers.handle_message(mock_update, mock_context)
+
+        # Pending context should have been cleared
+        assert 12345 not in handlers._pending_reminder_context
+
+        # The exit message should have been sent
+        reply_calls = mock_update.message.reply_text.call_args_list
+        exit_msg = reply_calls[0].args[0]
+        assert "Exited alert setup" in exit_msg
+        assert "Old event" in exit_msg
+
+    @pytest.mark.asyncio
+    async def test_weather_query_clears_custom_alert_context(self):
+        from src.bot.handlers import BotHandlers
+
+        parent = _make_reminder(
+            id=10,
+            title="Meeting",
+            due_at=datetime(2026, 5, 1, 18, 0, tzinfo=timezone.utc),
+        )
+
+        mock_settings = MagicMock()
+        mock_settings.timezone = "America/Los_Angeles"
+        mock_settings.persona = {"name": "openEar", "emoji": ""}
+
+        mock_reminder_svc = MagicMock()
+        mock_reminder_svc.get_reminder.return_value = parent
+
+        mock_llm = AsyncMock()
+        mock_llm.classify_intent = AsyncMock(return_value={"intent": "weather"})
+
+        handlers = BotHandlers(
+            settings=mock_settings,
+            llm_service=mock_llm,
+            email_service=MagicMock(),
+            reminder_service=mock_reminder_svc,
+            note_service=MagicMock(),
+            health_service=MagicMock(),
+        )
+
+        handlers._pending_reminder_context[12345] = {
+            "reminder_id": 10,
+            "awaiting_custom_alerts": True,
+            "due_at": datetime(2026, 5, 1, 18, 0, tzinfo=timezone.utc),
+        }
+
+        mock_update = MagicMock()
+        mock_update.effective_user.id = 12345
+        mock_update.effective_chat.id = 12345
+        mock_update.message.text = "what's the weather like?"
+        mock_update.message.reply_text = AsyncMock()
+
+        mock_context = MagicMock()
+        mock_context.bot_data = {}
+
+        with patch("src.bot.handlers.auth_check", new_callable=AsyncMock, return_value=True), \
+             patch("src.bot.handlers.get_weather", new_callable=AsyncMock, return_value="Sunny, 72F"):
+            await handlers.handle_message(mock_update, mock_context)
+
+        # Pending context should have been cleared
+        assert 12345 not in handlers._pending_reminder_context

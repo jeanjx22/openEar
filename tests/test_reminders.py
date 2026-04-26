@@ -567,3 +567,116 @@ class TestInsertEmailIgnoreDuplicate:
 
         assert first is True
         assert second is False
+
+
+# ---------------------------------------------------------------------------
+# 18. cleanup_expired_pre_alerts marks past pre-alerts as completed
+# ---------------------------------------------------------------------------
+
+
+class TestCleanupExpiredPreAlerts:
+    def test_marks_past_pre_alerts_completed(self, service: ReminderService):
+        past = datetime.now(timezone.utc) - timedelta(hours=1)
+        alert = service.create_reminder(
+            title="Alert: Meeting",
+            due_at=past,
+            source="pre_alert",
+            source_ref="1",
+            alert_label="Morning of",
+        )
+
+        count = service.cleanup_expired_pre_alerts()
+
+        assert count == 1
+        updated = service.get_reminder(alert.id)
+        assert updated.status == "completed"
+
+    def test_does_not_complete_future_pre_alerts(self, service: ReminderService):
+        future = datetime.now(timezone.utc) + timedelta(hours=2)
+        alert = service.create_reminder(
+            title="Alert: Dentist",
+            due_at=future,
+            source="pre_alert",
+            source_ref="2",
+            alert_label="1 hour before",
+        )
+
+        count = service.cleanup_expired_pre_alerts()
+
+        assert count == 0
+        updated = service.get_reminder(alert.id)
+        assert updated.status == "active"
+
+    def test_does_not_affect_normal_reminders(self, service: ReminderService):
+        past = datetime.now(timezone.utc) - timedelta(hours=1)
+        reminder = service.create_reminder(title="Normal", due_at=past)
+
+        count = service.cleanup_expired_pre_alerts()
+
+        assert count == 0
+        updated = service.get_reminder(reminder.id)
+        assert updated.status == "active"
+
+    def test_skips_already_completed_pre_alerts(self, service: ReminderService):
+        past = datetime.now(timezone.utc) - timedelta(hours=1)
+        alert = service.create_reminder(
+            title="Alert: Old",
+            due_at=past,
+            source="pre_alert",
+            source_ref="3",
+        )
+        service.complete_reminder(alert.id)
+
+        count = service.cleanup_expired_pre_alerts()
+
+        assert count == 0
+
+
+# ---------------------------------------------------------------------------
+# 19. get_alerts_for_reminder excludes completed alerts
+# ---------------------------------------------------------------------------
+
+
+class TestGetAlertsForReminderExcludesCompleted:
+    def test_excludes_completed_alerts(self, service: ReminderService):
+        parent_due = datetime(2026, 5, 5, 18, 0, tzinfo=timezone.utc)
+        parent = service.create_reminder(title="Conference", due_at=parent_due)
+
+        alert1 = service.create_reminder(
+            title="Alert 1: Conference",
+            due_at=parent_due - timedelta(days=1),
+            source="pre_alert",
+            source_ref=str(parent.id),
+            alert_label="Day before",
+        )
+        alert2 = service.create_reminder(
+            title="Alert 2: Conference",
+            due_at=parent_due - timedelta(hours=1),
+            source="pre_alert",
+            source_ref=str(parent.id),
+            alert_label="1 hour before",
+        )
+
+        # Complete alert1
+        service.complete_reminder(alert1.id)
+
+        alerts = service.get_alerts_for_reminder(parent.id)
+        alert_ids = [a.id for a in alerts]
+        assert alert1.id not in alert_ids
+        assert alert2.id in alert_ids
+
+    def test_returns_empty_when_all_completed(self, service: ReminderService):
+        parent_due = datetime(2026, 5, 5, 18, 0, tzinfo=timezone.utc)
+        parent = service.create_reminder(title="Workshop", due_at=parent_due)
+
+        alert = service.create_reminder(
+            title="Alert: Workshop",
+            due_at=parent_due - timedelta(hours=2),
+            source="pre_alert",
+            source_ref=str(parent.id),
+            alert_label="2 hours before",
+        )
+        service.complete_reminder(alert.id)
+
+        alerts = service.get_alerts_for_reminder(parent.id)
+        assert len(alerts) == 0
