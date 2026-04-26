@@ -8340,3 +8340,598 @@ telegram.error.NetworkError: httpx.ReadError:
 2026-04-25 23:23:19 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-25 23:24:19 PDT)" executed successfully
 2026-04-25 23:23:19 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
 2026-04-25 23:23:29 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-25 23:23:41 [INFO] openear (main.py:77): Starting openEar...
+2026-04-25 23:23:41 [INFO] src.db.database (database.py:39): Database initialized at /Users/jeanjx/fbsource/personal-assistant/data/openear.db
+2026-04-25 23:23:41 [INFO] src.services.llm_service (llm_service.py:93): LLM provider: cohere, model: command-r-08-2024
+2026-04-25 23:23:42 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getMe "HTTP/1.1 200 OK"
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-25 23:23:42 [INFO] src.scheduler.jobs (jobs.py:181): Scheduler jobs registered
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:1090): Added job "Email check at 07:00" to job store "default"
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:1090): Added job "Email check at 20:00" to job store "default"
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:1090): Added job "Reminder check" to job store "default"
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:1090): Added job "Snoozed reminder check" to job store "default"
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:1090): Added job "Write heartbeat file" to job store "default"
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:1090): Added job "Daily heartbeat" to job store "default"
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:1090): Added job "Daily S3 backup" to job store "default"
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:1090): Added job "OAuth expiry re-alert" to job store "default"
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:214): Scheduler started
+2026-04-25 23:23:42 [INFO] src.scheduler.jobs (jobs.py:186): Scheduler started
+2026-04-25 23:23:42 [INFO] openear (main.py:128): openEar is running.
+2026-04-25 23:23:42 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/deleteWebhook "HTTP/1.1 200 OK"
+2026-04-25 23:23:42 [INFO] apscheduler.scheduler (base.py:214): Scheduler started
+2026-04-25 23:23:42 [INFO] telegram.ext.Application (_application.py:633): Application started
+2026-04-25 23:23:52 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-25 23:24:03 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-25 23:24:11 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-25 23:24:12 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.cohere.com/compatibility/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-25 23:24:13 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.cohere.com/compatibility/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-25 23:24:13 [INFO] src.services.reminder_service (reminder_service.py:71): Created reminder #1: Meet personal therapist at 2026-04-27 22:00:00+00:00
+2026-04-25 23:24:14 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/sendMessage "HTTP/1.1 200 OK"
+2026-04-25 23:24:18 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-25 23:24:18 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/answerCallbackQuery "HTTP/1.1 200 OK"
+2026-04-25 23:24:19 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/editMessageText "HTTP/1.1 200 OK"
+2026-04-25 23:24:21 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-25 23:24:23 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.cohere.com/compatibility/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-25 23:24:23 [INFO] src.services.reminder_service (reminder_service.py:71): Created reminder #2: Alert: Meet personal therapist at 2026-04-26 06:25:21.816624+00:00
+2026-04-25 23:24:23 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/sendMessage "HTTP/1.1 200 OK"
+2026-04-25 23:24:31 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-25 23:24:42 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-25 23:24:42 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-25 23:25:42 PDT)" (scheduled at 2026-04-25 23:24:42.306959-07:00)
+2026-04-25 23:24:42 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-25 23:25:42 PDT)" executed successfully
+2026-04-25 23:24:42 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-25 23:25:42 PDT)" (scheduled at 2026-04-25 23:24:42.308246-07:00)
+2026-04-25 23:24:42 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-25 23:25:42 PDT)" executed successfully
+2026-04-25 23:24:42 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-25 23:25:42 PDT)" (scheduled at 2026-04-25 23:24:42.309492-07:00)
+2026-04-25 23:24:42 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-25 23:25:42 PDT)" executed successfully
+2026-04-25 23:24:52 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-25 23:25:02 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-25 23:41:24 [ERROR] openear (main.py:156): Unhandled exception: httpx.ReadError: 
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http_proxy.py", line 343, in handle_async_request
+    return await self._connection.handle_async_request(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 136, in handle_async_request
+    raise exc
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 106, in handle_async_request
+    ) = await self._receive_response_headers(**kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 177, in _receive_response_headers
+    event = await self._receive_event(timeout=timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 217, in _receive_event
+    data = await self._network_stream.read(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_backends/anyio.py", line 32, in read
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 279, in do_request
+    res = await self._client.request(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 305, in _request_wrapper
+    code, payload = await self.do_request(
+                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 303, in do_request
+    raise NetworkError(f"httpx.{err.__class__.__name__}: {err}") from err
+telegram.error.NetworkError: httpx.ReadError: 
+2026-04-25 23:57:55 [ERROR] openear (main.py:156): Unhandled exception: httpx.ReadError: 
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http_proxy.py", line 343, in handle_async_request
+    return await self._connection.handle_async_request(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 136, in handle_async_request
+    raise exc
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 106, in handle_async_request
+    ) = await self._receive_response_headers(**kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 177, in _receive_response_headers
+    event = await self._receive_event(timeout=timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 217, in _receive_event
+    data = await self._network_stream.read(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_backends/anyio.py", line 32, in read
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 279, in do_request
+    res = await self._client.request(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 305, in _request_wrapper
+    code, payload = await self.do_request(
+                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 303, in do_request
+    raise NetworkError(f"httpx.{err.__class__.__name__}: {err}") from err
+telegram.error.NetworkError: httpx.ReadError: 
+2026-04-26 00:14:14 [ERROR] openear (main.py:156): Unhandled exception: httpx.ReadError: 
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http_proxy.py", line 343, in handle_async_request
+    return await self._connection.handle_async_request(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 136, in handle_async_request
+    raise exc
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 106, in handle_async_request
+    ) = await self._receive_response_headers(**kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 177, in _receive_response_headers
+    event = await self._receive_event(timeout=timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 217, in _receive_event
+    data = await self._network_stream.read(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_backends/anyio.py", line 32, in read
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 279, in do_request
+    res = await self._client.request(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 305, in _request_wrapper
+    code, payload = await self.do_request(
+                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 303, in do_request
+    raise NetworkError(f"httpx.{err.__class__.__name__}: {err}") from err
+telegram.error.NetworkError: httpx.ReadError: 
+2026-04-26 00:30:46 [ERROR] openear (main.py:156): Unhandled exception: httpx.ReadError: 
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http_proxy.py", line 343, in handle_async_request
+    return await self._connection.handle_async_request(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 136, in handle_async_request
+    raise exc
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 106, in handle_async_request
+    ) = await self._receive_response_headers(**kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 177, in _receive_response_headers
+    event = await self._receive_event(timeout=timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 217, in _receive_event
+    data = await self._network_stream.read(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_backends/anyio.py", line 32, in read
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 279, in do_request
+    res = await self._client.request(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 305, in _request_wrapper
+    code, payload = await self.do_request(
+                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 303, in do_request
+    raise NetworkError(f"httpx.{err.__class__.__name__}: {err}") from err
+telegram.error.NetworkError: httpx.ReadError: 
+2026-04-26 00:46:33 [ERROR] openear (main.py:156): Unhandled exception: httpx.ConnectError: 
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http_proxy.py", line 316, in handle_async_request
+    stream = await stream.start_tls(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 376, in start_tls
+    return await self._stream.start_tls(ssl_context, server_hostname, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_backends/anyio.py", line 67, in start_tls
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 279, in do_request
+    res = await self._client.request(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 305, in _request_wrapper
+    code, payload = await self.do_request(
+                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 303, in do_request
+    raise NetworkError(f"httpx.{err.__class__.__name__}: {err}") from err
+telegram.error.NetworkError: httpx.ConnectError: 
+2026-04-26 01:04:33 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 01:04:42 PDT)" was missed by 0:00:50.915201
+2026-04-26 01:04:33 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 01:04:42 PDT)" was missed by 0:00:50.915062
+2026-04-26 01:04:33 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 01:04:42 PDT)" was missed by 0:00:50.914834
+2026-04-26 01:21:41 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 01:21:42 PDT)" was missed by 0:00:59.244305
+2026-04-26 01:21:41 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 01:21:42 PDT)" was missed by 0:00:59.244002
+2026-04-26 01:21:41 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 01:21:42 PDT)" was missed by 0:00:59.243368
+2026-04-26 01:25:38 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 01:25:42 PDT)" was missed by 0:00:56.263523
+2026-04-26 01:25:38 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 01:25:42 PDT)" was missed by 0:00:56.265770
+2026-04-26 01:25:38 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 01:25:42 PDT)" was missed by 0:00:56.270876
+2026-04-26 01:25:42 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 01:26:42 PDT)" (scheduled at 2026-04-26 01:25:42.306959-07:00)
+2026-04-26 01:25:42 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 01:26:42 PDT)" executed successfully
+2026-04-26 01:25:42 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 01:26:42 PDT)" (scheduled at 2026-04-26 01:25:42.308246-07:00)
+2026-04-26 01:25:42 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 01:26:42 PDT)" executed successfully
+2026-04-26 01:25:42 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 01:26:42 PDT)" (scheduled at 2026-04-26 01:25:42.309492-07:00)
+2026-04-26 01:25:42 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 01:26:42 PDT)" executed successfully
+2026-04-26 03:30:23 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 03:30:42 PDT)" was missed by 0:00:41.211960
+2026-04-26 03:30:23 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 03:30:42 PDT)" was missed by 0:00:41.217468
+2026-04-26 03:30:23 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 03:30:42 PDT)" was missed by 0:00:41.218291
+2026-04-26 03:30:23 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Daily S3 backup (trigger: cron[hour='3', minute='0'], next run at: 2026-04-27 03:00:00 PDT)" was missed by 0:30:23.528463
+2026-04-26 04:01:39 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 04:01:42 PDT)" was missed by 0:00:57.348711
+2026-04-26 04:01:39 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 04:01:42 PDT)" was missed by 0:00:57.348491
+2026-04-26 04:01:39 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 04:01:42 PDT)" was missed by 0:00:57.348920
+2026-04-26 04:01:42 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 04:02:42 PDT)" (scheduled at 2026-04-26 04:01:42.306959-07:00)
+2026-04-26 04:01:42 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 04:02:42 PDT)" executed successfully
+2026-04-26 04:01:42 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 04:02:42 PDT)" (scheduled at 2026-04-26 04:01:42.308246-07:00)
+2026-04-26 04:01:42 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 04:02:42 PDT)" executed successfully
+2026-04-26 04:01:42 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 04:02:42 PDT)" (scheduled at 2026-04-26 04:01:42.309492-07:00)
+2026-04-26 04:01:42 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 04:02:42 PDT)" executed successfully
+2026-04-26 06:12:36 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 06:12:42 PDT)" was missed by 0:00:54.376676
+2026-04-26 06:12:36 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 06:12:42 PDT)" was missed by 0:00:54.613571
+2026-04-26 06:12:36 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 06:12:42 PDT)" was missed by 0:00:54.623334
+2026-04-26 06:26:50 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 06:27:42 PDT)" was missed by 0:00:07.915966
+2026-04-26 06:26:51 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 06:27:42 PDT)" was missed by 0:00:09.612129
+2026-04-26 06:26:51 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 06:27:42 PDT)" was missed by 0:00:09.648737
+2026-04-26 07:17:46 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 07:18:42 PDT)" was missed by 0:00:04.076539
+2026-04-26 07:17:46 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 07:18:42 PDT)" was missed by 0:00:04.305558
+2026-04-26 07:17:46 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 07:18:42 PDT)" was missed by 0:00:04.322036
+2026-04-26 07:17:46 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Email check at 07:00 (trigger: cron[hour='7', minute='0'], next run at: 2026-04-27 07:00:00 PDT)" was missed by 0:17:46.645874
+2026-04-26 08:16:51 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 08:17:42 PDT)" was missed by 0:00:09.145581
+2026-04-26 08:16:51 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 08:17:42 PDT)" was missed by 0:00:09.146283
+2026-04-26 08:16:51 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 08:17:42 PDT)" was missed by 0:00:09.146078
+2026-04-26 08:16:51 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Daily heartbeat (trigger: cron[hour='8', minute='0'], next run at: 2026-04-27 08:00:00 PDT)" was missed by 0:16:51.456822
+2026-04-26 09:18:10 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 09:18:42 PDT)" was missed by 0:00:28.571532
+2026-04-26 09:18:10 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 09:18:42 PDT)" was missed by 0:00:28.571929
+2026-04-26 09:18:10 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 09:18:42 PDT)" was missed by 0:00:28.572585
+2026-04-26 09:43:47 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 09:44:42 PDT)" was missed by 0:00:05.239110
+2026-04-26 09:43:47 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 09:44:42 PDT)" was missed by 0:00:05.240082
+2026-04-26 09:43:47 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 09:44:42 PDT)" was missed by 0:00:05.244383
+2026-04-26 10:01:16 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 10:01:42 PDT)" was missed by 0:00:34.368892
+2026-04-26 10:01:16 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 10:01:42 PDT)" was missed by 0:00:34.370205
+2026-04-26 10:01:16 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 10:01:42 PDT)" was missed by 0:00:34.369627
+2026-04-26 10:01:42 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 10:02:42 PDT)" (scheduled at 2026-04-26 10:01:42.306959-07:00)
+2026-04-26 10:01:42 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 10:02:42 PDT)" (scheduled at 2026-04-26 10:01:42.308246-07:00)
+2026-04-26 10:01:42 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 10:02:42 PDT)" executed successfully
+2026-04-26 10:01:42 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 10:02:42 PDT)" (scheduled at 2026-04-26 10:01:42.309492-07:00)
+2026-04-26 10:01:42 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 10:02:42 PDT)" executed successfully
+2026-04-26 10:01:42 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/sendMessage "HTTP/1.1 200 OK"
+2026-04-26 10:01:43 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/sendMessage "HTTP/1.1 403 Forbidden"
+2026-04-26 10:01:43 [WARNING] src.scheduler.jobs (jobs.py:96): Cannot send to chat_id=8606983907: user has not sent /start to the bot. The bot cannot initiate conversations until the user sends /start.
+2026-04-26 10:01:43 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/sendMessage "HTTP/1.1 200 OK"
+2026-04-26 10:01:43 [INFO] src.services.reminder_service (reminder_service.py:269): Deleted fired alert #2
+2026-04-26 10:01:43 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 10:02:42 PDT)" executed successfully

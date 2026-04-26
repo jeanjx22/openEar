@@ -121,12 +121,14 @@ class SchedulerJobs:
             )
 
         # Reminder check - every 60 seconds
+        # misfire_grace_time=None means always run even after sleep/wake
         self.scheduler.add_job(
             self._reminder_check_job,
             IntervalTrigger(seconds=60),
             id="reminder_check",
             name="Reminder check",
             replace_existing=True,
+            misfire_grace_time=None,
         )
 
         # Snoozed reminder check - every 60 seconds
