@@ -85,7 +85,7 @@ class BotHandlers:
         # TODO: Add TTL expiration for stale states (intentionally deferred)
         self._user_states: dict[int, UserState] = {}
 
-    def _create_pre_alerts(self, parent_reminder, pre_alerts, due_at):
+    def _create_pre_alerts(self, parent_reminder, pre_alerts, due_at, context=None):
         from datetime import timedelta
         from zoneinfo import ZoneInfo
 
@@ -115,13 +115,49 @@ class BotHandlers:
             alert_utc = alert_dt.astimezone(timezone.utc)
             parent_title = parent_reminder.title or "Reminder"
             if alert_utc > datetime.now(timezone.utc):
-                self.reminders.create_reminder(
+                alert_record = self.reminders.create_reminder(
                     title=f"{label}: {parent_title}",
                     due_at=alert_utc,
                     source="pre_alert",
                     source_ref=str(parent_reminder.id),
                     alert_label=label,
                 )
+                # Schedule a DateTrigger job for exact-time firing
+                self._schedule_alert_job(alert_record, parent_reminder, context)
+
+    def _schedule_alert_job(self, alert_record, parent_reminder, context=None):
+        """Schedule a DateTrigger job for the given alert via SchedulerJobs.
+
+        Retrieves the scheduler_jobs instance from bot_data. If unavailable
+        (e.g., during tests), logs a warning and skips scheduling.
+        """
+        scheduler_jobs = None
+        if context is not None:
+            scheduler_jobs = context.bot_data.get("scheduler_jobs")
+        if scheduler_jobs is None:
+            logger.warning(
+                "scheduler_jobs not available; alert #%d will rely on polling",
+                alert_record.id,
+            )
+            return
+        scheduler_jobs.schedule_alert(alert_record, parent_reminder)
+
+    def _cancel_alert_job(self, alert_id, context=None):
+        """Cancel a scheduled DateTrigger job for the given alert ID.
+
+        Retrieves the scheduler_jobs instance from bot_data. Silently
+        skips if unavailable.
+        """
+        scheduler_jobs = None
+        if context is not None:
+            scheduler_jobs = context.bot_data.get("scheduler_jobs")
+        if scheduler_jobs is None:
+            logger.debug(
+                "scheduler_jobs not available; cannot cancel alert #%d job",
+                alert_id,
+            )
+            return
+        scheduler_jobs.cancel_alert(alert_id)
 
     def _format_alert_summary(self, pre_alerts, due_at=None):
         if not pre_alerts or not isinstance(pre_alerts, list):
@@ -379,14 +415,15 @@ class BotHandlers:
             return
 
         if state.mode == UserMode.AWAITING_ALERT_TIME:
-            await self._handle_alert_time_input(update, user_id, user_message, state)
+            await self._handle_alert_time_input(update, context, user_id, user_message, state)
             return
 
         # --- IDLE: classify intent normally ---
-        await self._handle_idle_message(update, user_id, user_message)
+        await self._handle_idle_message(update, context, user_id, user_message)
 
     async def _handle_alert_time_input(
-        self, update: Update, user_id: int, user_message: str, state: UserState,
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE,
+        user_id: int, user_message: str, state: UserState,
     ) -> None:
         """Handle text input while in AWAITING_ALERT_TIME state.
 
@@ -419,13 +456,15 @@ class BotHandlers:
             for alert in alerts:
                 alert_utc = alert["datetime"].astimezone(timezone.utc)
                 label = alert.get("label", "Custom")
-                self.reminders.create_reminder(
+                alert_record = self.reminders.create_reminder(
                     title=f"Alert: {reminder.title}",
                     due_at=alert_utc,
                     source="pre_alert",
                     source_ref=str(reminder.id),
                     alert_label=label,
                 )
+                # Schedule a DateTrigger job for exact-time firing
+                self._schedule_alert_job(alert_record, reminder, context)
                 created.append(
                     f"  {label} -- {formatters.to_local(alert_utc, self.settings.timezone)}"
                 )
@@ -490,7 +529,8 @@ class BotHandlers:
             )
 
     async def _handle_idle_message(
-        self, update: Update, user_id: int, user_message: str,
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE,
+        user_id: int, user_message: str,
     ) -> None:
         """Handle text input in IDLE state -- runs intent classification."""
         # Check for email_remind pending state (email index tracking)
@@ -594,7 +634,7 @@ class BotHandlers:
                             reply_markup=keyboards.alert_preferences(reminder.id),
                         )
                     else:
-                        self._create_pre_alerts(reminder, pre_alerts, due_at)
+                        self._create_pre_alerts(reminder, pre_alerts, due_at, context)
                         text = formatters.format_reminder(reminder, self.settings.timezone)
                         alert_desc = self._format_alert_summary(pre_alerts)
                         await update.message.reply_text(
@@ -612,7 +652,7 @@ class BotHandlers:
                     "I couldn't understand that reminder. Could you rephrase?"
                 )
         elif intent == "modify":
-            await self._handle_modify_reminder(update, user_id, user_message, intent_data)
+            await self._handle_modify_reminder(update, context, user_id, user_message, intent_data)
         else:
             # General conversation with context management
             # N5: pass user_id for per-user context
@@ -632,7 +672,8 @@ class BotHandlers:
     # ---- Modify Reminder Handler ----
 
     async def _handle_modify_reminder(
-        self, update: Update, user_id: int, user_message: str, intent_data: dict,
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE,
+        user_id: int, user_message: str, intent_data: dict,
     ) -> None:
         """Handle natural language reminder modification requests.
 
@@ -693,9 +734,10 @@ class BotHandlers:
         if action == "cancel":
             # Complete (cancel) the reminder and delete its pre-alerts
             self.reminders.complete_reminder(reminder_id)
-            # Delete pre-alerts -- they are one-shot, no status transitions
+            # Cancel scheduled jobs and delete pre-alerts from DB
             alerts = self.reminders.get_alerts_for_reminder(reminder_id)
             for alert in alerts:
+                self._cancel_alert_job(alert.id, context)
                 self.reminders.delete_reminder(alert.id)
             await update.message.reply_text(
                 f"Cancelled reminder: {reminder.title}"
@@ -723,6 +765,11 @@ class BotHandlers:
                     from zoneinfo import ZoneInfo
                     new_due = new_due.replace(tzinfo=ZoneInfo(self.settings.timezone))
                 new_due_utc = new_due.astimezone(timezone.utc)
+
+                # Cancel scheduled jobs for old alerts before they are deleted
+                old_alerts = self.reminders.get_alerts_for_reminder(reminder_id)
+                for old_alert in old_alerts:
+                    self._cancel_alert_job(old_alert.id, context)
 
                 updated = self.reminders.update_reminder_time(reminder_id, new_due_utc)
                 if updated:
@@ -846,7 +893,7 @@ class BotHandlers:
 
             # Preset alert paths: self-contained, uses reminder_id from callback_data
             self._reset_state(update.effective_user.id, "preset alert selected")
-            self._create_pre_alerts(reminder, pre_alerts, due_at)
+            self._create_pre_alerts(reminder, pre_alerts, due_at, context)
             summary = self._format_alert_summary(pre_alerts)
             text = formatters.format_reminder(reminder, self.settings.timezone)
             await query.edit_message_text(f"⏰ {text}\n\n🔔 Alerts: {summary}\n🐰")
@@ -949,6 +996,8 @@ class BotHandlers:
                 await query.edit_message_text("Alert not found 🐰")
                 return
             title = alert.title
+            # Cancel the scheduled DateTrigger job before deleting from DB
+            self._cancel_alert_job(alert_id, context)
             self.reminders.delete_reminder(alert_id)
             await query.edit_message_text(f"Deleted alert: {title} 🐰")
 

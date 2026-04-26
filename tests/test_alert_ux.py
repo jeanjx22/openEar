@@ -386,8 +386,8 @@ class TestPreAlertFiresWithParentInfo:
         # The parent event is May 1 at 2pm UTC = May 1 7:00 AM PDT
         assert "May 01" in text
 
-    def test_pre_alert_job_sends_parent_info(self):
-        """Verify _reminder_check_job sends parent event info for pre-alerts."""
+    def test_fire_alert_job_sends_parent_info(self):
+        """Verify _fire_alert_job sends parent event info for pre-alerts."""
         from src.scheduler.jobs import SchedulerJobs
 
         parent = _make_reminder(
@@ -395,6 +395,11 @@ class TestPreAlertFiresWithParentInfo:
             title="Team meeting",
             due_at=datetime(2026, 5, 1, 18, 0, tzinfo=timezone.utc),
         )
+
+        mock_settings = MagicMock()
+        mock_settings.timezone = "America/Los_Angeles"
+        mock_settings.telegram_allowed_user_ids = [12345]
+
         alert = _make_reminder(
             id=50,
             title="Alert: Team meeting",
@@ -404,15 +409,9 @@ class TestPreAlertFiresWithParentInfo:
             alert_label="1 hour before",
         )
 
-        mock_settings = MagicMock()
-        mock_settings.timezone = "America/Los_Angeles"
-        mock_settings.telegram_allowed_user_ids = [12345]
-
         mock_reminder_svc = MagicMock()
-        mock_reminder_svc.is_quiet_hours.return_value = False
-        mock_reminder_svc.get_due_reminders.return_value = [alert]
-        mock_reminder_svc.get_reminder.return_value = parent
-        mock_reminder_svc.mark_notified = MagicMock()
+        mock_reminder_svc.get_reminder.side_effect = lambda rid: alert if rid == 50 else parent if rid == 10 else None
+        mock_reminder_svc.delete_fired_alert = MagicMock()
 
         mock_app = MagicMock()
         mock_bot = AsyncMock()
@@ -432,17 +431,15 @@ class TestPreAlertFiresWithParentInfo:
         import asyncio
         loop = asyncio.new_event_loop()
         try:
-            loop.run_until_complete(jobs._reminder_check_job())
+            loop.run_until_complete(jobs._fire_alert_job(50, 10))
         finally:
             loop.close()
 
-        # Verify send_message was called
         mock_bot.send_message.assert_called_once()
         call_kwargs = mock_bot.send_message.call_args
         sent_text = call_kwargs.kwargs.get("text") or call_kwargs[1].get("text", "")
-        # The text should contain parent info
         assert "Team meeting" in sent_text
-        # The keyboard should be pre_alert_actions with parent_id
+        mock_reminder_svc.delete_fired_alert.assert_called_once_with(50)
         sent_markup = call_kwargs.kwargs.get("reply_markup") or call_kwargs[1].get("reply_markup")
         buttons = _flat_buttons(sent_markup)
         set_more = [b for b in buttons if b.text == "Set more alerts"]

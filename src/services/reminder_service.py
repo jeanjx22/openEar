@@ -322,6 +322,23 @@ class ReminderService:
             session.flush()
             return len(expired)
 
+    def get_active_pre_alerts(self) -> list[Reminder]:
+        """Get all active pre-alert reminders (source='pre_alert', status='active').
+
+        Used on startup to re-schedule alert jobs from persistent DB state.
+        """
+        with get_session() as session:
+            stmt = (
+                select(Reminder)
+                .where(Reminder.source == "pre_alert")
+                .where(Reminder.status == "active")
+                .order_by(Reminder.due_at.asc())
+            )
+            results = list(session.execute(stmt).scalars().all())
+            for r in results:
+                session.expunge(r)
+            return results
+
     def get_alerts_for_reminder(self, parent_id: int) -> list[Reminder]:
         """Get active pre-alert reminders associated with a parent reminder."""
         with get_session() as session:

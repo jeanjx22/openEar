@@ -2,16 +2,22 @@
 
 Jobs:
 - Email briefing: runs at configured check_times
-- Reminder check: runs every minute to fire due reminders
+- Reminder check: runs every minute to fire due REGULAR reminders
+- Alert jobs: one-time DateTrigger jobs that fire at the exact alert time
 - Heartbeat: runs daily at configured heartbeat_time
 - Backup: runs daily at configured backup_time
 - Snoozed reminders: runs every minute to wake expired snoozes
 - Heartbeat file: writes /tmp/openear_heartbeat every 60s (C4)
 
-Fire-and-delete model for alerts:
-- Pre-alerts (source="pre_alert") are one-shot notifications. After
-  firing, the alert record is DELETED from the DB (not marked notified).
-- Regular reminders are marked "notified" (C2) so the user can act on them.
+Alert scheduling model:
+- Pre-alerts (source="pre_alert") are scheduled as one-time DateTrigger
+  jobs via schedule_alert(). Each fires at the exact due_at time, sends
+  the notification, and deletes the alert record from the DB.
+- On startup, reschedule_alerts_from_db() restores jobs from the DB.
+- misfire_grace_time=3600 ensures alerts fire even after sleep/wake
+  (up to 1 hour late).
+- Regular reminders still use the 60-second polling loop and are marked
+  "notified" (C2) so the user can act on them.
 
 C4: _heartbeat_file_job writes heartbeat file for Docker HEALTHCHECK.
 C5: _send_to_all catches Forbidden errors with clear warning.
@@ -25,6 +31,7 @@ from datetime import datetime, timezone
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from telegram.error import Forbidden
 from telegram.ext import Application
@@ -183,14 +190,103 @@ class SchedulerJobs:
         logger.info("Scheduler jobs registered")
 
     def start(self) -> None:
-        """Start the scheduler."""
+        """Start the scheduler and re-schedule alerts from DB."""
         self.scheduler.start()
+        self.reschedule_alerts_from_db()
         logger.info("Scheduler started")
 
     def shutdown(self) -> None:
         """Shutdown the scheduler."""
         self.scheduler.shutdown(wait=False)
         logger.info("Scheduler stopped")
+
+    # ---- Direct Alert Scheduling ----
+
+    def schedule_alert(self, alert_reminder, parent_reminder) -> None:
+        """Schedule a one-time job to fire a pre-alert at its exact due time.
+
+        Uses DateTrigger so the notification fires at the precise second
+        rather than waiting up to 60 seconds for a poll cycle.
+
+        Args:
+            alert_reminder: The pre-alert Reminder record (source="pre_alert").
+            parent_reminder: The parent Reminder this alert belongs to.
+        """
+        job_id = f"alert_{alert_reminder.id}"
+        run_date = alert_reminder.due_at
+        # Ensure timezone-aware for APScheduler
+        if run_date.tzinfo is None:
+            run_date = run_date.replace(tzinfo=timezone.utc)
+
+        self.scheduler.add_job(
+            self._fire_alert_job,
+            DateTrigger(run_date=run_date),
+            id=job_id,
+            name=f"Alert: {alert_reminder.title}",
+            replace_existing=True,
+            misfire_grace_time=3600,
+            kwargs={
+                "alert_id": alert_reminder.id,
+                "parent_id": parent_reminder.id,
+            },
+        )
+        logger.info(
+            "Scheduled alert job %s for %s (alert #%d -> parent #%d)",
+            job_id, run_date, alert_reminder.id, parent_reminder.id,
+        )
+
+    def cancel_alert(self, alert_id: int) -> None:
+        """Remove a scheduled alert job by ID.
+
+        Called when the user deletes an alert. Silently ignores
+        if the job does not exist (already fired or never scheduled).
+        """
+        job_id = f"alert_{alert_id}"
+        try:
+            self.scheduler.remove_job(job_id)
+            logger.info("Cancelled alert job %s", job_id)
+        except Exception:
+            # Job may have already fired or never been scheduled
+            logger.debug("Alert job %s not found (already fired or missing)", job_id)
+
+    def reschedule_alerts_from_db(self) -> None:
+        """Re-schedule all active pre-alerts from the database.
+
+        Called on startup to restore alert jobs after a bot restart.
+        Past-due alerts with misfire_grace_time=3600 will fire immediately
+        if they are less than 1 hour old.
+        """
+        alerts = self.reminders.get_active_pre_alerts()
+        scheduled = 0
+        for alert in alerts:
+            try:
+                parent_id = int(alert.source_ref) if alert.source_ref else None
+            except (ValueError, TypeError):
+                parent_id = None
+
+            if parent_id is None:
+                logger.warning(
+                    "Skipping alert #%d: no valid parent_id (source_ref=%s)",
+                    alert.id, alert.source_ref,
+                )
+                continue
+
+            parent = self.reminders.get_reminder(parent_id)
+            if parent is None:
+                # Parent was deleted; clean up orphaned alert
+                self.reminders.delete_fired_alert(alert.id)
+                logger.info(
+                    "Deleted orphaned alert #%d (parent #%d not found)",
+                    alert.id, parent_id,
+                )
+                continue
+
+            self.schedule_alert(alert, parent)
+            scheduled += 1
+
+        logger.info(
+            "Startup: re-scheduled %d alert(s) from database", scheduled
+        )
 
     # ---- Job Implementations ----
 
@@ -218,11 +314,41 @@ class SchedulerJobs:
         except Exception as e:
             logger.error("Email briefing job failed: %s", e)
 
-    async def _reminder_check_job(self) -> None:
-        """Check for due reminders and send notifications.
+    async def _fire_alert_job(self, alert_id: int, parent_id: int) -> None:
+        """Fire a single pre-alert notification (called by DateTrigger).
 
-        Pre-alert reminders (source="pre_alert") are one-shot: after
-        firing the notification, the alert record is DELETED from the DB.
+        Sends the notification and deletes the alert record from the DB.
+        This replaces the old polling approach for pre-alerts.
+        """
+        alert = self.reminders.get_reminder(alert_id)
+        if not alert:
+            logger.info("Alert #%d already deleted, skipping fire", alert_id)
+            return
+
+        if alert.source != "pre_alert":
+            logger.warning("Job called for non-alert #%d, skipping", alert_id)
+            return
+
+        parent = self.reminders.get_reminder(parent_id)
+        if parent:
+            text = formatters.format_pre_alert(
+                alert, parent, self.settings.timezone
+            )
+            markup = keyboards.pre_alert_actions(alert.id, parent.id)
+        else:
+            text = formatters.format_reminder(alert, self.settings.timezone)
+            markup = keyboards.reminder_actions(alert.id)
+
+        await self._send_to_all(text, reply_markup=markup)
+        self.reminders.delete_fired_alert(alert.id)
+        logger.info("Fired and deleted alert #%d (parent #%d)", alert_id, parent_id)
+
+    async def _reminder_check_job(self) -> None:
+        """Check for due REGULAR reminders and send notifications.
+
+        Pre-alerts are no longer handled here -- they fire via
+        DateTrigger jobs scheduled at the exact due time (see
+        schedule_alert / _fire_alert_job).
 
         Regular reminders are marked as "notified" (C2) so they won't
         fire again but remain in the DB for user actions (Done/Snooze).
@@ -232,39 +358,17 @@ class SchedulerJobs:
 
         due = self.reminders.get_due_reminders()
         for reminder in due:
-            if reminder.source == "pre_alert" and reminder.source_ref:
-                # Look up the parent event
-                try:
-                    parent_id = int(reminder.source_ref)
-                    parent = self.reminders.get_reminder(parent_id)
-                except (ValueError, TypeError):
-                    parent = None
+            # Skip pre-alerts -- they are handled by DateTrigger jobs
+            if reminder.source == "pre_alert":
+                continue
 
-                if parent:
-                    text = formatters.format_pre_alert(
-                        reminder, parent, self.settings.timezone
-                    )
-                    markup = keyboards.pre_alert_actions(
-                        reminder.id, parent.id
-                    )
-                else:
-                    # Parent not found, fall back to standard format
-                    text = formatters.format_reminder(
-                        reminder, self.settings.timezone
-                    )
-                    markup = keyboards.reminder_actions(reminder.id)
-
-                await self._send_to_all(text, reply_markup=markup)
-                # Fire-and-delete: alert served its purpose, remove it
-                self.reminders.delete_fired_alert(reminder.id)
-            else:
-                text = formatters.format_reminder(
-                    reminder, self.settings.timezone
-                )
-                markup = keyboards.reminder_actions(reminder.id)
-                await self._send_to_all(text, reply_markup=markup)
-                # C2: Mark as notified so it won't fire again
-                self.reminders.mark_notified(reminder.id)
+            text = formatters.format_reminder(
+                reminder, self.settings.timezone
+            )
+            markup = keyboards.reminder_actions(reminder.id)
+            await self._send_to_all(text, reply_markup=markup)
+            # C2: Mark as notified so it won't fire again
+            self.reminders.mark_notified(reminder.id)
 
         # Periodic maintenance
         self.reminders.auto_complete_past_events(grace_hours=2)

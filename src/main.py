@@ -125,6 +125,8 @@ def main() -> None:
         )
         scheduler_jobs.setup()
         scheduler_jobs.start()
+        # Store scheduler in bot_data so handlers can schedule/cancel alerts
+        application.bot_data["scheduler_jobs"] = scheduler_jobs
         logger.info("openEar is running.")
 
     async def post_shutdown(application):
