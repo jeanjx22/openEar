@@ -565,8 +565,21 @@ class BotHandlers:
                 )
             return
 
-        # Classify intent
+        # Classify intent (may return list for compound messages)
         intent_data = await self.llm.classify_intent(user_message)
+
+        if isinstance(intent_data, list):
+            for sub_intent in intent_data:
+                await self._process_single_intent(update, context, user_id, user_message, sub_intent)
+            return
+
+        await self._process_single_intent(update, context, user_id, user_message, intent_data)
+
+    async def _process_single_intent(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE,
+        user_id: int, user_message: str, intent_data: dict,
+    ) -> None:
+        """Process a single classified intent."""
         intent = intent_data.get("intent", "general")
 
         if intent == "weather":
@@ -653,6 +666,20 @@ class BotHandlers:
                 )
         elif intent == "modify":
             await self._handle_modify_reminder(update, context, user_id, user_message, intent_data)
+        elif intent == "whitelist":
+            email = intent_data.get("email", "")
+            label = intent_data.get("label", "Other")
+            if email:
+                from src.db.models import SenderWhitelist
+                with get_session() as s:
+                    existing = s.query(SenderWhitelist).filter_by(pattern=email).first()
+                    if not existing:
+                        s.add(SenderWhitelist(pattern=email, label=label))
+                        await update.message.reply_text(f"Added {email} to whitelist as '{label}' 🐰")
+                    else:
+                        await update.message.reply_text(f"{email} is already in the whitelist 🐰")
+            else:
+                await update.message.reply_text("Couldn't find the email address. Try: 'add doctor@clinic.com to whitelist as Medical' 🐰")
         else:
             # General conversation with context management
             # N5: pass user_id for per-user context

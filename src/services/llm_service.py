@@ -201,22 +201,30 @@ class LLMService:
         For "modify" intent, also returns "action" key with one of:
         "reschedule", "cancel", "change_alert".
         """
-        system_prompt = """You are an intent classifier. Given a user message, classify it into one of these intents:
-- "reminder": user wants to set a NEW reminder
-- "modify": user wants to change, move, reschedule, cancel, or update an EXISTING reminder
-- "note": user wants to save a note or piece of information
-- "weather": user asks about weather
-- "stock": user asks about stocks or market data
-- "news": user asks about news
+        system_prompt = """You are an intent classifier. Given a user message, classify it.
+
+If the message contains MULTIPLE requests, return a JSON ARRAY of objects.
+If it contains ONE request, return a single JSON object.
+
+Intents:
+- "reminder": set a NEW reminder
+- "modify": change/reschedule/cancel an EXISTING reminder
+- "note": save a note or piece of information
+- "weather": asks about weather
+- "stock": asks about stocks
+- "news": asks about news
+- "whitelist": add/remove email sender to whitelist
 - "general": general conversation
 
-For "modify" intent, also include an "action" field:
-- "reschedule": move/change the time of a reminder
-- "cancel": cancel/delete a reminder
-- "change_alert": change alert settings for a reminder
+For "modify": include "action": "reschedule|cancel|change_alert"
+For "whitelist": include "email" and "label" fields
 
-Respond with ONLY a JSON object:
-{"intent": "<intent>", "content": "<extracted content>", "action": "<reschedule|cancel|change_alert if modify>", "tags": ["<tag1>", "<tag2>"]}"""
+Single request format:
+{"intent": "<intent>", "content": "<extracted content>", "action": "<if modify>", "tags": ["<tag>"]}
+
+Multiple requests format:
+[{"intent": "whitelist", "content": "add doctor@clinic.com", "email": "doctor@clinic.com", "label": "Medical", "tags": []},
+ {"intent": "note", "content": "Aaron is allergic to eggs and dairy", "tags": ["allergy", "Aaron"]}]"""
 
         messages = [
             {"role": "system", "content": system_prompt},
