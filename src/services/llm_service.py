@@ -21,6 +21,15 @@ from dataclasses import dataclass, field
 from openai import AsyncOpenAI, RateLimitError
 
 from src.config import Settings
+
+
+def _clean_json(text: str) -> str:
+    """Strip markdown code fences and whitespace from LLM JSON output."""
+    text = text.strip()
+    if text.startswith("```"):
+        text = re.sub(r"^```(?:json)?\s*", "", text)
+        text = re.sub(r"\s*```$", "", text)
+    return text.strip()
 from src.db.database import get_session
 from src.db.models import HealthLog
 
@@ -218,7 +227,7 @@ Respond with ONLY a JSON object:
             return {"intent": "general", "content": user_message, "tags": []}
 
         try:
-            return json.loads(result)
+            return json.loads(_clean_json(result))
         except json.JSONDecodeError:
             logger.warning("Failed to parse intent JSON: %s", result)
             return {"intent": "general", "content": user_message, "tags": []}
@@ -258,7 +267,7 @@ Emails:
             return [False] * len(emails)
 
         try:
-            parsed = json.loads(result)
+            parsed = json.loads(_clean_json(result))
             if isinstance(parsed, list) and len(parsed) == len(emails):
                 return [bool(x) for x in parsed]
             logger.warning(
@@ -369,7 +378,7 @@ Examples:
         if result is None:
             return None
         try:
-            parsed = json.loads(result)
+            parsed = json.loads(_clean_json(result))
         except json.JSONDecodeError:
             logger.warning("Failed to parse reminder JSON: %s", result)
             return None
@@ -453,7 +462,7 @@ If no reminder matches at all, return:
             return None
 
         try:
-            parsed = json.loads(result)
+            parsed = json.loads(_clean_json(result))
         except json.JSONDecodeError:
             logger.warning("Failed to parse modification JSON: %s", result)
             return None
@@ -553,7 +562,7 @@ Return ONLY the JSON array, nothing else. Return [] if input is not an alert tim
             return None
 
         try:
-            parsed_list = json.loads(result)
+            parsed_list = json.loads(_clean_json(result))
         except json.JSONDecodeError:
             cleaned = result.strip()
             if not cleaned.startswith("["):
