@@ -307,11 +307,46 @@ class BotHandlers:
         self._track_chat(update, context)
         await update.message.reply_text("Checking emails...")
         try:
+            import asyncio as _aio
+            from datetime import timedelta
+            from zoneinfo import ZoneInfo
+            from src.services.info_service import get_stock_quote as _get_stock
+
             emails = await self.email.process_emails()
             text = formatters.format_briefing(emails, self.settings.timezone)
+
+            now_local = datetime.now(timezone.utc).astimezone(ZoneInfo(self.settings.timezone))
+            is_weekday = now_local.weekday() < 5
+            briefing_config = self.settings.rules.get("briefing", {})
+
+            # Add stocks on weekdays
+            if is_weekday and briefing_config.get("morning", {}).get("include_stocks"):
+                symbols = briefing_config["morning"].get("stock_symbols", [])
+                if symbols:
+                    try:
+                        quotes = await _aio.gather(
+                            *[_aio.wait_for(_get_stock(sym), timeout=8) for sym in symbols],
+                            return_exceptions=True,
+                        )
+                        text += "\n\n" + formatters.format_stock_briefing(quotes)
+                    except Exception:
+                        pass
+
+            # Add upcoming events
+            try:
+                future = self.reminders.get_future_reminders()
+                cutoff = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(days=7)
+                upcoming = [r for r in future if r.due_at and r.due_at <= cutoff]
+                if upcoming:
+                    is_sunday = now_local.weekday() == 6
+                    text += "\n\n" + formatters.format_upcoming_events(
+                        upcoming, self.settings.timezone, is_sunday=is_sunday
+                    )
+            except Exception:
+                pass
+
             await update.message.reply_text(text)
 
-            # Send action keyboards for each important email
             for i, email in enumerate(emails):
                 if email.get("summary"):
                     await update.message.reply_text(
