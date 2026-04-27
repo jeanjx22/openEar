@@ -16633,3 +16633,613 @@ telegram.error.BadRequest: Query is too old and response timeout expired or quer
 2026-04-27 10:18:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:19:03 PDT)" (scheduled at 2026-04-27 10:18:03.436344-07:00)
 2026-04-27 10:18:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:19:03 PDT)" executed successfully
 2026-04-27 10:18:05 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:18:16 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:18:27 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:18:38 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:18:48 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:18:58 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:19:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:20:03 PDT)" (scheduled at 2026-04-27 10:19:03.433959-07:00)
+2026-04-27 10:19:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:20:03 PDT)" executed successfully
+2026-04-27 10:19:04 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:20:03 PDT)" (scheduled at 2026-04-27 10:19:03.434963-07:00)
+2026-04-27 10:19:04 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:20:03 PDT)" executed successfully
+2026-04-27 10:19:04 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:20:03 PDT)" (scheduled at 2026-04-27 10:19:03.436344-07:00)
+2026-04-27 10:19:04 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:20:03 PDT)" executed successfully
+2026-04-27 10:19:08 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:19:19 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:19:29 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:19:40 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:19:50 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:20:01 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:20:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:21:03 PDT)" (scheduled at 2026-04-27 10:20:03.433959-07:00)
+2026-04-27 10:20:04 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:21:03 PDT)" executed successfully
+2026-04-27 10:20:05 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:21:03 PDT)" was missed by 0:00:01.593163
+2026-04-27 10:20:05 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:21:03 PDT)" was missed by 0:00:01.593290
+2026-04-27 10:20:15 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:20:26 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:20:37 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:20:47 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:20:57 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:21:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:22:03 PDT)" (scheduled at 2026-04-27 10:21:03.433959-07:00)
+2026-04-27 10:21:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:22:03 PDT)" executed successfully
+2026-04-27 10:21:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:22:03 PDT)" (scheduled at 2026-04-27 10:21:03.434963-07:00)
+2026-04-27 10:21:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:22:03 PDT)" executed successfully
+2026-04-27 10:21:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:22:03 PDT)" (scheduled at 2026-04-27 10:21:03.436344-07:00)
+2026-04-27 10:21:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:22:03 PDT)" executed successfully
+2026-04-27 10:21:06 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-27 10:21:07 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-27 10:21:18 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:21:29 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:21:56 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:22:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:23:03 PDT)" (scheduled at 2026-04-27 10:22:03.433959-07:00)
+2026-04-27 10:22:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:23:03 PDT)" executed successfully
+2026-04-27 10:22:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:23:03 PDT)" (scheduled at 2026-04-27 10:22:03.434963-07:00)
+2026-04-27 10:22:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:23:03 PDT)" executed successfully
+2026-04-27 10:22:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:23:03 PDT)" (scheduled at 2026-04-27 10:22:03.436344-07:00)
+2026-04-27 10:22:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:23:03 PDT)" executed successfully
+2026-04-27 10:22:07 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:22:17 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:22:27 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:22:38 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:22:48 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:23:00 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:23:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:24:03 PDT)" (scheduled at 2026-04-27 10:23:03.433959-07:00)
+2026-04-27 10:23:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:24:03 PDT)" executed successfully
+2026-04-27 10:23:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:24:03 PDT)" (scheduled at 2026-04-27 10:23:03.434963-07:00)
+2026-04-27 10:23:04 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:24:03 PDT)" executed successfully
+2026-04-27 10:23:04 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:24:03 PDT)" was missed by 0:00:01.122284
+2026-04-27 10:23:14 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:23:24 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:23:34 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:23:45 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:23:55 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:24:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:25:03 PDT)" (scheduled at 2026-04-27 10:24:03.433959-07:00)
+2026-04-27 10:24:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:25:03 PDT)" executed successfully
+2026-04-27 10:24:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:25:03 PDT)" (scheduled at 2026-04-27 10:24:03.434963-07:00)
+2026-04-27 10:24:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:25:03 PDT)" executed successfully
+2026-04-27 10:24:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:25:03 PDT)" (scheduled at 2026-04-27 10:24:03.436344-07:00)
+2026-04-27 10:24:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:25:03 PDT)" executed successfully
+2026-04-27 10:24:06 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:24:20 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:24:30 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:24:42 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:29:28 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:30:03 PDT)" (scheduled at 2026-04-27 10:29:03.433959-07:00)
+2026-04-27 10:29:29 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:30:03 PDT)" executed successfully
+2026-04-27 10:29:29 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:30:03 PDT)" was missed by 0:00:25.853597
+2026-04-27 10:29:29 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:30:03 PDT)" was missed by 0:00:25.854904
+2026-04-27 10:29:54 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:30:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:31:03 PDT)" (scheduled at 2026-04-27 10:30:03.433959-07:00)
+2026-04-27 10:30:04 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:31:03 PDT)" executed successfully
+2026-04-27 10:30:04 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:31:03 PDT)" (scheduled at 2026-04-27 10:30:03.434963-07:00)
+2026-04-27 10:30:04 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:31:03 PDT)" executed successfully
+2026-04-27 10:30:04 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:31:03 PDT)" (scheduled at 2026-04-27 10:30:03.436344-07:00)
+2026-04-27 10:30:04 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:31:03 PDT)" executed successfully
+2026-04-27 10:30:04 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:30:15 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:30:27 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:30:41 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:30:55 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:31:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:32:03 PDT)" (scheduled at 2026-04-27 10:31:03.433959-07:00)
+2026-04-27 10:31:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:32:03 PDT)" executed successfully
+2026-04-27 10:31:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:32:03 PDT)" (scheduled at 2026-04-27 10:31:03.434963-07:00)
+2026-04-27 10:31:04 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:32:03 PDT)" executed successfully
+2026-04-27 10:31:04 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:32:03 PDT)" (scheduled at 2026-04-27 10:31:03.436344-07:00)
+2026-04-27 10:31:05 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:32:03 PDT)" executed successfully
+2026-04-27 10:31:22 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:31:34 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:31:44 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:31:58 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:32:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:33:03 PDT)" (scheduled at 2026-04-27 10:32:03.433959-07:00)
+2026-04-27 10:32:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:33:03 PDT)" executed successfully
+2026-04-27 10:32:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:33:03 PDT)" (scheduled at 2026-04-27 10:32:03.434963-07:00)
+2026-04-27 10:32:04 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:33:03 PDT)" executed successfully
+2026-04-27 10:32:05 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:33:03 PDT)" was missed by 0:00:02.181434
+2026-04-27 10:32:08 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:32:19 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:32:29 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:32:39 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:32:52 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:33:02 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:33:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:34:03 PDT)" (scheduled at 2026-04-27 10:33:03.433959-07:00)
+2026-04-27 10:33:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:34:03 PDT)" executed successfully
+2026-04-27 10:33:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:34:03 PDT)" (scheduled at 2026-04-27 10:33:03.434963-07:00)
+2026-04-27 10:33:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:34:03 PDT)" executed successfully
+2026-04-27 10:33:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:34:03 PDT)" (scheduled at 2026-04-27 10:33:03.436344-07:00)
+2026-04-27 10:33:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:34:03 PDT)" executed successfully
+2026-04-27 10:33:12 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:33:23 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:33:35 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:33:45 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:33:55 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:34:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:35:03 PDT)" (scheduled at 2026-04-27 10:34:03.433959-07:00)
+2026-04-27 10:34:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:35:03 PDT)" executed successfully
+2026-04-27 10:34:04 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:35:03 PDT)" (scheduled at 2026-04-27 10:34:03.434963-07:00)
+2026-04-27 10:34:04 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:35:03 PDT)" executed successfully
+2026-04-27 10:34:04 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:35:03 PDT)" (scheduled at 2026-04-27 10:34:03.436344-07:00)
+2026-04-27 10:34:04 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:35:03 PDT)" executed successfully
+2026-04-27 10:34:06 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:34:16 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:34:26 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:34:36 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:34:46 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:34:56 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:35:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:36:03 PDT)" (scheduled at 2026-04-27 10:35:03.433959-07:00)
+2026-04-27 10:35:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:36:03 PDT)" executed successfully
+2026-04-27 10:35:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:36:03 PDT)" (scheduled at 2026-04-27 10:35:03.434963-07:00)
+2026-04-27 10:35:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:36:03 PDT)" executed successfully
+2026-04-27 10:35:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:36:03 PDT)" (scheduled at 2026-04-27 10:35:03.436344-07:00)
+2026-04-27 10:35:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:36:03 PDT)" executed successfully
+2026-04-27 10:35:06 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:35:17 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:35:27 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:35:37 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:35:47 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:35:57 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:36:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:37:03 PDT)" (scheduled at 2026-04-27 10:36:03.433959-07:00)
+2026-04-27 10:36:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:37:03 PDT)" executed successfully
+2026-04-27 10:36:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:37:03 PDT)" (scheduled at 2026-04-27 10:36:03.434963-07:00)
+2026-04-27 10:36:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:37:03 PDT)" executed successfully
+2026-04-27 10:36:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:37:03 PDT)" (scheduled at 2026-04-27 10:36:03.436344-07:00)
+2026-04-27 10:36:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:37:03 PDT)" executed successfully
+2026-04-27 10:36:08 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:36:18 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:36:28 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:36:38 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:36:48 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-27 10:36:48 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-27 10:37:00 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:37:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:38:03 PDT)" (scheduled at 2026-04-27 10:37:03.433959-07:00)
+2026-04-27 10:37:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:38:03 PDT)" executed successfully
+2026-04-27 10:37:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:38:03 PDT)" (scheduled at 2026-04-27 10:37:03.434963-07:00)
+2026-04-27 10:37:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:38:03 PDT)" executed successfully
+2026-04-27 10:37:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:38:03 PDT)" (scheduled at 2026-04-27 10:37:03.436344-07:00)
+2026-04-27 10:37:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:38:03 PDT)" executed successfully
+2026-04-27 10:37:10 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:37:20 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:37:31 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:37:41 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:37:51 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:38:01 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:38:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:39:03 PDT)" (scheduled at 2026-04-27 10:38:03.433959-07:00)
+2026-04-27 10:38:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:39:03 PDT)" executed successfully
+2026-04-27 10:38:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:39:03 PDT)" (scheduled at 2026-04-27 10:38:03.434963-07:00)
+2026-04-27 10:38:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:39:03 PDT)" executed successfully
+2026-04-27 10:38:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:39:03 PDT)" (scheduled at 2026-04-27 10:38:03.436344-07:00)
+2026-04-27 10:38:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:39:03 PDT)" executed successfully
+2026-04-27 10:38:11 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:38:22 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:38:32 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:38:42 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:38:52 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:39:02 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:39:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:40:03 PDT)" (scheduled at 2026-04-27 10:39:03.433959-07:00)
+2026-04-27 10:39:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:40:03 PDT)" executed successfully
+2026-04-27 10:39:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:40:03 PDT)" (scheduled at 2026-04-27 10:39:03.434963-07:00)
+2026-04-27 10:39:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:40:03 PDT)" executed successfully
+2026-04-27 10:39:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:40:03 PDT)" (scheduled at 2026-04-27 10:39:03.436344-07:00)
+2026-04-27 10:39:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:40:03 PDT)" executed successfully
+2026-04-27 10:39:12 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:39:23 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:39:33 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:39:43 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:39:53 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:40:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:41:03 PDT)" (scheduled at 2026-04-27 10:40:03.433959-07:00)
+2026-04-27 10:40:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:41:03 PDT)" executed successfully
+2026-04-27 10:40:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:41:03 PDT)" (scheduled at 2026-04-27 10:40:03.434963-07:00)
+2026-04-27 10:40:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:41:03 PDT)" executed successfully
+2026-04-27 10:40:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:41:03 PDT)" (scheduled at 2026-04-27 10:40:03.436344-07:00)
+2026-04-27 10:40:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:41:03 PDT)" executed successfully
+2026-04-27 10:40:03 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:40:13 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:40:24 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:40:34 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:40:44 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:40:54 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:41:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:42:03 PDT)" (scheduled at 2026-04-27 10:41:03.433959-07:00)
+2026-04-27 10:41:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:42:03 PDT)" executed successfully
+2026-04-27 10:41:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:42:03 PDT)" (scheduled at 2026-04-27 10:41:03.434963-07:00)
+2026-04-27 10:41:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:42:03 PDT)" executed successfully
+2026-04-27 10:41:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:42:03 PDT)" (scheduled at 2026-04-27 10:41:03.436344-07:00)
+2026-04-27 10:41:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:42:03 PDT)" executed successfully
+2026-04-27 10:41:04 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:41:14 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:41:25 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:41:35 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:41:45 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:41:55 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:42:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:43:03 PDT)" (scheduled at 2026-04-27 10:42:03.433959-07:00)
+2026-04-27 10:42:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:43:03 PDT)" executed successfully
+2026-04-27 10:42:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:43:03 PDT)" (scheduled at 2026-04-27 10:42:03.434963-07:00)
+2026-04-27 10:42:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:43:03 PDT)" executed successfully
+2026-04-27 10:42:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:43:03 PDT)" (scheduled at 2026-04-27 10:42:03.436344-07:00)
+2026-04-27 10:42:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:43:03 PDT)" executed successfully
+2026-04-27 10:42:05 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:42:15 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:42:26 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:42:36 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:42:46 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:42:56 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:43:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:44:03 PDT)" (scheduled at 2026-04-27 10:43:03.433959-07:00)
+2026-04-27 10:43:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:44:03 PDT)" executed successfully
+2026-04-27 10:43:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:44:03 PDT)" (scheduled at 2026-04-27 10:43:03.434963-07:00)
+2026-04-27 10:43:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:44:03 PDT)" executed successfully
+2026-04-27 10:43:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:44:03 PDT)" (scheduled at 2026-04-27 10:43:03.436344-07:00)
+2026-04-27 10:43:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:44:03 PDT)" executed successfully
+2026-04-27 10:43:06 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:43:17 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:43:27 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:43:37 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:43:47 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:43:57 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:44:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:45:03 PDT)" (scheduled at 2026-04-27 10:44:03.433959-07:00)
+2026-04-27 10:44:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:45:03 PDT)" executed successfully
+2026-04-27 10:44:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:45:03 PDT)" (scheduled at 2026-04-27 10:44:03.434963-07:00)
+2026-04-27 10:44:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:45:03 PDT)" executed successfully
+2026-04-27 10:44:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:45:03 PDT)" (scheduled at 2026-04-27 10:44:03.436344-07:00)
+2026-04-27 10:44:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:45:03 PDT)" executed successfully
+2026-04-27 10:44:07 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:44:18 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:44:28 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:44:38 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:44:48 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:44:58 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:45:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:46:03 PDT)" (scheduled at 2026-04-27 10:45:03.433959-07:00)
+2026-04-27 10:45:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:46:03 PDT)" executed successfully
+2026-04-27 10:45:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:46:03 PDT)" (scheduled at 2026-04-27 10:45:03.434963-07:00)
+2026-04-27 10:45:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:46:03 PDT)" executed successfully
+2026-04-27 10:45:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:46:03 PDT)" (scheduled at 2026-04-27 10:45:03.436344-07:00)
+2026-04-27 10:45:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:46:03 PDT)" executed successfully
+2026-04-27 10:45:08 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:45:19 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:45:29 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:45:39 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:45:49 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:45:59 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:46:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:47:03 PDT)" (scheduled at 2026-04-27 10:46:03.433959-07:00)
+2026-04-27 10:46:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:47:03 PDT)" executed successfully
+2026-04-27 10:46:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:47:03 PDT)" (scheduled at 2026-04-27 10:46:03.434963-07:00)
+2026-04-27 10:46:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:47:03 PDT)" executed successfully
+2026-04-27 10:46:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:47:03 PDT)" (scheduled at 2026-04-27 10:46:03.436344-07:00)
+2026-04-27 10:46:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:47:03 PDT)" executed successfully
+2026-04-27 10:46:09 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:46:20 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:46:30 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:46:40 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:46:50 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:47:00 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:47:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:48:03 PDT)" (scheduled at 2026-04-27 10:47:03.433959-07:00)
+2026-04-27 10:47:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:48:03 PDT)" executed successfully
+2026-04-27 10:47:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:48:03 PDT)" (scheduled at 2026-04-27 10:47:03.434963-07:00)
+2026-04-27 10:47:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:48:03 PDT)" executed successfully
+2026-04-27 10:47:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:48:03 PDT)" (scheduled at 2026-04-27 10:47:03.436344-07:00)
+2026-04-27 10:47:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:48:03 PDT)" executed successfully
+2026-04-27 10:47:11 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:47:21 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:47:31 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:47:41 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:47:51 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:48:01 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:48:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:49:03 PDT)" (scheduled at 2026-04-27 10:48:03.433959-07:00)
+2026-04-27 10:48:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:49:03 PDT)" executed successfully
+2026-04-27 10:48:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:49:03 PDT)" (scheduled at 2026-04-27 10:48:03.434963-07:00)
+2026-04-27 10:48:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:49:03 PDT)" executed successfully
+2026-04-27 10:48:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:49:03 PDT)" (scheduled at 2026-04-27 10:48:03.436344-07:00)
+2026-04-27 10:48:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:49:03 PDT)" executed successfully
+2026-04-27 10:48:11 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:48:22 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:48:32 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:48:43 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:48:53 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:49:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:50:03 PDT)" (scheduled at 2026-04-27 10:49:03.433959-07:00)
+2026-04-27 10:49:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:50:03 PDT)" executed successfully
+2026-04-27 10:49:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:50:03 PDT)" (scheduled at 2026-04-27 10:49:03.434963-07:00)
+2026-04-27 10:49:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:50:03 PDT)" executed successfully
+2026-04-27 10:49:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:50:03 PDT)" (scheduled at 2026-04-27 10:49:03.436344-07:00)
+2026-04-27 10:49:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:50:03 PDT)" executed successfully
+2026-04-27 10:49:03 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:49:13 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:49:23 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:49:33 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:49:44 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:49:54 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:50:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:51:03 PDT)" (scheduled at 2026-04-27 10:50:03.433959-07:00)
+2026-04-27 10:50:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:51:03 PDT)" executed successfully
+2026-04-27 10:50:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:51:03 PDT)" (scheduled at 2026-04-27 10:50:03.434963-07:00)
+2026-04-27 10:50:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:51:03 PDT)" executed successfully
+2026-04-27 10:50:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:51:03 PDT)" (scheduled at 2026-04-27 10:50:03.436344-07:00)
+2026-04-27 10:50:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:51:03 PDT)" executed successfully
+2026-04-27 10:50:04 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:50:14 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:50:24 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:50:35 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:50:45 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:50:55 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:51:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:52:03 PDT)" (scheduled at 2026-04-27 10:51:03.433959-07:00)
+2026-04-27 10:51:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:52:03 PDT)" executed successfully
+2026-04-27 10:51:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:52:03 PDT)" (scheduled at 2026-04-27 10:51:03.434963-07:00)
+2026-04-27 10:51:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:52:03 PDT)" executed successfully
+2026-04-27 10:51:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:52:03 PDT)" (scheduled at 2026-04-27 10:51:03.436344-07:00)
+2026-04-27 10:51:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:52:03 PDT)" executed successfully
+2026-04-27 10:51:05 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:51:15 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:51:25 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:51:36 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:51:46 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:51:56 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:52:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:53:03 PDT)" (scheduled at 2026-04-27 10:52:03.433959-07:00)
+2026-04-27 10:52:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:53:03 PDT)" executed successfully
+2026-04-27 10:52:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:53:03 PDT)" (scheduled at 2026-04-27 10:52:03.434963-07:00)
+2026-04-27 10:52:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:53:03 PDT)" executed successfully
+2026-04-27 10:52:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:53:03 PDT)" (scheduled at 2026-04-27 10:52:03.436344-07:00)
+2026-04-27 10:52:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:53:03 PDT)" executed successfully
+2026-04-27 10:52:06 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:52:16 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:52:26 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:52:37 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:52:47 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:52:57 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:53:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:54:03 PDT)" (scheduled at 2026-04-27 10:53:03.433959-07:00)
+2026-04-27 10:53:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:54:03 PDT)" executed successfully
+2026-04-27 10:53:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:54:03 PDT)" (scheduled at 2026-04-27 10:53:03.434963-07:00)
+2026-04-27 10:53:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:54:03 PDT)" executed successfully
+2026-04-27 10:53:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:54:03 PDT)" (scheduled at 2026-04-27 10:53:03.436344-07:00)
+2026-04-27 10:53:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:54:03 PDT)" executed successfully
+2026-04-27 10:53:07 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:53:17 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:53:27 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:53:38 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:53:48 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:53:58 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:54:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:55:03 PDT)" (scheduled at 2026-04-27 10:54:03.433959-07:00)
+2026-04-27 10:54:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:55:03 PDT)" executed successfully
+2026-04-27 10:54:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:55:03 PDT)" (scheduled at 2026-04-27 10:54:03.434963-07:00)
+2026-04-27 10:54:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:55:03 PDT)" executed successfully
+2026-04-27 10:54:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:55:03 PDT)" (scheduled at 2026-04-27 10:54:03.436344-07:00)
+2026-04-27 10:54:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:55:03 PDT)" executed successfully
+2026-04-27 10:54:08 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:54:18 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:54:28 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:54:39 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:54:49 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:54:59 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:55:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:56:03 PDT)" (scheduled at 2026-04-27 10:55:03.433959-07:00)
+2026-04-27 10:55:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:56:03 PDT)" executed successfully
+2026-04-27 10:55:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:56:03 PDT)" (scheduled at 2026-04-27 10:55:03.434963-07:00)
+2026-04-27 10:55:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:56:03 PDT)" executed successfully
+2026-04-27 10:55:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:56:03 PDT)" (scheduled at 2026-04-27 10:55:03.436344-07:00)
+2026-04-27 10:55:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:56:03 PDT)" executed successfully
+2026-04-27 10:55:09 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:55:19 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:55:30 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:55:40 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:55:50 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:56:00 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:56:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:57:03 PDT)" (scheduled at 2026-04-27 10:56:03.433959-07:00)
+2026-04-27 10:56:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:57:03 PDT)" executed successfully
+2026-04-27 10:56:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:57:03 PDT)" (scheduled at 2026-04-27 10:56:03.434963-07:00)
+2026-04-27 10:56:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:57:03 PDT)" executed successfully
+2026-04-27 10:56:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:57:03 PDT)" (scheduled at 2026-04-27 10:56:03.436344-07:00)
+2026-04-27 10:56:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:57:03 PDT)" executed successfully
+2026-04-27 10:56:10 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:56:20 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:56:31 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:56:41 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:56:51 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:57:01 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:57:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:58:03 PDT)" (scheduled at 2026-04-27 10:57:03.433959-07:00)
+2026-04-27 10:57:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:58:03 PDT)" executed successfully
+2026-04-27 10:57:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:58:03 PDT)" (scheduled at 2026-04-27 10:57:03.434963-07:00)
+2026-04-27 10:57:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:58:03 PDT)" executed successfully
+2026-04-27 10:57:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:58:03 PDT)" (scheduled at 2026-04-27 10:57:03.436344-07:00)
+2026-04-27 10:57:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:58:03 PDT)" executed successfully
+2026-04-27 10:57:11 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:57:21 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:57:32 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:57:42 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:57:52 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:58:02 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:58:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:59:03 PDT)" (scheduled at 2026-04-27 10:58:03.433959-07:00)
+2026-04-27 10:58:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:59:03 PDT)" executed successfully
+2026-04-27 10:58:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:59:03 PDT)" (scheduled at 2026-04-27 10:58:03.434963-07:00)
+2026-04-27 10:58:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 10:59:03 PDT)" executed successfully
+2026-04-27 10:58:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:59:03 PDT)" (scheduled at 2026-04-27 10:58:03.436344-07:00)
+2026-04-27 10:58:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 10:59:03 PDT)" executed successfully
+2026-04-27 10:58:12 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:58:22 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:58:33 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:58:43 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:58:53 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:59:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:00:03 PDT)" (scheduled at 2026-04-27 10:59:03.433959-07:00)
+2026-04-27 10:59:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:00:03 PDT)" executed successfully
+2026-04-27 10:59:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:00:03 PDT)" (scheduled at 2026-04-27 10:59:03.434963-07:00)
+2026-04-27 10:59:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:00:03 PDT)" executed successfully
+2026-04-27 10:59:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:00:03 PDT)" (scheduled at 2026-04-27 10:59:03.436344-07:00)
+2026-04-27 10:59:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:00:03 PDT)" executed successfully
+2026-04-27 10:59:03 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:59:13 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:59:24 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:59:34 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:59:44 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 10:59:54 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:00:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:01:03 PDT)" (scheduled at 2026-04-27 11:00:03.433959-07:00)
+2026-04-27 11:00:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:01:03 PDT)" executed successfully
+2026-04-27 11:00:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:01:03 PDT)" (scheduled at 2026-04-27 11:00:03.434963-07:00)
+2026-04-27 11:00:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:01:03 PDT)" executed successfully
+2026-04-27 11:00:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:01:03 PDT)" (scheduled at 2026-04-27 11:00:03.436344-07:00)
+2026-04-27 11:00:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:01:03 PDT)" executed successfully
+2026-04-27 11:00:04 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:00:14 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:00:25 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:00:35 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:00:45 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:00:55 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:01:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:02:03 PDT)" (scheduled at 2026-04-27 11:01:03.433959-07:00)
+2026-04-27 11:01:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:02:03 PDT)" executed successfully
+2026-04-27 11:01:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:02:03 PDT)" (scheduled at 2026-04-27 11:01:03.434963-07:00)
+2026-04-27 11:01:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:02:03 PDT)" executed successfully
+2026-04-27 11:01:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:02:03 PDT)" (scheduled at 2026-04-27 11:01:03.436344-07:00)
+2026-04-27 11:01:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:02:03 PDT)" executed successfully
+2026-04-27 11:01:05 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:01:15 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:01:26 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:01:36 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:01:46 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:01:56 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:02:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:03:03 PDT)" (scheduled at 2026-04-27 11:02:03.433959-07:00)
+2026-04-27 11:02:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:03:03 PDT)" executed successfully
+2026-04-27 11:02:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:03:03 PDT)" (scheduled at 2026-04-27 11:02:03.434963-07:00)
+2026-04-27 11:02:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:03:03 PDT)" executed successfully
+2026-04-27 11:02:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:03:03 PDT)" (scheduled at 2026-04-27 11:02:03.436344-07:00)
+2026-04-27 11:02:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:03:03 PDT)" executed successfully
+2026-04-27 11:02:06 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:02:17 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:02:27 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:02:37 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:02:47 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:02:57 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:03:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:04:03 PDT)" (scheduled at 2026-04-27 11:03:03.433959-07:00)
+2026-04-27 11:03:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:04:03 PDT)" executed successfully
+2026-04-27 11:03:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:04:03 PDT)" (scheduled at 2026-04-27 11:03:03.434963-07:00)
+2026-04-27 11:03:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:04:03 PDT)" executed successfully
+2026-04-27 11:03:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:04:03 PDT)" (scheduled at 2026-04-27 11:03:03.436344-07:00)
+2026-04-27 11:03:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:04:03 PDT)" executed successfully
+2026-04-27 11:03:08 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:03:18 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:03:28 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:03:38 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:03:48 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:03:58 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:04:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:05:03 PDT)" (scheduled at 2026-04-27 11:04:03.433959-07:00)
+2026-04-27 11:04:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:05:03 PDT)" executed successfully
+2026-04-27 11:04:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:05:03 PDT)" (scheduled at 2026-04-27 11:04:03.434963-07:00)
+2026-04-27 11:04:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:05:03 PDT)" executed successfully
+2026-04-27 11:04:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:05:03 PDT)" (scheduled at 2026-04-27 11:04:03.436344-07:00)
+2026-04-27 11:04:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:05:03 PDT)" executed successfully
+2026-04-27 11:04:09 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:04:19 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:04:29 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:04:39 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:04:49 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:04:59 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:05:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:06:03 PDT)" (scheduled at 2026-04-27 11:05:03.433959-07:00)
+2026-04-27 11:05:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:06:03 PDT)" executed successfully
+2026-04-27 11:05:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:06:03 PDT)" (scheduled at 2026-04-27 11:05:03.434963-07:00)
+2026-04-27 11:05:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:06:03 PDT)" executed successfully
+2026-04-27 11:05:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:06:03 PDT)" (scheduled at 2026-04-27 11:05:03.436344-07:00)
+2026-04-27 11:05:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:06:03 PDT)" executed successfully
+2026-04-27 11:05:10 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:05:20 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:05:30 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:05:40 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:05:51 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:06:01 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:06:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:07:03 PDT)" (scheduled at 2026-04-27 11:06:03.433959-07:00)
+2026-04-27 11:06:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:07:03 PDT)" executed successfully
+2026-04-27 11:06:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:07:03 PDT)" (scheduled at 2026-04-27 11:06:03.434963-07:00)
+2026-04-27 11:06:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:07:03 PDT)" executed successfully
+2026-04-27 11:06:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:07:03 PDT)" (scheduled at 2026-04-27 11:06:03.436344-07:00)
+2026-04-27 11:06:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:07:03 PDT)" executed successfully
+2026-04-27 11:06:11 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:06:21 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:06:31 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:06:41 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:06:52 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:07:02 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:07:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:08:03 PDT)" (scheduled at 2026-04-27 11:07:03.433959-07:00)
+2026-04-27 11:07:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:08:03 PDT)" executed successfully
+2026-04-27 11:07:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:08:03 PDT)" (scheduled at 2026-04-27 11:07:03.434963-07:00)
+2026-04-27 11:07:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:08:03 PDT)" executed successfully
+2026-04-27 11:07:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:08:03 PDT)" (scheduled at 2026-04-27 11:07:03.436344-07:00)
+2026-04-27 11:07:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:08:03 PDT)" executed successfully
+2026-04-27 11:07:12 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:07:22 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:07:32 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:07:42 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:07:53 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:08:03 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:08:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:09:03 PDT)" (scheduled at 2026-04-27 11:08:03.433959-07:00)
+2026-04-27 11:08:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:09:03 PDT)" executed successfully
+2026-04-27 11:08:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:09:03 PDT)" (scheduled at 2026-04-27 11:08:03.434963-07:00)
+2026-04-27 11:08:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:09:03 PDT)" executed successfully
+2026-04-27 11:08:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:09:03 PDT)" (scheduled at 2026-04-27 11:08:03.436344-07:00)
+2026-04-27 11:08:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:09:03 PDT)" executed successfully
+2026-04-27 11:08:13 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:08:23 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:08:33 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:08:43 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:08:54 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:09:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:10:03 PDT)" (scheduled at 2026-04-27 11:09:03.433959-07:00)
+2026-04-27 11:09:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:10:03 PDT)" executed successfully
+2026-04-27 11:09:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:10:03 PDT)" (scheduled at 2026-04-27 11:09:03.434963-07:00)
+2026-04-27 11:09:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:10:03 PDT)" executed successfully
+2026-04-27 11:09:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:10:03 PDT)" (scheduled at 2026-04-27 11:09:03.436344-07:00)
+2026-04-27 11:09:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:10:03 PDT)" executed successfully
+2026-04-27 11:09:04 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:09:14 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:09:24 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:09:34 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:09:44 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:09:55 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:10:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:11:03 PDT)" (scheduled at 2026-04-27 11:10:03.433959-07:00)
+2026-04-27 11:10:03 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:11:03 PDT)" executed successfully
+2026-04-27 11:10:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:11:03 PDT)" (scheduled at 2026-04-27 11:10:03.434963-07:00)
+2026-04-27 11:10:03 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-27 11:11:03 PDT)" executed successfully
+2026-04-27 11:10:03 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:11:03 PDT)" (scheduled at 2026-04-27 11:10:03.436344-07:00)
+2026-04-27 11:10:03 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-27 11:11:03 PDT)" executed successfully
+2026-04-27 11:10:05 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-27 11:10:15 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"

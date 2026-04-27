@@ -125,6 +125,7 @@ class SchedulerJobs:
                 id=f"email_check_{check_time}",
                 name=f"Email check at {check_time}",
                 replace_existing=True,
+                misfire_grace_time=3600,
             )
 
         # Reminder check - every 60 seconds
