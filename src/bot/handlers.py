@@ -570,7 +570,10 @@ class BotHandlers:
 
         if isinstance(intent_data, list):
             for sub_intent in intent_data:
-                await self._process_single_intent(update, context, user_id, user_message, sub_intent)
+                try:
+                    await self._process_single_intent(update, context, user_id, user_message, sub_intent)
+                except Exception as e:
+                    logger.error("Sub-intent failed: %s (intent: %s)", e, sub_intent.get("intent"))
             return
 
         await self._process_single_intent(update, context, user_id, user_message, intent_data)

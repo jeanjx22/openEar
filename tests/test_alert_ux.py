@@ -953,3 +953,238 @@ class TestAwaitingAlertTimeDisambiguation:
         # "All set!" confirmation should have been sent
         reply_calls = mock_update.message.reply_text.call_args_list
         assert any("All set" in call.args[0] for call in reply_calls)
+
+
+# ===================================================================
+# 8. Compound intent routing tests
+# ===================================================================
+
+
+class TestCompoundIntentRouting:
+    """Verify _handle_idle_message dispatches single vs. compound intents
+    correctly, and handles an empty list without crashing."""
+
+    def _make_handlers(self, mock_llm=None):
+        from src.bot.handlers import BotHandlers
+
+        mock_settings = MagicMock()
+        mock_settings.timezone = "America/Los_Angeles"
+        mock_settings.persona = {"name": "openEar", "emoji": "", "tone": "warm", "behavior": []}
+
+        return BotHandlers(
+            settings=mock_settings,
+            llm_service=mock_llm or AsyncMock(),
+            email_service=MagicMock(),
+            reminder_service=MagicMock(),
+            note_service=MagicMock(),
+            health_service=MagicMock(),
+        )
+
+    def _make_update_and_context(self, user_id=12345, text="hello"):
+        mock_update = MagicMock()
+        mock_update.effective_user.id = user_id
+        mock_update.effective_chat.id = user_id
+        mock_update.message.text = text
+        mock_update.message.reply_text = AsyncMock()
+
+        mock_context = MagicMock()
+        mock_context.bot_data = {}
+        return mock_update, mock_context
+
+    @pytest.mark.asyncio
+    async def test_single_intent_returns_dict(self):
+        """When classify_intent returns a single dict, _process_single_intent
+        is called exactly once."""
+        mock_llm = AsyncMock()
+        mock_llm.classify_intent = AsyncMock(
+            return_value={"intent": "weather", "content": "what's the weather", "tags": []}
+        )
+
+        handlers = self._make_handlers(mock_llm)
+        mock_update, mock_context = self._make_update_and_context(text="what's the weather")
+
+        with patch("src.bot.handlers.auth_check", new_callable=AsyncMock, return_value=True), \
+             patch.object(handlers, "_process_single_intent", new_callable=AsyncMock) as mock_process:
+            await handlers.handle_message(mock_update, mock_context)
+
+        mock_process.assert_called_once()
+        call_args = mock_process.call_args
+        assert call_args[0][4] == {"intent": "weather", "content": "what's the weather", "tags": []}
+
+    @pytest.mark.asyncio
+    async def test_compound_intent_returns_list(self):
+        """When classify_intent returns a list of 2 dicts,
+        _process_single_intent is called twice."""
+        intents = [
+            {"intent": "whitelist", "content": "add doc@clinic.com", "email": "doc@clinic.com", "label": "Medical", "tags": []},
+            {"intent": "note", "content": "Aaron is allergic to eggs", "tags": ["allergy"]},
+        ]
+        mock_llm = AsyncMock()
+        mock_llm.classify_intent = AsyncMock(return_value=intents)
+
+        handlers = self._make_handlers(mock_llm)
+        mock_update, mock_context = self._make_update_and_context(
+            text="add doc@clinic.com to whitelist and note Aaron is allergic to eggs"
+        )
+
+        with patch("src.bot.handlers.auth_check", new_callable=AsyncMock, return_value=True), \
+             patch.object(handlers, "_process_single_intent", new_callable=AsyncMock) as mock_process:
+            await handlers.handle_message(mock_update, mock_context)
+
+        assert mock_process.call_count == 2
+        dispatched_intents = [call.args[4] for call in mock_process.call_args_list]
+        assert dispatched_intents[0]["intent"] == "whitelist"
+        assert dispatched_intents[1]["intent"] == "note"
+
+    @pytest.mark.asyncio
+    async def test_empty_list_fallback(self):
+        """When classify_intent returns an empty list, nothing crashes
+        and _process_single_intent is never called."""
+        mock_llm = AsyncMock()
+        mock_llm.classify_intent = AsyncMock(return_value=[])
+
+        handlers = self._make_handlers(mock_llm)
+        mock_update, mock_context = self._make_update_and_context(text="")
+
+        with patch("src.bot.handlers.auth_check", new_callable=AsyncMock, return_value=True), \
+             patch.object(handlers, "_process_single_intent", new_callable=AsyncMock) as mock_process:
+            await handlers.handle_message(mock_update, mock_context)
+
+        mock_process.assert_not_called()
+
+
+# ===================================================================
+# 9. Whitelist intent tests (with real DB)
+# ===================================================================
+
+
+class TestWhitelistIntent:
+    """Verify the 'whitelist' intent branch in _process_single_intent
+    creates, detects duplicates, and rejects missing-email payloads."""
+
+    @pytest.fixture(autouse=True)
+    def tmp_db(self, tmp_path):
+        """Initialise a fresh SQLite database for every test in this class."""
+        from src.db import database as db_module
+        from src.db.database import init_db
+
+        db_path = str(tmp_path / "test.db")
+        init_db(db_path)
+        yield db_path
+        db_module._engine = None
+        db_module._SessionLocal = None
+
+    def _make_handlers(self):
+        from src.bot.handlers import BotHandlers
+
+        mock_settings = MagicMock()
+        mock_settings.timezone = "America/Los_Angeles"
+        mock_settings.persona = {"name": "openEar", "emoji": "", "tone": "warm", "behavior": []}
+
+        return BotHandlers(
+            settings=mock_settings,
+            llm_service=AsyncMock(),
+            email_service=MagicMock(),
+            reminder_service=MagicMock(),
+            note_service=MagicMock(),
+            health_service=MagicMock(),
+        )
+
+    def _make_update_and_context(self, user_id=12345, text="test"):
+        mock_update = MagicMock()
+        mock_update.effective_user.id = user_id
+        mock_update.effective_chat.id = user_id
+        mock_update.message.text = text
+        mock_update.message.reply_text = AsyncMock()
+
+        mock_context = MagicMock()
+        mock_context.bot_data = {}
+        return mock_update, mock_context
+
+    @pytest.mark.asyncio
+    async def test_whitelist_adds_to_db(self):
+        """Whitelist intent with email and label creates a SenderWhitelist row."""
+        from src.db.database import get_session
+        from src.db.models import SenderWhitelist
+
+        handlers = self._make_handlers()
+        mock_update, mock_context = self._make_update_and_context()
+
+        intent_data = {
+            "intent": "whitelist",
+            "email": "doctor@clinic.com",
+            "label": "Medical",
+            "content": "add doctor@clinic.com",
+            "tags": [],
+        }
+
+        await handlers._process_single_intent(
+            mock_update, mock_context, 12345,
+            "add doctor@clinic.com to whitelist as Medical",
+            intent_data,
+        )
+
+        # Verify DB entry was created
+        with get_session() as session:
+            entry = session.query(SenderWhitelist).filter_by(pattern="doctor@clinic.com").first()
+            assert entry is not None
+            assert entry.label == "Medical"
+
+        # Verify confirmation message was sent
+        mock_update.message.reply_text.assert_called_once()
+        msg = mock_update.message.reply_text.call_args[0][0]
+        assert "doctor@clinic.com" in msg
+        assert "whitelist" in msg.lower() or "Medical" in msg
+
+    @pytest.mark.asyncio
+    async def test_whitelist_duplicate_detected(self):
+        """If the email is already whitelisted, the bot reports it."""
+        from src.db.database import get_session
+        from src.db.models import SenderWhitelist
+
+        # Pre-populate the whitelist
+        with get_session() as session:
+            session.add(SenderWhitelist(pattern="doctor@clinic.com", label="Medical"))
+
+        handlers = self._make_handlers()
+        mock_update, mock_context = self._make_update_and_context()
+
+        intent_data = {
+            "intent": "whitelist",
+            "email": "doctor@clinic.com",
+            "label": "Medical",
+            "content": "add doctor@clinic.com",
+            "tags": [],
+        }
+
+        await handlers._process_single_intent(
+            mock_update, mock_context, 12345,
+            "add doctor@clinic.com to whitelist",
+            intent_data,
+        )
+
+        msg = mock_update.message.reply_text.call_args[0][0]
+        assert "already" in msg.lower()
+
+    @pytest.mark.asyncio
+    async def test_whitelist_missing_email(self):
+        """When the intent has no email field, the bot asks the user to retry."""
+        handlers = self._make_handlers()
+        mock_update, mock_context = self._make_update_and_context()
+
+        intent_data = {
+            "intent": "whitelist",
+            "email": "",
+            "label": "Other",
+            "content": "add someone to whitelist",
+            "tags": [],
+        }
+
+        await handlers._process_single_intent(
+            mock_update, mock_context, 12345,
+            "add someone to whitelist",
+            intent_data,
+        )
+
+        msg = mock_update.message.reply_text.call_args[0][0]
+        assert "email" in msg.lower() or "couldn't" in msg.lower()
