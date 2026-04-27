@@ -268,3 +268,26 @@ def confirm_cancel() -> InlineKeyboardMarkup:
             ]
         ]
     )
+
+
+def confirm_settings(settings_id: str) -> InlineKeyboardMarkup:
+    """Confirm/Cancel keyboard for setup settings changes.
+
+    Args:
+        settings_id: unique identifier for the pending settings batch,
+            stored in bot_data so the callback can retrieve and apply them.
+    """
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "Confirm",
+                    callback_data=f"setup_confirm:{settings_id}",
+                ),
+                InlineKeyboardButton(
+                    "Cancel",
+                    callback_data=f"setup_cancel:{settings_id}",
+                ),
+            ]
+        ]
+    )

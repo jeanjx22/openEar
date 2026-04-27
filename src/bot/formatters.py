@@ -6,7 +6,8 @@ convert to the user's local timezone for display purposes only.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from collections import defaultdict
+from datetime import datetime, timedelta, timezone
 
 from zoneinfo import ZoneInfo
 
@@ -157,4 +158,81 @@ def format_note_list(
         created = to_local(n.created_at, tz_name)
         preview = n.content[:60] + ("..." if len(n.content) > 60 else "")
         lines.append(f"  #{n.id} ({created}): {preview}")
+    return "\n".join(lines)
+
+
+def format_stock_briefing(quotes: list[str | BaseException]) -> str:
+    """Format stock quotes for the morning briefing.
+
+    Args:
+        quotes: Results from asyncio.gather(return_exceptions=True).
+            Each element is either a formatted quote string or an
+            exception (timeout / fetch failure).
+
+    Returns:
+        A section string to append to the email briefing.
+    """
+    lines = ["\n---\nMarket snapshot:\n"]
+    for q in quotes:
+        if isinstance(q, BaseException):
+            lines.append(f"  -- (unavailable: {q})")
+        else:
+            # get_stock_quote returns multi-line rich output for
+            # successful lookups and single-line for fallback/error.
+            # Indent every line for consistent briefing formatting.
+            for part in str(q).splitlines():
+                if part.strip():
+                    lines.append(f"  {part}")
+            lines.append("")
+    return "\n".join(lines)
+
+
+def format_upcoming_events(
+    reminders: list,
+    tz_name: str = "America/Los_Angeles",
+    is_sunday: bool = False,
+) -> str:
+    """Format upcoming reminders (next 7 days) for the evening briefing.
+
+    On Sunday evenings a richer "Week Ahead Preview" header is shown
+    and events are grouped by day.
+
+    Args:
+        reminders: Reminder objects filtered to the next 7 days.
+        tz_name: IANA timezone name for display.
+        is_sunday: True when the briefing runs on Sunday evening.
+
+    Returns:
+        A section string to append to the email briefing,
+        or an empty string if there are no upcoming events.
+    """
+    if not reminders:
+        return "\n---\nNo upcoming events this week."
+
+    tz = ZoneInfo(tz_name)
+
+    if is_sunday:
+        lines = ["\n---\nWeek Ahead Preview:\n"]
+        # Group reminders by local day
+        by_day: dict[str, list] = defaultdict(list)
+        for r in reminders:
+            dt = r.due_at
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            local_dt = dt.astimezone(tz)
+            day_key = local_dt.strftime("%A %b %d")
+            time_str = local_dt.strftime("%-I:%M %p")
+            by_day[day_key].append(f"{r.title} at {time_str}")
+
+        for day, items in by_day.items():
+            lines.append(f"  {day}:")
+            for item in items:
+                lines.append(f"    - {item}")
+        return "\n".join(lines)
+
+    # Regular evening: flat list
+    lines = ["\n---\nUpcoming this week:\n"]
+    for r in reminders:
+        due_str = to_local_full(r.due_at, tz_name)
+        lines.append(f"  - {r.title} -- {due_str}")
     return "\n".join(lines)

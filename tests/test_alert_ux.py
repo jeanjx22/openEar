@@ -15,6 +15,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from src.bot import formatters, keyboards
+from src.services.llm_service import LLMService
 
 
 # ---------------------------------------------------------------------------
@@ -1187,3 +1188,145 @@ class TestWhitelistIntent:
 
         msg = mock_update.message.reply_text.call_args[0][0]
         assert "email" in msg.lower() or "couldn't" in msg.lower()
+
+
+# ===================================================================
+# 10. Stock briefing formatter tests
+# ===================================================================
+
+
+class TestFormatStockBriefing:
+    """Test format_stock_briefing handles successful quotes, errors, and empty input."""
+
+    def test_formats_successful_quotes(self):
+        quotes = [
+            "META $520.30 +2.15%\nVol: 12.3M",
+            "AAPL $198.50 -0.42%\nVol: 8.1M",
+        ]
+        result = formatters.format_stock_briefing(quotes)
+        assert "Market snapshot" in result
+        assert "META" in result
+        assert "AAPL" in result
+        assert "$520.30" in result
+        assert "$198.50" in result
+
+    def test_handles_timeout_errors_gracefully(self):
+        quotes = [
+            "META $520.30 +2.15%",
+            TimeoutError("API timed out"),
+            "TSLA $245.00 +1.10%",
+        ]
+        result = formatters.format_stock_briefing(quotes)
+        assert "Market snapshot" in result
+        assert "META" in result
+        assert "TSLA" in result
+        assert "unavailable" in result
+        # The error detail should appear
+        assert "API timed out" in result
+
+    def test_empty_quotes_list(self):
+        result = formatters.format_stock_briefing([])
+        assert "Market snapshot" in result
+        # No stock data lines beyond the header
+        lines = [l for l in result.splitlines() if l.strip() and "Market snapshot" not in l and "---" not in l]
+        assert len(lines) == 0
+
+
+# ===================================================================
+# 11. Upcoming events formatter tests
+# ===================================================================
+
+
+class TestFormatUpcomingEvents:
+    """Test format_upcoming_events for empty lists, headers, and day grouping."""
+
+    def test_formats_events_list(self):
+        reminders = [
+            _make_reminder(id=1, title="Dentist", due_at=datetime(2026, 5, 1, 18, 0, tzinfo=timezone.utc)),
+            _make_reminder(id=2, title="Gym", due_at=datetime(2026, 5, 2, 10, 0, tzinfo=timezone.utc)),
+        ]
+        result = formatters.format_upcoming_events(reminders, is_sunday=False)
+        assert "Upcoming this week" in result
+        assert "Dentist" in result
+        assert "Gym" in result
+
+    def test_empty_list_returns_no_events_message(self):
+        result = formatters.format_upcoming_events([], is_sunday=False)
+        assert "No upcoming events this week" in result
+
+    def test_sunday_uses_week_ahead_header(self):
+        reminders = [
+            _make_reminder(id=1, title="Standup", due_at=datetime(2026, 5, 4, 16, 0, tzinfo=timezone.utc)),
+        ]
+        result = formatters.format_upcoming_events(reminders, is_sunday=True)
+        assert "Week Ahead Preview" in result
+        assert "Standup" in result
+
+    def test_non_sunday_uses_simple_header(self):
+        reminders = [
+            _make_reminder(id=1, title="Meeting", due_at=datetime(2026, 5, 1, 14, 0, tzinfo=timezone.utc)),
+        ]
+        result = formatters.format_upcoming_events(reminders, is_sunday=False)
+        assert "Upcoming this week" in result
+        assert "Week Ahead Preview" not in result
+
+
+# ===================================================================
+# 12. confirm_settings keyboard tests
+# ===================================================================
+
+
+class TestConfirmSettingsKeyboard:
+    """Test confirm_settings keyboard builder."""
+
+    def test_has_confirm_and_cancel_buttons(self):
+        markup = keyboards.confirm_settings("abc123")
+        labels = [btn.text for btn in _flat_buttons(markup)]
+        assert "Confirm" in labels
+        assert "Cancel" in labels
+
+    def test_callback_data_includes_settings_id(self):
+        settings_id = "test_settings_42"
+        markup = keyboards.confirm_settings(settings_id)
+        buttons = _flat_buttons(markup)
+        data_values = [btn.callback_data for btn in buttons]
+        assert f"setup_confirm:{settings_id}" in data_values
+        assert f"setup_cancel:{settings_id}" in data_values
+
+
+# ===================================================================
+# 13. validate_setup_settings tests
+# ===================================================================
+
+
+class TestValidateSetupSettings:
+    """Test LLMService.validate_setup_settings static method."""
+
+    def test_valid_time_format_passes(self):
+        settings = [{"key": "email_check_morning", "value": "06:30"}]
+        valid, errors = LLMService.validate_setup_settings(settings)
+        assert len(valid) == 1
+        assert valid[0]["key"] == "email_check_morning"
+        assert valid[0]["value"] == "06:30"
+        assert len(errors) == 0
+
+    def test_invalid_time_format_fails(self):
+        settings = [{"key": "email_check_morning", "value": "6am"}]
+        valid, errors = LLMService.validate_setup_settings(settings)
+        assert len(valid) == 0
+        assert len(errors) == 1
+        assert "Invalid time format" in errors[0]
+
+    def test_valid_stock_symbol_passes(self):
+        settings = [{"key": "stock_symbols_add", "value": "TSLA"}]
+        valid, errors = LLMService.validate_setup_settings(settings)
+        assert len(valid) == 1
+        assert valid[0]["value"] == "TSLA"
+        assert len(errors) == 0
+
+    def test_invalid_stock_symbol_fails(self):
+        settings = [{"key": "stock_symbols_add", "value": "toolong123"}]
+        valid, errors = LLMService.validate_setup_settings(settings)
+        assert len(valid) == 0
+        assert len(errors) == 1
+        assert "Invalid stock symbol" in errors[0]

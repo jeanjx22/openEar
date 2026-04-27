@@ -87,6 +87,7 @@ class UserConfig(Base):
 
     key: Mapped[str] = mapped_column(String, primary_key=True)
     value: Mapped[str] = mapped_column(String, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
 
 class HealthLog(Base):

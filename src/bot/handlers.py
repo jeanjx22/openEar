@@ -34,7 +34,7 @@ from src.auth import auth_check
 from src.bot import formatters, keyboards
 from src.config import Settings
 from src.db.database import get_session
-from src.db.models import Conversation, Reminder  # N4: normal import
+from src.db.models import Conversation, Reminder, UserConfig  # N4: normal import
 from src.services.email_service import EmailService, EmailServiceUnavailable
 from src.services.health_service import HealthService
 from src.services.info_service import get_stock_quote, get_weather, search_news
@@ -47,6 +47,15 @@ logger = logging.getLogger(__name__)
 # Maximum active messages in conversation context before summarization
 MAX_ACTIVE_MESSAGES = 20
 SUMMARIZE_BATCH_SIZE = 10
+
+# Human-readable labels for setup setting keys
+_SETTING_LABELS = {
+    "email_check_morning": "Morning email check",
+    "email_check_evening": "Evening email check",
+    "stock_symbols": "Stock watchlist",
+    "quiet_start": "Quiet hours start",
+    "quiet_end": "Quiet hours end",
+}
 
 
 class UserMode(Enum):
@@ -740,6 +749,8 @@ class BotHandlers:
                         await update.message.reply_text(f"{email} is already in the whitelist 🐰")
             else:
                 await update.message.reply_text("Couldn't find the email address. Try: 'add doctor@clinic.com to whitelist as Medical' 🐰")
+        elif intent == "setup":
+            await self._handle_setup(update, context, user_id, user_message, intent_data)
         else:
             # General conversation with context management
             # N5: pass user_id for per-user context
@@ -901,6 +912,192 @@ class BotHandlers:
                 "Try saying 'reschedule', 'cancel', or 'change alerts'."
             )
 
+    # ---- Setup / Config Handler ----
+
+    def _get_current_setting(self, key: str) -> str | None:
+        """Read a single setting from the UserConfig DB table.
+
+        Returns the stored value string, or None if not set.
+        """
+        with get_session() as session:
+            row = session.get(UserConfig, key)
+            if row:
+                session.expunge(row)
+                return row.value
+        return None
+
+    def _get_effective_setting(self, key: str) -> str:
+        """Get the effective value for a setting key.
+
+        Checks UserConfig DB first, then falls back to rules.yaml defaults.
+        """
+        db_val = self._get_current_setting(key)
+        if db_val is not None:
+            return db_val
+
+        rules = self.settings.rules
+        defaults = {
+            "email_check_morning": rules.get("email", {}).get("check_times", ["07:00"])[0],
+            "email_check_evening": (
+                rules.get("email", {}).get("check_times", ["07:00", "21:30"])[1]
+                if len(rules.get("email", {}).get("check_times", [])) > 1
+                else "21:30"
+            ),
+            "quiet_start": rules.get("reminders", {}).get("quiet_hours", ["22:00"])[0],
+            "quiet_end": (
+                rules.get("reminders", {}).get("quiet_hours", ["22:00", "07:00"])[1]
+                if len(rules.get("reminders", {}).get("quiet_hours", [])) > 1
+                else "07:00"
+            ),
+            "stock_symbols": ",".join(
+                rules.get("briefing", {}).get("morning", {}).get(
+                    "stock_symbols", ["META", "AAPL"]
+                )
+            ),
+        }
+        return defaults.get(key, "")
+
+    async def _handle_setup(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE,
+        user_id: int, user_message: str, intent_data: dict,
+    ) -> None:
+        """Handle the 'setup' intent -- bot settings configuration.
+
+        Parses settings from the LLM intent, validates them, shows a
+        confirmation preview with old -> new values, and waits for
+        user confirmation before applying.
+        """
+        raw_settings = intent_data.get("settings", [])
+        if not raw_settings:
+            await update.message.reply_text(
+                "I can help you configure settings. Try something like:\n"
+                "- \"change morning email check to 6:30am\"\n"
+                "- \"add stock TSLA to my watchlist\"\n"
+                "- \"set quiet hours from 10pm to 7am\"\n"
+                "- \"change evening email check to 9pm\""
+            )
+            return
+
+        # Validate the parsed settings
+        valid_settings, errors = self.llm.validate_setup_settings(raw_settings)
+
+        if errors:
+            error_msg = "\n".join(f"  - {e}" for e in errors)
+            await update.message.reply_text(
+                f"Some settings could not be validated:\n{error_msg}"
+            )
+            if not valid_settings:
+                return
+
+        # Resolve stock_symbols_add / stock_symbols_remove into the
+        # effective stock_symbols list before showing the preview.
+        resolved_settings = self._resolve_stock_mutations(valid_settings)
+
+        # Build confirmation message with old -> new values
+        lines = ["Settings to change:\n"]
+        for s in resolved_settings:
+            key = s["key"]
+            new_val = s["value"]
+            old_val = self._get_effective_setting(key)
+            label = _SETTING_LABELS.get(key, key)
+            lines.append(f"  {label}: {old_val} -> {new_val}")
+
+        lines.append("\nConfirm these changes?")
+        summary = "\n".join(lines)
+
+        # Store pending settings in bot_data keyed by a unique ID
+        import uuid
+        settings_id = str(uuid.uuid4())[:8]
+        context.bot_data.setdefault("pending_settings", {})[settings_id] = resolved_settings
+
+        await update.message.reply_text(
+            summary,
+            reply_markup=keyboards.confirm_settings(settings_id),
+        )
+
+    def _resolve_stock_mutations(self, settings: list[dict]) -> list[dict]:
+        """Convert stock_symbols_add / stock_symbols_remove into a full
+        stock_symbols replacement setting."""
+        resolved = []
+        current_symbols_str = self._get_effective_setting("stock_symbols")
+        current_symbols = [s.strip() for s in current_symbols_str.split(",") if s.strip()]
+
+        for s in settings:
+            key = s["key"]
+            if key == "stock_symbols_add":
+                sym = s["value"]
+                if sym not in current_symbols:
+                    current_symbols.append(sym)
+                resolved.append({"key": "stock_symbols", "value": ",".join(current_symbols)})
+            elif key == "stock_symbols_remove":
+                sym = s["value"]
+                current_symbols = [x for x in current_symbols if x != sym]
+                resolved.append({"key": "stock_symbols", "value": ",".join(current_symbols)})
+            else:
+                resolved.append(s)
+
+        return resolved
+
+    def _apply_settings(self, settings: list[dict], context) -> list[str]:
+        """Apply validated settings to UserConfig DB and update in-memory state.
+
+        Returns a list of setting keys that affect email check schedule.
+        """
+        email_time_keys = {"email_check_morning", "email_check_evening"}
+        changed_email_times = False
+
+        with get_session() as session:
+            for s in settings:
+                key = s["key"]
+                value = s["value"]
+                existing = session.get(UserConfig, key)
+                if existing:
+                    existing.value = value
+                    existing.updated_at = datetime.now(timezone.utc)
+                else:
+                    from src.db.models import utcnow
+                    session.add(UserConfig(key=key, value=value, updated_at=utcnow()))
+
+                # Update in-memory settings
+                if key == "email_check_morning":
+                    check_times = self.settings.rules.get("email", {}).get("check_times", ["07:00", "21:30"])
+                    if len(check_times) > 0:
+                        check_times[0] = value
+                    else:
+                        check_times = [value]
+                    self.settings.rules.setdefault("email", {})["check_times"] = check_times
+                    changed_email_times = True
+                elif key == "email_check_evening":
+                    check_times = self.settings.rules.get("email", {}).get("check_times", ["07:00", "21:30"])
+                    if len(check_times) > 1:
+                        check_times[1] = value
+                    else:
+                        check_times.append(value)
+                    self.settings.rules.setdefault("email", {})["check_times"] = check_times
+                    changed_email_times = True
+                elif key == "quiet_start":
+                    quiet = self.settings.rules.get("reminders", {}).get("quiet_hours", ["22:00", "07:00"])
+                    if len(quiet) > 0:
+                        quiet[0] = value
+                    self.settings.rules.setdefault("reminders", {})["quiet_hours"] = quiet
+                elif key == "quiet_end":
+                    quiet = self.settings.rules.get("reminders", {}).get("quiet_hours", ["22:00", "07:00"])
+                    if len(quiet) > 1:
+                        quiet[1] = value
+                    self.settings.rules.setdefault("reminders", {})["quiet_hours"] = quiet
+                elif key == "stock_symbols":
+                    syms = [x.strip() for x in value.split(",") if x.strip()]
+                    self.settings.rules.setdefault("briefing", {}).setdefault("morning", {})["stock_symbols"] = syms
+
+        # Reschedule email check jobs if times changed
+        if changed_email_times:
+            new_times = self.settings.rules.get("email", {}).get("check_times", [])
+            scheduler_jobs = context.bot_data.get("scheduler_jobs") if context else None
+            if scheduler_jobs is not None:
+                scheduler_jobs.reschedule_email_checks(new_times)
+
+        return [s["key"] for s in settings]
+
     # ---- Callback Query Handler (Step 3F) ----
 
     async def callback_handler(
@@ -914,7 +1111,24 @@ class BotHandlers:
         await query.answer()
         data = query.data
 
-        if data.startswith("alert_more:"):
+        if data.startswith("setup_confirm:"):
+            settings_id = data.split(":")[1]
+            pending = context.bot_data.get("pending_settings", {}).pop(settings_id, None)
+            if not pending:
+                await query.edit_message_text("Settings expired or already applied.")
+                return
+            applied = self._apply_settings(pending, context)
+            labels = [_SETTING_LABELS.get(k, k) for k in applied]
+            await query.edit_message_text(
+                "Settings updated:\n" + "\n".join(f"  - {l}" for l in labels)
+            )
+
+        elif data.startswith("setup_cancel:"):
+            settings_id = data.split(":")[1]
+            context.bot_data.get("pending_settings", {}).pop(settings_id, None)
+            await query.edit_message_text("Settings change cancelled.")
+
+        elif data.startswith("alert_more:"):
             parent_id = int(data.split(":")[1])
             parent = self.reminders.get_reminder(parent_id)
             if not parent:

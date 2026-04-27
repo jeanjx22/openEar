@@ -214,13 +214,27 @@ Intents:
 - "stock": asks about stocks
 - "news": asks about news
 - "whitelist": add/remove email sender to whitelist
+- "setup": user wants to configure bot settings (email check times, stock watchlist, quiet hours, preferences)
 - "general": general conversation
 
 For "modify": include "action": "reschedule|cancel|change_alert"
 For "whitelist": include "email" and "label" fields
+For "setup": include "settings" array with {"key": "<setting_key>", "value": "<new_value>"} objects
+
+Setup setting keys:
+- "email_check_morning": morning email check time (HH:MM format, e.g. "06:30")
+- "email_check_evening": evening email check time (HH:MM format, e.g. "21:30")
+- "stock_symbols": comma-separated stock symbols to watch (e.g. "META,AAPL,TSLA")
+- "stock_symbols_add": single stock symbol to ADD to watchlist (e.g. "TSLA")
+- "stock_symbols_remove": single stock symbol to REMOVE from watchlist (e.g. "META")
+- "quiet_start": quiet hours start time (HH:MM, e.g. "22:00")
+- "quiet_end": quiet hours end time (HH:MM, e.g. "07:00")
 
 Single request format:
 {"intent": "<intent>", "content": "<extracted content>", "action": "<if modify>", "tags": ["<tag>"]}
+
+Setup format:
+{"intent": "setup", "content": "<what to configure>", "settings": [{"key": "email_check_morning", "value": "06:30"}], "tags": []}
 
 Multiple requests format:
 [{"intent": "whitelist", "content": "add doctor@clinic.com", "email": "doctor@clinic.com", "label": "Medical", "tags": []},
@@ -607,3 +621,54 @@ Return ONLY the JSON array, nothing else. Return [] if input is not an alert tim
                 logger.warning("Failed to compute alert time: %s (parsed: %s)", e, parsed)
 
         return alerts if alerts else None
+
+    @staticmethod
+    def validate_setup_settings(settings: list[dict]) -> tuple[list[dict], list[str]]:
+        """Validate parsed setup settings.
+
+        Returns (valid_settings, errors) where valid_settings is a list
+        of validated {key, value} dicts and errors is a list of
+        human-readable error messages.
+        """
+        import re as _re
+
+        valid = []
+        errors = []
+        time_pattern = _re.compile(r"^\d{2}:\d{2}$")
+        symbol_pattern = _re.compile(r"^[A-Z]{1,5}$")
+
+        for s in settings:
+            key = s.get("key", "")
+            value = s.get("value", "")
+
+            if key in ("email_check_morning", "email_check_evening",
+                       "quiet_start", "quiet_end"):
+                if not time_pattern.match(value):
+                    errors.append(f"Invalid time format for {key}: '{value}' (expected HH:MM)")
+                    continue
+                parts = value.split(":")
+                h, m = int(parts[0]), int(parts[1])
+                if h > 23 or m > 59:
+                    errors.append(f"Invalid time for {key}: '{value}'")
+                    continue
+                valid.append({"key": key, "value": value})
+
+            elif key in ("stock_symbols_add", "stock_symbols_remove"):
+                sym = value.upper().strip()
+                if not symbol_pattern.match(sym):
+                    errors.append(f"Invalid stock symbol: '{value}'")
+                    continue
+                valid.append({"key": key, "value": sym})
+
+            elif key == "stock_symbols":
+                syms = [x.strip().upper() for x in value.split(",") if x.strip()]
+                bad = [x for x in syms if not symbol_pattern.match(x)]
+                if bad:
+                    errors.append(f"Invalid stock symbols: {', '.join(bad)}")
+                    continue
+                valid.append({"key": key, "value": ",".join(syms)})
+
+            else:
+                errors.append(f"Unknown setting key: '{key}'")
+
+        return valid, errors

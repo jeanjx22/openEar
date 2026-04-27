@@ -25,9 +25,12 @@ C5: _send_to_all catches Forbidden errors with clear warning.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+
+from zoneinfo import ZoneInfo
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -41,6 +44,7 @@ from src.config import Settings
 from src.services.backup_service import BackupService
 from src.services.email_service import EmailService, EmailServiceUnavailable
 from src.services.health_service import HealthService
+from src.services.info_service import get_stock_quote
 from src.services.llm_service import LLMService
 from src.services.reminder_service import ReminderService
 
@@ -122,6 +126,7 @@ class SchedulerJobs:
             self.scheduler.add_job(
                 self._email_briefing_job,
                 CronTrigger(hour=hour, minute=minute, timezone=tz),
+                kwargs={"check_time": check_time},
                 id=f"email_check_{check_time}",
                 name=f"Email check at {check_time}",
                 replace_existing=True,
@@ -250,6 +255,36 @@ class SchedulerJobs:
             # Job may have already fired or never been scheduled
             logger.debug("Alert job %s not found (already fired or missing)", job_id)
 
+    def reschedule_email_checks(self, new_times: list[str]) -> None:
+        """Reschedule email briefing jobs with new check times.
+
+        Removes existing email_check_* jobs and creates new ones
+        for the given times. Thread-safe via APScheduler internals.
+
+        Args:
+            new_times: list of "HH:MM" strings for new email check times.
+        """
+        tz = self.settings.timezone
+
+        # Remove existing email check jobs
+        for job in self.scheduler.get_jobs():
+            if job.id.startswith("email_check_"):
+                self.scheduler.remove_job(job.id)
+                logger.info("Removed old email check job: %s", job.id)
+
+        # Add new jobs
+        for check_time in new_times:
+            hour, minute = map(int, check_time.split(":"))
+            self.scheduler.add_job(
+                self._email_briefing_job,
+                CronTrigger(hour=hour, minute=minute, timezone=tz),
+                id=f"email_check_{check_time}",
+                name=f"Email check at {check_time}",
+                replace_existing=True,
+                misfire_grace_time=3600,
+            )
+            logger.info("Scheduled new email check job at %s", check_time)
+
     def reschedule_alerts_from_db(self) -> None:
         """Re-schedule all active pre-alerts from the database.
 
@@ -291,12 +326,65 @@ class SchedulerJobs:
 
     # ---- Job Implementations ----
 
-    async def _email_briefing_job(self) -> None:
-        """Fetch and send email briefing."""
-        logger.info("Running email briefing job")
+    async def _email_briefing_job(self, check_time: str = "07:00") -> None:
+        """Fetch and send email briefing with optional stock/event enrichment.
+
+        Morning briefings (check_time hour < 12) include a market snapshot
+        on weekdays when briefing.morning.include_stocks is enabled.
+
+        Evening briefings (check_time hour >= 12) include upcoming events
+        for the next 7 days. On Sunday evenings a richer "Week Ahead
+        Preview" grouping is used.
+        """
+        logger.info("Running email briefing job (check_time=%s)", check_time)
         try:
             emails = await self.email.process_emails()
             text = formatters.format_briefing(emails, self.settings.timezone)
+
+            # Determine morning vs evening from check_time
+            hour = int(check_time.split(":")[0])
+            is_morning = hour < 12
+            tz = ZoneInfo(self.settings.timezone)
+            now_local = datetime.now(tz)
+            is_weekday = now_local.weekday() < 5  # Mon-Fri
+            is_sunday = now_local.weekday() == 6
+
+            # --- Morning enrichment: stock quotes on weekdays ---
+            if is_morning and is_weekday:
+                rules = self.settings.rules.get("briefing", {})
+                morning_cfg = rules.get("morning", {})
+                include_stocks = morning_cfg.get("include_stocks", False)
+                stock_symbols = morning_cfg.get("stock_symbols", [])
+
+                if include_stocks and stock_symbols:
+                    try:
+                        quotes = await asyncio.gather(
+                            *[
+                                asyncio.wait_for(get_stock_quote(sym), timeout=8)
+                                for sym in stock_symbols
+                            ],
+                            return_exceptions=True,
+                        )
+                        text += formatters.format_stock_briefing(quotes)
+                    except Exception as e:
+                        logger.warning("Stock enrichment failed: %s", e)
+
+            # --- Evening enrichment: upcoming events (next 7 days) ---
+            if not is_morning:
+                try:
+                    all_future = self.reminders.get_future_reminders()
+                    now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
+                    cutoff = now_utc + timedelta(days=7)
+                    upcoming = [
+                        r for r in all_future
+                        if r.due_at and r.due_at <= cutoff
+                    ]
+                    text += formatters.format_upcoming_events(
+                        upcoming, self.settings.timezone, is_sunday=is_sunday,
+                    )
+                except Exception as e:
+                    logger.warning("Evening event enrichment failed: %s", e)
+
             await self._send_to_all(text)
 
             # Send action keyboards for each important email
