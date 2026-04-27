@@ -315,10 +315,11 @@ class SchedulerJobs:
             logger.error("Email briefing job failed: %s", e)
 
     async def _fire_alert_job(self, alert_id: int, parent_id: int) -> None:
-        """Fire a single pre-alert notification (called by DateTrigger).
+        """Fire a pre-alert notification (called by DateTrigger).
 
-        Sends the notification and deletes the alert record from the DB.
-        This replaces the old polling approach for pre-alerts.
+        Sends plain text (no buttons) and deletes the alert record.
+        Collects other alerts firing at the same time and combines
+        them into one message.
         """
         alert = self.reminders.get_reminder(alert_id)
         if not alert:
@@ -329,19 +330,41 @@ class SchedulerJobs:
             logger.warning("Job called for non-alert #%d, skipping", alert_id)
             return
 
-        parent = self.reminders.get_reminder(parent_id)
-        if parent:
-            text = formatters.format_pre_alert(
-                alert, parent, self.settings.timezone
-            )
-            markup = keyboards.pre_alert_actions(alert.id, parent.id)
-        else:
-            text = formatters.format_reminder(alert, self.settings.timezone)
-            markup = keyboards.reminder_actions(alert.id)
+        from datetime import timedelta
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
+        window = timedelta(seconds=90)
+        all_due_alerts = self.reminders.get_active_pre_alerts()
+        batch = [alert]
+        batch_ids = {alert.id}
+        for other in all_due_alerts:
+            if other.id == alert.id:
+                continue
+            if other.due_at and abs((other.due_at - now).total_seconds()) < window.total_seconds():
+                batch.append(other)
+                batch_ids.add(other.id)
 
-        await self._send_to_all(text, reply_markup=markup)
-        self.reminders.delete_fired_alert(alert.id)
-        logger.info("Fired and deleted alert #%d (parent #%d)", alert_id, parent_id)
+        lines = ["🔔 Reminder alerts:\n"]
+        for a in batch:
+            try:
+                pid = int(a.source_ref) if a.source_ref else None
+            except (ValueError, TypeError):
+                pid = None
+            parent = self.reminders.get_reminder(pid) if pid else None
+            label = a.alert_label or "Alert"
+            if parent:
+                event_time = formatters.to_local(parent.due_at, self.settings.timezone)
+                lines.append(f"  ⏰ {label}: {parent.title}")
+                lines.append(f"     📅 {event_time}")
+            else:
+                lines.append(f"  ⏰ {a.title}")
+            lines.append("")
+
+        lines.append("🐰")
+        await self._send_to_all("\n".join(lines))
+
+        for a in batch:
+            self.reminders.delete_fired_alert(a.id)
+        logger.info("Fired and deleted %d alert(s): %s", len(batch), list(batch_ids))
 
     async def _reminder_check_job(self) -> None:
         """Check for due REGULAR reminders and send notifications.

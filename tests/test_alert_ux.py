@@ -412,6 +412,7 @@ class TestPreAlertFiresWithParentInfo:
         mock_reminder_svc = MagicMock()
         mock_reminder_svc.get_reminder.side_effect = lambda rid: alert if rid == 50 else parent if rid == 10 else None
         mock_reminder_svc.delete_fired_alert = MagicMock()
+        mock_reminder_svc.get_active_pre_alerts.return_value = [alert]
 
         mock_app = MagicMock()
         mock_bot = AsyncMock()
@@ -439,12 +440,10 @@ class TestPreAlertFiresWithParentInfo:
         call_kwargs = mock_bot.send_message.call_args
         sent_text = call_kwargs.kwargs.get("text") or call_kwargs[1].get("text", "")
         assert "Team meeting" in sent_text
+        assert "1 hour before" in sent_text
         mock_reminder_svc.delete_fired_alert.assert_called_once_with(50)
-        sent_markup = call_kwargs.kwargs.get("reply_markup") or call_kwargs[1].get("reply_markup")
-        buttons = _flat_buttons(sent_markup)
-        set_more = [b for b in buttons if b.text == "Set more alerts"]
-        assert len(set_more) == 1
-        assert set_more[0].callback_data == "alert_more:10"
+        sent_markup = call_kwargs.kwargs.get("reply_markup")
+        assert sent_markup is None, "Alerts should fire as plain text, no buttons"
 
 
 class TestPostEventPrompt:
