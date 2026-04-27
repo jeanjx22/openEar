@@ -195,6 +195,7 @@ class BotHandlers:
             CommandHandler("reminders", self.cmd_list_reminders),
             CommandHandler("notes", self.cmd_list_notes),
             CommandHandler("note", self.cmd_save_note),
+            CommandHandler("whitelist", self.cmd_whitelist),
             CallbackQueryHandler(self.callback_handler),
             MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message),
         ]
@@ -358,6 +359,62 @@ class BotHandlers:
         notes = self.notes.get_all_notes()
         text = formatters.format_note_list(notes, self.settings.timezone)
         await update.message.reply_text(text)
+
+    async def cmd_whitelist(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        if not await auth_check(update, context):
+            return
+        self._track_chat(update, context)
+
+        args = update.message.text.split(maxsplit=1)
+        sub_cmd = args[1].strip().lower() if len(args) > 1 else ""
+
+        from src.db.models import SenderWhitelist
+
+        if sub_cmd.startswith("add "):
+            parts = sub_cmd[4:].strip()
+            if " as " in parts:
+                email, label = parts.rsplit(" as ", 1)
+                email = email.strip()
+                label = label.strip().title()
+            else:
+                email = parts
+                label = "Other"
+            with get_session() as s:
+                existing = s.query(SenderWhitelist).filter_by(pattern=email).first()
+                if existing:
+                    await update.message.reply_text(f"'{email}' is already in the whitelist as '{existing.label}' 🐰")
+                else:
+                    s.add(SenderWhitelist(pattern=email, label=label))
+                    await update.message.reply_text(f"✅ Added '{email}' as '{label}' 🐰")
+
+        elif sub_cmd.startswith("remove "):
+            email = sub_cmd[7:].strip()
+            with get_session() as s:
+                entry = s.query(SenderWhitelist).filter_by(pattern=email).first()
+                if entry:
+                    s.delete(entry)
+                    await update.message.reply_text(f"🗑 Removed '{email}' from whitelist 🐰")
+                else:
+                    await update.message.reply_text(f"'{email}' not found in whitelist 🐰")
+
+        else:
+            with get_session() as s:
+                entries = s.query(SenderWhitelist).all()
+                for e in entries:
+                    s.expunge(e)
+            if not entries:
+                await update.message.reply_text("Whitelist is empty. Use /whitelist add email@example.com as Label 🐰")
+                return
+            lines = ["📧 Email whitelist:\n"]
+            for e in entries:
+                lines.append(f"  • {e.pattern} → {e.label}")
+            lines.append(f"\n📝 {len(entries)} entries")
+            lines.append("\nCommands:")
+            lines.append("/whitelist add email@x.com as Label")
+            lines.append("/whitelist remove email@x.com")
+            await update.message.reply_text("\n".join(lines))
 
     async def cmd_save_note(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE

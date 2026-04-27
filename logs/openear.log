@@ -13319,3 +13319,1030 @@ TypeError: expected string or bytes-like object, got 'NoneType'
 2026-04-26 21:11:45 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
 2026-04-26 21:11:55 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
 2026-04-26 21:12:06 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:12:16 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:12:26 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:12:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:13:34 PDT)" (scheduled at 2026-04-26 21:12:34.749873-07:00)
+2026-04-26 21:12:34 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:13:34 PDT)" executed successfully
+2026-04-26 21:12:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:13:34 PDT)" (scheduled at 2026-04-26 21:12:34.751900-07:00)
+2026-04-26 21:12:34 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:13:34 PDT)" executed successfully
+2026-04-26 21:12:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:13:34 PDT)" (scheduled at 2026-04-26 21:12:34.753458-07:00)
+2026-04-26 21:12:34 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:13:34 PDT)" executed successfully
+2026-04-26 21:12:36 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:12:46 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:12:56 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:13:06 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:13:17 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:13:27 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:13:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:14:34 PDT)" (scheduled at 2026-04-26 21:13:34.749873-07:00)
+2026-04-26 21:13:34 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:14:34 PDT)" executed successfully
+2026-04-26 21:13:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:14:34 PDT)" (scheduled at 2026-04-26 21:13:34.751900-07:00)
+2026-04-26 21:13:34 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:14:34 PDT)" executed successfully
+2026-04-26 21:13:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:14:34 PDT)" (scheduled at 2026-04-26 21:13:34.753458-07:00)
+2026-04-26 21:13:34 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:14:34 PDT)" executed successfully
+2026-04-26 21:13:37 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:30:07 [ERROR] openear (main.py:158): Unhandled exception: httpx.ReadError: 
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http_proxy.py", line 343, in handle_async_request
+    return await self._connection.handle_async_request(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 136, in handle_async_request
+    raise exc
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 106, in handle_async_request
+    ) = await self._receive_response_headers(**kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 177, in _receive_response_headers
+    event = await self._receive_event(timeout=timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 217, in _receive_event
+    data = await self._network_stream.read(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_backends/anyio.py", line 32, in read
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 279, in do_request
+    res = await self._client.request(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 305, in _request_wrapper
+    code, payload = await self.do_request(
+                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 303, in do_request
+    raise NetworkError(f"httpx.{err.__class__.__name__}: {err}") from err
+telegram.error.NetworkError: httpx.ReadError: 
+2026-04-26 21:34:07 [ERROR] openear (main.py:158): Unhandled exception: httpx.ReadError: 
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http_proxy.py", line 343, in handle_async_request
+    return await self._connection.handle_async_request(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 136, in handle_async_request
+    raise exc
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 106, in handle_async_request
+    ) = await self._receive_response_headers(**kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 177, in _receive_response_headers
+    event = await self._receive_event(timeout=timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 217, in _receive_event
+    data = await self._network_stream.read(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_backends/anyio.py", line 32, in read
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 279, in do_request
+    res = await self._client.request(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 305, in _request_wrapper
+    code, payload = await self.do_request(
+                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 303, in do_request
+    raise NetworkError(f"httpx.{err.__class__.__name__}: {err}") from err
+telegram.error.NetworkError: httpx.ReadError: 
+2026-04-26 21:34:20 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:34:30 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:34:40 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:34:50 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:34:50 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:35:34 PDT)" (scheduled at 2026-04-26 21:34:34.749873-07:00)
+2026-04-26 21:34:50 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:35:34 PDT)" executed successfully
+2026-04-26 21:34:50 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:35:34 PDT)" was missed by 0:00:16.105829
+2026-04-26 21:34:50 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:35:34 PDT)" was missed by 0:00:16.105266
+2026-04-26 21:34:50 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Email check at 21:30 (trigger: cron[hour='21', minute='30'], next run at: 2026-04-27 21:30:00 PDT)" was missed by 0:04:50.862030
+2026-04-26 21:35:00 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:35:10 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:35:21 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:35:31 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:35:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:36:34 PDT)" (scheduled at 2026-04-26 21:35:34.749873-07:00)
+2026-04-26 21:35:34 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:36:34 PDT)" executed successfully
+2026-04-26 21:35:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:36:34 PDT)" (scheduled at 2026-04-26 21:35:34.751900-07:00)
+2026-04-26 21:35:34 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:36:34 PDT)" executed successfully
+2026-04-26 21:35:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:36:34 PDT)" (scheduled at 2026-04-26 21:35:34.753458-07:00)
+2026-04-26 21:35:34 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:36:34 PDT)" executed successfully
+2026-04-26 21:35:41 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:35:51 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:36:01 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:36:11 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:36:22 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:36:32 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:36:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:37:34 PDT)" (scheduled at 2026-04-26 21:36:34.749873-07:00)
+2026-04-26 21:36:34 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:37:34 PDT)" executed successfully
+2026-04-26 21:36:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:37:34 PDT)" (scheduled at 2026-04-26 21:36:34.751900-07:00)
+2026-04-26 21:36:34 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:37:34 PDT)" executed successfully
+2026-04-26 21:36:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:37:34 PDT)" (scheduled at 2026-04-26 21:36:34.753458-07:00)
+2026-04-26 21:36:34 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:37:34 PDT)" executed successfully
+2026-04-26 21:36:42 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:36:52 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:37:02 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:37:12 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:37:23 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:37:33 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:37:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:38:34 PDT)" (scheduled at 2026-04-26 21:37:34.749873-07:00)
+2026-04-26 21:37:34 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:38:34 PDT)" executed successfully
+2026-04-26 21:37:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:38:34 PDT)" (scheduled at 2026-04-26 21:37:34.751900-07:00)
+2026-04-26 21:37:34 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:38:34 PDT)" executed successfully
+2026-04-26 21:37:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:38:34 PDT)" (scheduled at 2026-04-26 21:37:34.753458-07:00)
+2026-04-26 21:37:34 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:38:34 PDT)" executed successfully
+2026-04-26 21:37:43 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:37:53 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:38:03 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:38:13 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:38:24 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:38:34 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:38:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:39:34 PDT)" (scheduled at 2026-04-26 21:38:34.749873-07:00)
+2026-04-26 21:38:34 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:39:34 PDT)" executed successfully
+2026-04-26 21:38:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:39:34 PDT)" (scheduled at 2026-04-26 21:38:34.751900-07:00)
+2026-04-26 21:38:34 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:39:34 PDT)" executed successfully
+2026-04-26 21:38:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:39:34 PDT)" (scheduled at 2026-04-26 21:38:34.753458-07:00)
+2026-04-26 21:38:34 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:39:34 PDT)" executed successfully
+2026-04-26 21:38:44 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:38:54 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:39:04 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:39:14 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:39:25 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:39:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:40:34 PDT)" (scheduled at 2026-04-26 21:39:34.749873-07:00)
+2026-04-26 21:39:34 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:40:34 PDT)" executed successfully
+2026-04-26 21:39:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:40:34 PDT)" (scheduled at 2026-04-26 21:39:34.751900-07:00)
+2026-04-26 21:39:34 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:40:34 PDT)" executed successfully
+2026-04-26 21:39:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:40:34 PDT)" (scheduled at 2026-04-26 21:39:34.753458-07:00)
+2026-04-26 21:39:34 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:40:34 PDT)" executed successfully
+2026-04-26 21:39:35 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:39:45 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:42:09 [ERROR] openear (main.py:158): Unhandled exception: httpx.ReadError: 
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http_proxy.py", line 343, in handle_async_request
+    return await self._connection.handle_async_request(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 136, in handle_async_request
+    raise exc
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 106, in handle_async_request
+    ) = await self._receive_response_headers(**kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 177, in _receive_response_headers
+    event = await self._receive_event(timeout=timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_async/http11.py", line 217, in _receive_event
+    data = await self._network_stream.read(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_backends/anyio.py", line 32, in read
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 279, in do_request
+    res = await self._client.request(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 305, in _request_wrapper
+    code, payload = await self.do_request(
+                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_httpxrequest.py", line 303, in do_request
+    raise NetworkError(f"httpx.{err.__class__.__name__}: {err}") from err
+telegram.error.NetworkError: httpx.ReadError: 
+2026-04-26 21:42:21 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:42:31 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:42:41 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:42:51 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:42:53 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:43:34 PDT)" (scheduled at 2026-04-26 21:42:34.749873-07:00)
+2026-04-26 21:42:53 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:43:34 PDT)" executed successfully
+2026-04-26 21:42:53 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:43:34 PDT)" was missed by 0:00:18.686463
+2026-04-26 21:42:53 [WARNING] apscheduler.executors.default (base.py:176): Run time of job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:43:34 PDT)" was missed by 0:00:18.686278
+2026-04-26 21:43:01 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:43:02 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/sendMessage "HTTP/1.1 200 OK"
+2026-04-26 21:43:02 [INFO] googleapiclient.discovery_cache (__init__.py:49): file_cache is only supported with oauth2client<4.0.0
+2026-04-26 21:43:02 [ERROR] openear (main.py:158): Unhandled exception: [Errno 1] Operation not permitted
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_application.py", line 1315, in process_update
+    await coroutine
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_handlers/basehandler.py", line 159, in handle_update
+    return await self.callback(update, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/src/bot/handlers.py", line 300, in cmd_briefing
+    emails = await self.email.process_emails()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/src/services/email_service.py", line 243, in process_emails
+    raw_emails = await self.fetch_unread_emails()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/src/services/email_service.py", line 136, in fetch_unread_emails
+    results = await asyncio.to_thread(
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/src/services/email_service.py", line 140, in <lambda>
+    .execute()
+     ^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/googleapiclient/_helpers.py", line 130, in positional_wrapper
+    return wrapped(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/googleapiclient/http.py", line 923, in execute
+    resp, content = _retry_request(
+                    ^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/googleapiclient/http.py", line 191, in _retry_request
+    resp, content = http.request(uri, method, *args, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/google_auth_httplib2.py", line 216, in request
+    response, content = self.http.request(
+                        ^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httplib2/__init__.py", line 1727, in request
+    (response, content) = self._request(
+                          ^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httplib2/__init__.py", line 1447, in _request
+    (response, content) = self._conn_request(conn, request_uri, method, body, headers)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httplib2/__init__.py", line 1369, in _conn_request
+    conn.connect()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httplib2/__init__.py", line 1205, in connect
+    raise socket_err
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httplib2/__init__.py", line 1159, in connect
+    sock.connect((self.host, self.port))
+PermissionError: [Errno 1] Operation not permitted
+2026-04-26 21:43:02 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/sendMessage "HTTP/1.1 200 OK"
+2026-04-26 21:43:11 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:43:16 [INFO] openear (main.py:77): Starting openEar...
+2026-04-26 21:43:16 [INFO] src.db.database (database.py:39): Database initialized at /Users/jeanjx/fbsource/personal-assistant/data/openear.db
+2026-04-26 21:43:16 [INFO] src.services.llm_service (llm_service.py:102): LLM provider: cohere, model: command-r-08-2024
+2026-04-26 21:43:16 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getMe "HTTP/1.1 200 OK"
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:43:16 [INFO] src.scheduler.jobs (jobs.py:190): Scheduler jobs registered
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:1090): Added job "Email check at 07:00" to job store "default"
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:1090): Added job "Email check at 21:30" to job store "default"
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:1090): Added job "Reminder check" to job store "default"
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:1090): Added job "Snoozed reminder check" to job store "default"
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:1090): Added job "Write heartbeat file" to job store "default"
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:1090): Added job "Daily heartbeat" to job store "default"
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:1090): Added job "Daily S3 backup" to job store "default"
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:1090): Added job "OAuth expiry re-alert" to job store "default"
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:214): Scheduler started
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:1090): Added job "Alert: Alert: Meet personal therapist" to job store "default"
+2026-04-26 21:43:16 [INFO] src.scheduler.jobs (jobs.py:233): Scheduled alert job alert_4 for 2026-04-27 15:00:00+00:00 (alert #4 -> parent #2)
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:1090): Added job "Alert: Morning of: Meet couple therapy" to job store "default"
+2026-04-26 21:43:16 [INFO] src.scheduler.jobs (jobs.py:233): Scheduled alert job alert_7 for 2026-04-27 15:00:00+00:00 (alert #7 -> parent #5)
+2026-04-26 21:43:16 [INFO] apscheduler.scheduler (base.py:1090): Added job "Alert: Morning of: Pick up colleague's package" to job store "default"
+2026-04-26 21:43:16 [INFO] src.scheduler.jobs (jobs.py:233): Scheduled alert job alert_9 for 2026-04-27 15:00:00+00:00 (alert #9 -> parent #8)
+2026-04-26 21:43:16 [INFO] src.scheduler.jobs (jobs.py:287): Startup: re-scheduled 3 alert(s) from database
+2026-04-26 21:43:16 [INFO] src.scheduler.jobs (jobs.py:196): Scheduler started
+2026-04-26 21:43:16 [INFO] openear (main.py:130): openEar is running.
+2026-04-26 21:43:17 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/deleteWebhook "HTTP/1.1 200 OK"
+2026-04-26 21:43:17 [INFO] apscheduler.scheduler (base.py:214): Scheduler started
+2026-04-26 21:43:17 [INFO] telegram.ext.Application (_application.py:633): Application started
+2026-04-26 21:43:17 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-26 21:43:17 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-26 21:43:21 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-26 21:43:21 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-26 21:43:22 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-26 21:43:22 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-26 21:43:25 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:43:25 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/sendMessage "HTTP/1.1 200 OK"
+2026-04-26 21:43:25 [ERROR] openear (main.py:158): Unhandled exception: [Errno 1] Operation not permitted
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_application.py", line 1315, in process_update
+    await coroutine
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_handlers/basehandler.py", line 159, in handle_update
+    return await self.callback(update, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/src/bot/handlers.py", line 300, in cmd_briefing
+    emails = await self.email.process_emails()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/src/services/email_service.py", line 243, in process_emails
+    raw_emails = await self.fetch_unread_emails()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/src/services/email_service.py", line 136, in fetch_unread_emails
+    results = await asyncio.to_thread(
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/fbcode/platform010/Python3.12.framework/Versions/3.12/lib/python3.12/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/src/services/email_service.py", line 140, in <lambda>
+    .execute()
+     ^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/googleapiclient/_helpers.py", line 130, in positional_wrapper
+    return wrapped(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/googleapiclient/http.py", line 923, in execute
+    resp, content = _retry_request(
+                    ^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/googleapiclient/http.py", line 191, in _retry_request
+    resp, content = http.request(uri, method, *args, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/google_auth_httplib2.py", line 216, in request
+    response, content = self.http.request(
+                        ^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httplib2/__init__.py", line 1727, in request
+    (response, content) = self._request(
+                          ^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httplib2/__init__.py", line 1447, in _request
+    (response, content) = self._conn_request(conn, request_uri, method, body, headers)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httplib2/__init__.py", line 1369, in _conn_request
+    conn.connect()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httplib2/__init__.py", line 1205, in connect
+    raise socket_err
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/httplib2/__init__.py", line 1159, in connect
+    sock.connect((self.host, self.port))
+PermissionError: [Errno 1] Operation not permitted
+2026-04-26 21:43:26 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/sendMessage "HTTP/1.1 200 OK"
+2026-04-26 21:43:27 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-26 21:43:27 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-26 21:43:29 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-26 21:43:29 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-26 21:43:33 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-26 21:43:33 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-26 21:43:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:44:34 PDT)" (scheduled at 2026-04-26 21:43:34.749873-07:00)
+2026-04-26 21:43:34 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:44:34 PDT)" executed successfully
+2026-04-26 21:43:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:44:34 PDT)" (scheduled at 2026-04-26 21:43:34.751900-07:00)
+2026-04-26 21:43:34 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:44:34 PDT)" executed successfully
+2026-04-26 21:43:34 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:44:34 PDT)" (scheduled at 2026-04-26 21:43:34.753458-07:00)
+2026-04-26 21:43:34 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:44:34 PDT)" executed successfully
+2026-04-26 21:43:35 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-26 21:43:35 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-26 21:43:40 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-26 21:43:40 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-26 21:43:43 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-26 21:43:43 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-26 21:43:49 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-26 21:43:49 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-26 21:43:56 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-26 21:43:56 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-26 21:43:59 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-26 21:43:59 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-26 21:44:07 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-26 21:44:07 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/Library/Python/3.12/lib/python/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-26 21:44:13 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 409 Conflict"
+2026-04-26 21:44:13 [ERROR] openear (main.py:158): Unhandled exception: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+Traceback (most recent call last):
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_utils/networkloop.py", line 161, in network_retry_loop
+    await do_action()
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_utils/networkloop.py", line 154, in do_action
+    action_cb_task.result()
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_updater.py", line 340, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 672, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 4865, in get_updates
+    await self._post(
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 704, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/ext/_extbot.py", line 370, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/_bot.py", line 733, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeanjx/fbsource/personal-assistant/venv/lib/python3.12/site-packages/telegram/request/_baserequest.py", line 375, in _request_wrapper
+    raise exception
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-04-26 21:44:16 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:45:16 PDT)" (scheduled at 2026-04-26 21:44:16.873757-07:00)
+2026-04-26 21:44:16 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:45:16 PDT)" executed successfully
+2026-04-26 21:44:16 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:45:16 PDT)" (scheduled at 2026-04-26 21:44:16.874530-07:00)
+2026-04-26 21:44:16 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:45:16 PDT)" executed successfully
+2026-04-26 21:44:16 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:45:16 PDT)" (scheduled at 2026-04-26 21:44:16.875234-07:00)
+2026-04-26 21:44:16 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:45:16 PDT)" executed successfully
+2026-04-26 21:44:23 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:44:25 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:44:25 [INFO] telegram.ext.Application (_application.py:667): Application is stopping. This might take a moment.
+2026-04-26 21:44:25 [INFO] apscheduler.scheduler (base.py:245): Scheduler has been shut down
+2026-04-26 21:44:25 [INFO] telegram.ext.Application (_application.py:703): Application.stop() complete
+2026-04-26 21:44:25 [INFO] src.scheduler.jobs (jobs.py:201): Scheduler stopped
+2026-04-26 21:44:25 [INFO] openear (main.py:135): openEar stopped.
+2026-04-26 21:44:25 [INFO] apscheduler.scheduler (base.py:245): Scheduler has been shut down
+2026-04-26 21:44:59 [INFO] openear (main.py:77): Starting openEar...
+2026-04-26 21:44:59 [INFO] src.db.database (database.py:39): Database initialized at /Users/jeanjx/fbsource/personal-assistant/data/openear.db
+2026-04-26 21:44:59 [INFO] src.services.llm_service (llm_service.py:102): LLM provider: cohere, model: command-r-08-2024
+2026-04-26 21:44:59 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getMe "HTTP/1.1 200 OK"
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:507): Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-26 21:44:59 [INFO] src.scheduler.jobs (jobs.py:190): Scheduler jobs registered
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:1090): Added job "Email check at 07:00" to job store "default"
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:1090): Added job "Email check at 21:30" to job store "default"
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:1090): Added job "Reminder check" to job store "default"
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:1090): Added job "Snoozed reminder check" to job store "default"
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:1090): Added job "Write heartbeat file" to job store "default"
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:1090): Added job "Daily heartbeat" to job store "default"
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:1090): Added job "Daily S3 backup" to job store "default"
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:1090): Added job "OAuth expiry re-alert" to job store "default"
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:214): Scheduler started
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:1090): Added job "Alert: Alert: Meet personal therapist" to job store "default"
+2026-04-26 21:44:59 [INFO] src.scheduler.jobs (jobs.py:233): Scheduled alert job alert_4 for 2026-04-27 15:00:00+00:00 (alert #4 -> parent #2)
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:1090): Added job "Alert: Morning of: Meet couple therapy" to job store "default"
+2026-04-26 21:44:59 [INFO] src.scheduler.jobs (jobs.py:233): Scheduled alert job alert_7 for 2026-04-27 15:00:00+00:00 (alert #7 -> parent #5)
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:1090): Added job "Alert: Morning of: Pick up colleague's package" to job store "default"
+2026-04-26 21:44:59 [INFO] src.scheduler.jobs (jobs.py:233): Scheduled alert job alert_9 for 2026-04-27 15:00:00+00:00 (alert #9 -> parent #8)
+2026-04-26 21:44:59 [INFO] src.scheduler.jobs (jobs.py:287): Startup: re-scheduled 3 alert(s) from database
+2026-04-26 21:44:59 [INFO] src.scheduler.jobs (jobs.py:196): Scheduler started
+2026-04-26 21:44:59 [INFO] openear (main.py:130): openEar is running.
+2026-04-26 21:44:59 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/deleteWebhook "HTTP/1.1 200 OK"
+2026-04-26 21:44:59 [INFO] apscheduler.scheduler (base.py:214): Scheduler started
+2026-04-26 21:44:59 [INFO] telegram.ext.Application (_application.py:633): Application started
+2026-04-26 21:45:08 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:45:09 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/sendMessage "HTTP/1.1 200 OK"
+2026-04-26 21:45:09 [INFO] googleapiclient.discovery_cache (__init__.py:49): file_cache is only supported with oauth2client<4.0.0
+2026-04-26 21:45:09 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/sendMessage "HTTP/1.1 200 OK"
+2026-04-26 21:45:18 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:45:28 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:45:38 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:45:49 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:45:59 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:45:59 [INFO] apscheduler.executors.default (base.py:179): Running job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:46:59 PDT)" (scheduled at 2026-04-26 21:45:59.762693-07:00)
+2026-04-26 21:45:59 [INFO] apscheduler.executors.default (base.py:203): Job "Reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:46:59 PDT)" executed successfully
+2026-04-26 21:45:59 [INFO] apscheduler.executors.default (base.py:179): Running job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:46:59 PDT)" (scheduled at 2026-04-26 21:45:59.763017-07:00)
+2026-04-26 21:45:59 [INFO] apscheduler.executors.default (base.py:203): Job "Snoozed reminder check (trigger: interval[0:01:00], next run at: 2026-04-26 21:46:59 PDT)" executed successfully
+2026-04-26 21:45:59 [INFO] apscheduler.executors.default (base.py:179): Running job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:46:59 PDT)" (scheduled at 2026-04-26 21:45:59.763417-07:00)
+2026-04-26 21:45:59 [INFO] apscheduler.executors.default (base.py:203): Job "Write heartbeat file (trigger: interval[0:01:00], next run at: 2026-04-26 21:46:59 PDT)" executed successfully
+2026-04-26 21:46:09 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:46:19 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:46:29 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:46:40 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
+2026-04-26 21:46:50 [INFO] httpx (_client.py:1740): HTTP Request: POST https://api.telegram.org/bot8644655248:AAFmupwNzntvkE1pmXDa8UoAaA26cqCfx9E/getUpdates "HTTP/1.1 200 OK"
