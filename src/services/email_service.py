@@ -230,8 +230,14 @@ class EmailService:
             # C1: expunge so objects are usable after session closes
             for entry in whitelist:
                 session.expunge(entry)
+        import re as _re
+        email_match = _re.search(r'<([^>]+)>', sender)
+        email_only = email_match.group(1).lower() if email_match else sender.lower()
+        sender_lower = sender.lower()
+
         for entry in whitelist:
-            if fnmatch.fnmatch(sender.lower(), entry.pattern.lower()):
+            pattern = entry.pattern.lower()
+            if fnmatch.fnmatch(email_only, pattern) or fnmatch.fnmatch(sender_lower, pattern):
                 return entry.label
         return None
 
