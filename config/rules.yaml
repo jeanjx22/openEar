@@ -1,10 +1,30 @@
 family:
-  sons: []
-  husband: {}
+  sons:
+    - name: Aaron
+      grade: "1st grade elementary"
+      allergies: ["egg", "dairy"]
+    - name: August
+  husband:
+    name: Ye
+  mom:
+    name: Jean (Jing)
+
+briefing:
+  morning:
+    include_stocks: true
+    stock_symbols: ["META", "AAPL", "GOOGL", "MSFT", "NVDA", "AMZN"]
+    weekdays_only: true
+  evening:
+    include_upcoming_week: true
+    remind_appointments: true
+  sunday_night:
+    week_ahead_preview: true
+  auto_remove_past_events: true
 
 email:
-  check_times: ["07:00", "20:00"]
+  check_times: ["07:00", "21:30"]
   timezone: "America/Los_Angeles"
+  classification_criteria: ["school", "medical", "appointment", "afterschool", "teacher"]
 
 reminders:
   default_snooze: 1h
