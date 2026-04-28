@@ -406,7 +406,7 @@ Examples:
             return None
 
         time_phrase = parsed.get("time_phrase", "")
-        normalized = _re.sub(r"\bnext\b", "", time_phrase, flags=_re.IGNORECASE).strip()
+        normalized = _re.sub(r"\b(next|this|coming)\b", "", time_phrase, flags=_re.IGNORECASE).strip()
 
         dt = dateparser.parse(
             normalized,
@@ -494,7 +494,7 @@ If no reminder matches at all, return:
             import re as _re
 
             time_phrase = parsed["time_phrase"]
-            normalized = _re.sub(r"\bnext\b", "", time_phrase, flags=_re.IGNORECASE).strip()
+            normalized = _re.sub(r"\b(next|this|coming)\b", "", time_phrase, flags=_re.IGNORECASE).strip()
 
             dt = dateparser.parse(
                 normalized,
