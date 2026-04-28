@@ -79,6 +79,17 @@ class SchedulerJobs:
         # to avoid re-sending every minute
         self._post_prompted: set[int] = set()
 
+    async def _send_to_chat(self, chat_id: int, text: str, reply_markup=None) -> None:
+        """Send a message to a specific chat."""
+        try:
+            await self.app.bot.send_message(
+                chat_id=chat_id, text=text, reply_markup=reply_markup,
+            )
+        except Forbidden:
+            logger.warning("Cannot send to chat_id=%s: user has not sent /start.", chat_id)
+        except Exception as e:
+            logger.error("Failed to send to chat_id=%s: %s", chat_id, e)
+
     async def _send_to_all(self, text: str, reply_markup=None) -> None:
         """Send a message to all active chats (DMs and group chats).
 
@@ -449,7 +460,16 @@ class SchedulerJobs:
             lines.append("")
 
         lines.append("🐰")
-        await self._send_to_all("\n".join(lines))
+        text = "\n".join(lines)
+
+        chat_id = alert.chat_id
+        if not chat_id:
+            parent = self.reminders.get_reminder(parent_id)
+            chat_id = parent.chat_id if parent else None
+        if chat_id:
+            await self._send_to_chat(chat_id, text)
+        else:
+            await self._send_to_all(text)
 
         for a in batch:
             self.reminders.delete_fired_alert(a.id)
@@ -478,7 +498,10 @@ class SchedulerJobs:
                 reminder, self.settings.timezone
             )
             markup = keyboards.reminder_actions(reminder.id)
-            await self._send_to_all(text, reply_markup=markup)
+            if reminder.chat_id:
+                await self._send_to_chat(reminder.chat_id, text, reply_markup=markup)
+            else:
+                await self._send_to_all(text, reply_markup=markup)
             # C2: Mark as notified so it won't fire again
             self.reminders.mark_notified(reminder.id)
 

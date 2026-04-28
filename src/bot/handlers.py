@@ -130,6 +130,7 @@ class BotHandlers:
                     source="pre_alert",
                     source_ref=str(parent_reminder.id),
                     alert_label=label,
+                    chat_id=getattr(parent_reminder, 'chat_id', None),
                 )
                 # Schedule a DateTrigger job for exact-time firing
                 self._schedule_alert_job(alert_record, parent_reminder, context)
@@ -569,6 +570,7 @@ class BotHandlers:
                     source="pre_alert",
                     source_ref=str(reminder.id),
                     alert_label=label,
+                    chat_id=getattr(reminder, 'chat_id', None),
                 )
                 # Schedule a DateTrigger job for exact-time firing
                 self._schedule_alert_job(alert_record, reminder, context)
@@ -810,6 +812,7 @@ class BotHandlers:
                         title=parsed["title"],
                         due_at=due_at_utc,
                         recurrence=parsed.get("recurrence"),
+                        chat_id=update.effective_chat.id,
                     )
 
                     pre_alerts = parsed.get("pre_alerts", "ask")

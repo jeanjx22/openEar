@@ -51,6 +51,7 @@ class ReminderService:
         source: str = "user_manual",
         source_ref: str | None = None,
         alert_label: str | None = None,
+        chat_id: int | None = None,
     ) -> Reminder:
         """Create a new reminder. due_at must be UTC."""
         with get_session() as session:
@@ -62,6 +63,7 @@ class ReminderService:
                 source=source,
                 source_ref=source_ref,
                 alert_label=alert_label,
+                chat_id=chat_id,
                 status="active",
             )
             session.add(reminder)

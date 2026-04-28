@@ -53,6 +53,7 @@ class Reminder(Base):
     source_ref: Mapped[str | None] = mapped_column(String, nullable=True)
     parent_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     alert_label: Mapped[str | None] = mapped_column(String, nullable=True)
+    chat_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     snoozed_until: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
