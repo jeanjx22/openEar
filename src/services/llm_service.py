@@ -407,6 +407,7 @@ Examples:
 
         time_phrase = parsed.get("time_phrase", "")
         normalized = _re.sub(r"\b(next|this|coming)\b", "", time_phrase, flags=_re.IGNORECASE).strip()
+        normalized = _re.sub(r"\bfrom\s+(\d{1,2}(?::\d{2})?(?:\s*[ap]m)?)\s+to\s+\d{1,2}(?::\d{2})?(?:\s*[ap]m)?", r"at \1", normalized, flags=_re.IGNORECASE).strip()
 
         dt = dateparser.parse(
             normalized,
