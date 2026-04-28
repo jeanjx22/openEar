@@ -1642,11 +1642,15 @@ class BotHandlers:
             except Exception:
                 pass
 
-    def _parse_time_range(self, time_range: str) -> datetime | None:
+    def _parse_time_range(self, time_range: str | None) -> datetime | None:
         """Parse a natural language time range into a since-datetime."""
         from datetime import timedelta
         now = datetime.now(timezone.utc)
+        if not time_range:
+            return None
         lower = time_range.lower().strip()
+        if lower in ("all time", "all", "ever", "unspecified"):
+            return None
         if "today" in lower:
             return now.replace(hour=0, minute=0, second=0, microsecond=0)
         elif "yesterday" in lower:
