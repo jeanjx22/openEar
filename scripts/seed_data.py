@@ -63,4 +63,28 @@ for day_name, weekday_num in [("Sunday", 6), ("Tuesday", 1), ("Thursday", 3)]:
     )
     print(f"  Reminder: {r.title} at {due.strftime('%A %I:%M %p')}")
 
+# Notes / Activity log
+from src.services.note_service import NoteService
+notes_svc = NoteService()
+
+notes_data = [
+    ("husband went to tennis on April 24", ["activity_log", "husband", "tennis"]),
+    ("husband went to play tennis ball machine on April 22", ["activity_log", "husband", "tennis"]),
+    ("Aaron is allergic to egg and dairy", ["allergy", "Aaron", "medical"]),
+    ("Aaron's teacher is Jennifer Flores", ["school", "Aaron"]),
+    ("Aaron is in 1st grade elementary", ["school", "Aaron"]),
+    ("August is our younger son", ["family", "August"]),
+    ("Husband name is Ye", ["family", "husband"]),
+]
+
+for content, tags in notes_data:
+    import json
+    existing = notes_svc.search_notes(content[:30])
+    if not existing:
+        notes_svc.save_note(content, tags)
+        print(f"  Note: {content[:50]}")
+    else:
+        print(f"  Exists: {content[:50]}")
+
+print(f"\nNotes seeded")
 print("\nSeed complete")
