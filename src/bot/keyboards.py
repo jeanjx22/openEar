@@ -138,6 +138,22 @@ def note_followup(note_id: int) -> InlineKeyboardMarkup:
     )
 
 
+def note_remind_with_context(note_id: int, event_desc: str) -> InlineKeyboardMarkup:
+    """Inline keyboard offering to set a reminder for a note with a future event."""
+    # Truncate event description for button text (Telegram limit is 64 bytes)
+    label = f"Set reminder for {event_desc[:30]}?" if event_desc else "Set a reminder?"
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    label,
+                    callback_data=f"note_remind:{note_id}",
+                ),
+            ]
+        ]
+    )
+
+
 def manage_alerts(reminder_id: int) -> InlineKeyboardMarkup:
     """Inline keyboard for managing alerts on an existing reminder."""
     return InlineKeyboardMarkup(

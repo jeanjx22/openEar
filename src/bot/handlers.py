@@ -476,12 +476,22 @@ class BotHandlers:
         note = self.notes.save_note(content, tags)
         reply = formatters.format_note(note, self.settings.timezone)
 
-        # Check for recurring pattern to suggest reminder
+        # Check for future event to offer reminder
+        markup = None
         has_recurring = any(
             word in content.lower()
             for word in ["every", "weekly", "daily", "monthly", "each"]
         )
-        markup = keyboards.note_followup(note.id) if has_recurring else None
+        if has_recurring:
+            markup = keyboards.note_followup(note.id)
+        else:
+            future_event = await self.llm.check_future_event(
+                content, self.settings.timezone
+            )
+            if future_event and future_event.get("has_future_event"):
+                markup = keyboards.note_remind_with_context(
+                    note.id, future_event.get("event_description", "")
+                )
         await update.message.reply_text(
             f"Saved! {reply}", reply_markup=markup
         )
@@ -714,7 +724,67 @@ class BotHandlers:
             tags = intent_data.get("tags", [])
             note = self.notes.save_note(content, tags)
             reply = formatters.format_note(note, self.settings.timezone)
-            await update.message.reply_text(f"Saved! {reply}")
+            # Check for future event to offer reminder
+            markup = None
+            future_event = await self.llm.check_future_event(
+                content, self.settings.timezone
+            )
+            if future_event and future_event.get("has_future_event"):
+                markup = keyboards.note_remind_with_context(
+                    note.id, future_event.get("event_description", "")
+                )
+            await update.message.reply_text(f"Saved! {reply}", reply_markup=markup)
+        elif intent == "search_notes":
+            content = intent_data.get("content", user_message)
+            # Search by content and by tag, merge and deduplicate
+            content_matches = self.notes.search_notes(content)
+            # Extract likely search terms for tag search
+            tags = intent_data.get("tags", [])
+            tag_matches = []
+            for tag in tags:
+                tag_matches.extend(self.notes.search_by_tag(tag))
+            # Deduplicate by note id
+            seen_ids = set()
+            all_matches = []
+            for note in content_matches + tag_matches:
+                if note.id not in seen_ids:
+                    seen_ids.add(note.id)
+                    all_matches.append(note)
+            if all_matches:
+                reply = formatters.format_note_search_results(
+                    all_matches, content, self.settings.timezone
+                )
+            else:
+                reply = f"No notes found matching '{content}'."
+            await update.message.reply_text(reply)
+        elif intent == "activity_log":
+            who = intent_data.get("who", "")
+            activity = intent_data.get("activity", "")
+            content = intent_data.get("content", user_message)
+            tags = ["activity_log"]
+            if who:
+                tags.append(who.lower())
+            note = self.notes.save_note(content, tags)
+            await update.message.reply_text(f"Logged! {who}'s activity: {activity}")
+        elif intent == "search_activity":
+            who = intent_data.get("who", "")
+            time_range = intent_data.get("time_range", "this week")
+            since = self._parse_time_range(time_range)
+            tag = who.lower() if who else "activity_log"
+            activities = self.notes.search_by_tag(tag, since)
+            # Also filter for activity_log tag if searching by person
+            if who:
+                activities = [
+                    a for a in activities
+                    if "activity_log" in (json.loads(a.tags) if a.tags else [])
+                ]
+            if activities:
+                reply = formatters.format_activity_log(
+                    activities, who, self.settings.timezone
+                )
+            else:
+                reply = f"No activities found for {who or 'anyone'} ({time_range})."
+            await update.message.reply_text(reply)
         elif intent == "reminder":
             parsed = await self.llm.parse_reminder_time(user_message, self.settings.timezone)
             if parsed:
@@ -794,6 +864,9 @@ class BotHandlers:
             # Store conversation turn (N5: with user_id)
             self._store_conversation("user", user_message, user_id)
             self._store_conversation("assistant", response, user_id)
+
+            # Auto-save check: detect save-worthy information
+            await self._maybe_auto_save(update, user_message, response)
 
             # Check if summarization is needed
             await self._maybe_summarize_context(update, user_id)
@@ -1568,3 +1641,57 @@ class BotHandlers:
                 )
             except Exception:
                 pass
+
+    def _parse_time_range(self, time_range: str) -> datetime | None:
+        """Parse a natural language time range into a since-datetime."""
+        from datetime import timedelta
+        now = datetime.now(timezone.utc)
+        lower = time_range.lower().strip()
+        if "today" in lower:
+            return now.replace(hour=0, minute=0, second=0, microsecond=0)
+        elif "yesterday" in lower:
+            return (now - timedelta(days=1)).replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
+        elif "week" in lower:
+            return now - timedelta(days=7)
+        elif "month" in lower:
+            return now - timedelta(days=30)
+        return now - timedelta(days=7)  # default to last week
+
+    async def _maybe_auto_save(
+        self, update: Update, user_message: str, bot_response: str,
+    ) -> None:
+        """Check if the conversation contains save-worthy info and auto-save it.
+
+        Only runs if auto_save is enabled in rules.yaml and the circuit
+        breaker is not open (to avoid unnecessary LLM calls when the
+        service is degraded).
+        """
+        # Check rules.yaml auto_save.enabled flag (review finding #1)
+        auto_save_config = self.settings.rules.get("notes", {}).get("auto_save", {})
+        if not auto_save_config.get("enabled", False):
+            return
+
+        if self.llm.circuit_breaker.is_open:
+            return
+
+        try:
+            result = await self.llm.should_auto_save(user_message, bot_response)
+            if result and result.get("should_save"):
+                content = result.get("content", "")
+                # Guard against empty content (review finding #7)
+                if not content:
+                    return
+                tags = result.get("tags", [])
+                tags.append("auto_saved")
+                # Dedup: check if a similar note already exists (review finding #4)
+                existing = self.notes.search_notes(content[:50])
+                if existing:
+                    return
+                self.notes.save_note(content, tags)
+                # Append indicator to existing reply instead of sending
+                # a separate message (review finding #3)
+                await update.message.reply_text("\U0001f4dd Noted!")
+        except Exception as e:
+            logger.debug("Auto-save check failed (non-critical): %s", e)

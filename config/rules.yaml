@@ -39,3 +39,9 @@ reminders:
 
 notes:
   auto_suggest_reminder: true
+  auto_save:
+    enabled: true
+    confirm_message: "Noted!"
+  activity_log:
+    enabled: true
+    default_search_range: "7d"

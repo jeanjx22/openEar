@@ -161,6 +161,58 @@ def format_note_list(
     return "\n".join(lines)
 
 
+def format_note_search_results(
+    notes: list, query: str, tz_name: str = "America/Los_Angeles"
+) -> str:
+    """Format note search results."""
+    if not notes:
+        return f"No notes found matching '{query}'."
+
+    lines = [f"Found {len(notes)} note(s) matching '{query}':\n"]
+    for n in notes:
+        created = to_local(n.created_at, tz_name)
+        tags = ""
+        if n.tags and n.tags != "[]":
+            import json
+            try:
+                tag_list = json.loads(n.tags)
+                if tag_list:
+                    tags = f" [{', '.join(tag_list)}]"
+            except Exception:
+                pass
+        lines.append(f"  #{n.id} ({created}){tags}:")
+        lines.append(f"    {n.content}")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def format_activity_log(
+    activities: list, who: str, tz_name: str = "America/Los_Angeles"
+) -> str:
+    """Format activity log entries chronologically."""
+    if not activities:
+        return f"No activities logged for {who}."
+
+    # Sort chronologically (oldest first for reading order)
+    sorted_activities = sorted(activities, key=lambda a: a.created_at)
+    name = who.title() if who else "Family"
+    lines = [f"Activity log for {name}:\n"]
+    current_day = None
+    tz = ZoneInfo(tz_name)
+    for a in sorted_activities:
+        dt = a.created_at
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        local_dt = dt.astimezone(tz)
+        day_str = local_dt.strftime("%A %b %d")
+        time_str = local_dt.strftime("%-I:%M %p")
+        if day_str != current_day:
+            current_day = day_str
+            lines.append(f"\n  {day_str}:")
+        lines.append(f"    {time_str} -- {a.content}")
+    return "\n".join(lines)
+
+
 def format_stock_briefing(quotes: list[str | BaseException]) -> str:
     """Format stock quotes for the morning briefing.
 

@@ -210,6 +210,9 @@ Intents:
 - "reminder": set a NEW reminder
 - "modify": change/reschedule/cancel an EXISTING reminder
 - "note": save a note or piece of information
+- "search_notes": user is asking about previously saved notes or trying to recall something they noted (e.g. "what did I note about X?", "find my note on Y", "what was Aaron's allergy?")
+- "activity_log": user is logging what a family member did or is doing (e.g. "husband went to tennis", "Aaron had a playdate at Oscar's", "August napped 2 hours")
+- "search_activity": user is asking what someone did recently (e.g. "what did husband do this week?", "what has Aaron done lately?"). This is specifically for "what did [person] do" queries, NOT "what did I note about [topic]"
 - "weather": asks about weather
 - "stock": asks about stocks
 - "news": asks about news
@@ -233,6 +236,12 @@ Setup setting keys:
 Single request format:
 {"intent": "<intent>", "content": "<extracted content>", "action": "<if modify>", "tags": ["<tag>"]}
 
+Activity log format:
+{"intent": "activity_log", "content": "husband went to tennis", "who": "husband", "activity": "tennis", "tags": ["activity_log", "husband"]}
+
+Search activity format:
+{"intent": "search_activity", "content": "what did husband do this week", "who": "husband", "time_range": "this week", "tags": ["activity_log"]}
+
 Setup format:
 {"intent": "setup", "content": "<what to configure>", "settings": [{"key": "email_check_morning", "value": "06:30"}], "tags": []}
 
@@ -253,6 +262,85 @@ Multiple requests format:
         except json.JSONDecodeError:
             logger.warning("Failed to parse intent JSON: %s", result)
             return {"intent": "general", "content": user_message, "tags": []}
+
+    async def should_auto_save(self, user_message: str, bot_response: str) -> dict | None:
+        """Check if a conversation contains information worth auto-saving.
+
+        Returns a dict with keys: should_save (bool), content (str to save),
+        tags (list[str]). Returns None if LLM is unavailable.
+        """
+        system_prompt = """Analyze this conversation turn. Determine if the user shared important personal/family information that should be saved for future reference.
+
+SAVE-WORTHY information (return should_save: true):
+- Allergies, medical info, dietary restrictions
+- Schedules, routines, recurring activities
+- Preferences (food, activities, etc.)
+- Important dates (birthdays, anniversaries)
+- Contact info, addresses
+- School or childcare details
+- Names of friends, teachers, doctors
+
+NOT save-worthy (return should_save: false):
+- General chitchat, greetings
+- Questions that were already answered
+- Complaints, venting
+- Information already in the system
+- Requests for actions (reminders, weather, etc.)
+
+Return ONLY a JSON object:
+{"should_save": true/false, "content": "<concise fact to save>", "tags": ["<relevant_tags>"]}
+
+If should_save is false, content and tags can be empty."""
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": f"User said: {user_message}\n\nBot replied: {bot_response}"},
+        ]
+        result = await self.call_groq(messages, temperature=0.1)
+        if result is None:
+            return None
+        try:
+            return json.loads(_clean_json(result))
+        except json.JSONDecodeError:
+            logger.warning("Failed to parse auto-save JSON: %s", result)
+            return None
+
+    async def check_future_event(self, note_content: str, timezone_str: str) -> dict | None:
+        """Check if a note's content mentions a future event that could use a reminder.
+
+        Returns a dict with keys: has_future_event (bool), event_description (str),
+        suggested_time (str, natural language). Returns None if LLM unavailable.
+        """
+        from datetime import datetime as _dt
+        from datetime import timezone as _tz
+        from zoneinfo import ZoneInfo
+
+        now_local = _dt.now(_tz.utc).astimezone(ZoneInfo(timezone_str))
+
+        system_prompt = f"""Analyze this note content. Determine if it mentions a future event, appointment, or deadline that would benefit from a reminder.
+
+Current date/time: {now_local.strftime("%A %B %d, %Y %I:%M %p")}
+
+Return ONLY a JSON object:
+{{"has_future_event": true/false, "event_description": "<what the event is>", "suggested_time": "<when, in natural language>"}}
+
+Examples:
+- "Aaron has a dentist appointment next Tuesday at 3pm" -> {{"has_future_event": true, "event_description": "Aaron's dentist appointment", "suggested_time": "next Tuesday at 3pm"}}
+- "Aaron is allergic to eggs" -> {{"has_future_event": false, "event_description": "", "suggested_time": ""}}
+- "Piano recital on May 15th" -> {{"has_future_event": true, "event_description": "Piano recital", "suggested_time": "May 15th"}}"""
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": note_content},
+        ]
+        result = await self.call_groq(messages, temperature=0.1)
+        if result is None:
+            return None
+        try:
+            return json.loads(_clean_json(result))
+        except json.JSONDecodeError:
+            logger.warning("Failed to parse future event JSON: %s", result)
+            return None
 
     async def classify_emails_batch(
         self, emails: list[dict[str, str]], criteria: list[str]

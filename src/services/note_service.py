@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import logging
+from datetime import datetime
 
 from sqlalchemy import select
 
@@ -67,12 +68,22 @@ class NoteService:
                 session.expunge(note)
             return results
 
-    def search_by_tag(self, tag: str) -> list[Note]:
-        """Search notes by tag. Scans JSON array in tags column."""
+    def search_by_tag(
+        self, tag: str, since: datetime | None = None
+    ) -> list[Note]:
+        """Search notes by tag, optionally filtered to a time range.
+
+        Args:
+            tag: Tag to search for (case-insensitive).
+            since: If provided, only return notes created after this datetime.
+        """
         with get_session() as session:
             # SQLite JSON: tags column contains JSON array as text
             # Use LIKE as a simple filter, then verify in Python
             stmt = select(Note).where(Note.tags.ilike(f'%"{tag}"%'))
+            if since:
+                stmt = stmt.where(Note.created_at >= since)
+            stmt = stmt.order_by(Note.created_at.desc())
             candidates = list(session.execute(stmt).scalars().all())
             results = []
             for note in candidates:
