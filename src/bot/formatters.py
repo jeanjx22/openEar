@@ -166,9 +166,9 @@ def format_note_search_results(
 ) -> str:
     """Format note search results."""
     if not notes:
-        return f"No notes found matching '{query}'."
+        return f"🔍 Nothing found for '{query}' 🐰"
 
-    lines = [f"Found {len(notes)} note(s) matching '{query}':\n"]
+    lines = [f"📝 Found {len(notes)} note(s) for '{query}':\n"]
     for n in notes:
         created = to_local(n.created_at, tz_name)
         tags = ""
@@ -176,13 +176,15 @@ def format_note_search_results(
             import json
             try:
                 tag_list = json.loads(n.tags)
+                tag_list = [t for t in tag_list if t != "activity_log"]
                 if tag_list:
-                    tags = f" [{', '.join(tag_list)}]"
+                    tags = f"  🏷 {', '.join(tag_list)}"
             except Exception:
                 pass
-        lines.append(f"  #{n.id} ({created}){tags}:")
-        lines.append(f"    {n.content}")
+        lines.append(f"  💬 {n.content}")
+        lines.append(f"     📅 {created}{tags}")
         lines.append("")
+    lines.append("🐰")
     return "\n".join(lines)
 
 
@@ -191,12 +193,11 @@ def format_activity_log(
 ) -> str:
     """Format activity log entries chronologically."""
     if not activities:
-        return f"No activities logged for {who}."
+        return f"🤷 No activities logged for {who or 'anyone'} 🐰"
 
-    # Sort chronologically (oldest first for reading order)
     sorted_activities = sorted(activities, key=lambda a: a.created_at)
     name = who.title() if who else "Family"
-    lines = [f"Activity log for {name}:\n"]
+    lines = [f"🏃 {name}'s activities:\n"]
     current_day = None
     tz = ZoneInfo(tz_name)
     for a in sorted_activities:
@@ -208,8 +209,9 @@ def format_activity_log(
         time_str = local_dt.strftime("%-I:%M %p")
         if day_str != current_day:
             current_day = day_str
-            lines.append(f"\n  {day_str}:")
-        lines.append(f"    {time_str} -- {a.content}")
+            lines.append(f"\n📅 {day_str}:")
+        lines.append(f"  • {a.content}")
+    lines.append("\n🐰")
     return "\n".join(lines)
 
 

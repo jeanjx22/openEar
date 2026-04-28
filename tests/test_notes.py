@@ -260,7 +260,7 @@ class TestFormatNoteSearchResultsEmpty:
     def test_format_note_search_results_empty(self):
         """Empty notes list returns 'no notes found' message."""
         result = formatters.format_note_search_results([], "allergies")
-        assert "No notes found" in result
+        assert "Nothing found" in result or "No notes" in result
         assert "allergies" in result
 
     def test_format_note_search_results_empty_returns_string(self):
@@ -288,9 +288,9 @@ class TestFormatNoteSearchResultsWithResults:
             ),
         ]
         result = formatters.format_note_search_results(notes, "Aaron")
-        assert "Found 2 note(s) matching 'Aaron'" in result
-        assert "#1" in result
-        assert "#5" in result
+        assert "Found 2 note" in result
+        assert "allergic to eggs" in result
+        assert "Ms. Johnson" in result
         assert "allergic to eggs" in result
         assert "Ms. Johnson" in result
         assert "allergy" in result
@@ -302,9 +302,8 @@ class TestFormatNoteSearchResultsWithResults:
             _make_note(id=3, content="Plain note", tags="[]"),
         ]
         result = formatters.format_note_search_results(notes, "plain")
-        assert "Found 1 note(s)" in result
+        assert "Found 1 note" in result
         assert "Plain note" in result
-        assert "#3" in result
 
 
 # ===================================================================
@@ -403,7 +402,7 @@ class TestFormatActivityLog:
 
         result = formatters.format_activity_log(activities, "husband")
 
-        assert "Activity log for Husband" in result
+        assert "Husband" in result
         assert "tennis" in result
         assert "lunch with friends" in result
         assert "gym" in result
@@ -430,7 +429,7 @@ class TestFormatActivityLog:
             ),
         ]
         result = formatters.format_activity_log(activities, "")
-        assert "Activity log for Family" in result
+        assert "Family" in result
 
 
 # ===================================================================
