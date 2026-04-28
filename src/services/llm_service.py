@@ -376,7 +376,13 @@ Behavioral rules:
         from zoneinfo import ZoneInfo
 
         system_prompt = """Extract reminder details from the user's message. Return ONLY a JSON object:
-{"title": "<what to remind about>", "time_phrase": "<the time/date part>", "recurrence": "<daily|weekly|monthly|null>", "pre_alerts": [<list of alert preferences>]}
+{"title": "<what to remind about>", "time_phrase": "<the time/date part or null>", "recurrence": "<daily|weekly|biweekly|monthly|null>", "pre_alerts": [<list of alert preferences>]}
+
+IMPORTANT for recurring reminders without a specific date:
+- "remind me oil change every 2 weeks" -> {"title": "Oil change", "time_phrase": null, "recurrence": "biweekly"}
+- "check tire pressure every month" -> {"title": "Check tire pressure", "time_phrase": null, "recurrence": "monthly"}
+- "remind me every week to take vitamins" -> {"title": "Take vitamins", "time_phrase": null, "recurrence": "weekly"}
+Set time_phrase to null when there's no specific date/time, only a recurrence pattern.
 
 pre_alerts should contain objects like:
 - {"offset": "1d_before", "time": "20:00", "label": "Tomorrow"} — remind the evening before
@@ -405,9 +411,24 @@ Examples:
             logger.warning("Failed to parse reminder JSON: %s", result)
             return None
 
-        time_phrase = parsed.get("time_phrase", "")
+        time_phrase = parsed.get("time_phrase") or ""
+        recurrence = parsed.get("recurrence")
+
+        if not time_phrase and recurrence:
+            from datetime import datetime as _dt, timezone as _tz
+            from zoneinfo import ZoneInfo
+            now_local = _dt.now(_tz.utc).astimezone(ZoneInfo(timezone))
+            return {
+                "title": parsed.get("title", user_input),
+                "due_at": now_local.isoformat(),
+                "recurrence": recurrence,
+                "pre_alerts": parsed.get("pre_alerts", "ask"),
+            }
+
         normalized = _re.sub(r"\b(next|this|coming)\b", "", time_phrase, flags=_re.IGNORECASE).strip()
         normalized = _re.sub(r"\bfrom\s+(\d{1,2}(?::\d{2})?(?:\s*[ap]m)?)\s+to\s+\d{1,2}(?::\d{2})?(?:\s*[ap]m)?", r"at \1", normalized, flags=_re.IGNORECASE).strip()
+        normalized = _re.sub(r"\b(every\s+\w+|starting\s+from)\b", "", normalized, flags=_re.IGNORECASE).strip()
+        normalized = _re.sub(r",\s*$", "", normalized).strip()
 
         dt = dateparser.parse(
             normalized,
