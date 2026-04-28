@@ -367,32 +367,28 @@ class BotHandlers:
             return
         self._track_chat(update, context)
 
-        # Only show future reminders or recently notified ones
+        self.reminders.auto_complete_past_events(grace_hours=0)
+
         parent_reminders = self.reminders.get_future_reminders()
 
         if not parent_reminders:
-            await update.message.reply_text("No active reminders.")
+            await update.message.reply_text("No active reminders 🐰")
             return
 
-        cards = ["\U0001f4cb Your reminders:\n"]
-        reminder_meta = []  # (reminder, has_alerts) for keyboard buttons
-
+        lines = ["📋 Your reminders:\n"]
         for i, r in enumerate(parent_reminders, 1):
+            due_str = formatters.to_local(r.due_at, self.settings.timezone)
+            recur = f" (repeats {r.recurrence})" if r.recurrence else ""
             alerts = self.reminders.get_alerts_for_reminder(r.id)
-            active_alerts = [a for a in alerts if a.status in ("active", "notified")]
-            card = formatters.format_reminder_card(r, active_alerts, self.settings.timezone)
-            cards.append(f"{i}. {card}\n")
-            reminder_meta.append((r, len(active_alerts) > 0))
+            alert_str = ""
+            if alerts:
+                alert_labels = [a.alert_label or "Alert" for a in alerts]
+                alert_str = f"\n   🔔 {' · '.join(alert_labels)}"
+            lines.append(f"{i}. 🗓 {r.title}\n   📅 {due_str}{recur}{alert_str}\n")
 
-        text = "\n".join(cards)
-        await update.message.reply_text(text)
-
-        # Send inline keyboard for each reminder
-        for r, has_alerts in reminder_meta:
-            await update.message.reply_text(
-                f"{r.title}",
-                reply_markup=keyboards.reminder_list_actions(r.id, has_alerts),
-            )
+        lines.append("To manage: just tell me naturally 🐰")
+        lines.append('e.g. "cancel dentist" or "add alert for oil change"')
+        await update.message.reply_text("\n".join(lines))
 
     async def cmd_list_notes(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
