@@ -768,22 +768,34 @@ class BotHandlers:
             await update.message.reply_text(f"Logged! {who}'s activity: {activity}")
         elif intent == "search_activity":
             who = intent_data.get("who", "")
+            activity = intent_data.get("activity", "")
             time_range = intent_data.get("time_range", "this week")
             since = self._parse_time_range(time_range)
-            tag = who.lower() if who else "activity_log"
-            activities = self.notes.search_by_tag(tag, since)
-            # Also filter for activity_log tag if searching by person
+            seen_ids = set()
+            activities = []
             if who:
-                activities = [
-                    a for a in activities
-                    if "activity_log" in (json.loads(a.tags) if a.tags else [])
-                ]
+                for note in self.notes.search_by_tag(who.lower(), since):
+                    if note.id not in seen_ids:
+                        seen_ids.add(note.id)
+                        activities.append(note)
+            if activity:
+                for note in self.notes.search_notes(activity):
+                    if note.id not in seen_ids:
+                        if since is None or (note.created_at and note.created_at >= since.replace(tzinfo=None)):
+                            seen_ids.add(note.id)
+                            activities.append(note)
+            if not activities and who:
+                for note in self.notes.search_notes(who):
+                    if note.id not in seen_ids:
+                        seen_ids.add(note.id)
+                        activities.append(note)
+            activities.sort(key=lambda a: a.created_at or datetime.min)
             if activities:
                 reply = formatters.format_activity_log(
                     activities, who, self.settings.timezone
                 )
             else:
-                reply = f"No activities found for {who or 'anyone'} ({time_range})."
+                reply = f"🤷 No activities found for {who or 'anyone'} 🐰"
             await update.message.reply_text(reply)
         elif intent == "reminder":
             parsed = await self.llm.parse_reminder_time(user_message, self.settings.timezone)

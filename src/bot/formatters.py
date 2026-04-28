@@ -210,7 +210,24 @@ def format_activity_log(
         if day_str != current_day:
             current_day = day_str
             lines.append(f"\n📅 {day_str}:")
-        lines.append(f"  • {a.content}")
+        content = a.content
+        emoji = "•"
+        cl = content.lower()
+        if "tennis" in cl:
+            emoji = "🎾"
+        elif "gym" in cl or "workout" in cl or "exercise" in cl:
+            emoji = "💪"
+        elif "swim" in cl:
+            emoji = "🏊"
+        elif "run" in cl or "jog" in cl:
+            emoji = "🏃"
+        elif "doctor" in cl or "dentist" in cl or "hospital" in cl:
+            emoji = "🏥"
+        elif "school" in cl or "class" in cl:
+            emoji = "📚"
+        elif "lunch" in cl or "dinner" in cl or "food" in cl:
+            emoji = "🍽"
+        lines.append(f"  {emoji} {content}")
     lines.append("\n🐰")
     return "\n".join(lines)
 
