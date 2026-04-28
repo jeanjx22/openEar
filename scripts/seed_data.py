@@ -59,6 +59,7 @@ for day_name, weekday_num in [("Sunday", 6), ("Tuesday", 1), ("Thursday", 3)]:
         title=f"Remind Ye: Take food out of fridge ({day_name} night)",
         due_at=due_utc,
         recurrence="weekly",
+        chat_id=-1003962733226,
     )
     print(f"  Reminder: {r.title} at {due.strftime('%A %I:%M %p')}")
 
