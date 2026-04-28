@@ -324,10 +324,14 @@ Current date/time: {now_local.strftime("%A %B %d, %Y %I:%M %p")}
 Return ONLY a JSON object:
 {{"has_future_event": true/false, "event_description": "<what the event is>", "suggested_time": "<when, in natural language>"}}
 
+IMPORTANT: Only return has_future_event=true if the date/time is IN THE FUTURE (after {now_local.strftime("%B %d, %Y")}).
+Past dates should ALWAYS return has_future_event=false.
+
 Examples:
 - "Aaron has a dentist appointment next Tuesday at 3pm" -> {{"has_future_event": true, "event_description": "Aaron's dentist appointment", "suggested_time": "next Tuesday at 3pm"}}
 - "Aaron is allergic to eggs" -> {{"has_future_event": false, "event_description": "", "suggested_time": ""}}
-- "Piano recital on May 15th" -> {{"has_future_event": true, "event_description": "Piano recital", "suggested_time": "May 15th"}}"""
+- "Piano recital on May 15th" -> {{"has_future_event": true, "event_description": "Piano recital", "suggested_time": "May 15th"}}
+- "husband went to tennis on April 22" -> {{"has_future_event": false, "event_description": "", "suggested_time": ""}}"""
 
         messages = [
             {"role": "system", "content": system_prompt},
@@ -337,7 +341,16 @@ Examples:
         if result is None:
             return None
         try:
-            return json.loads(_clean_json(result))
+            parsed = json.loads(_clean_json(result))
+            if parsed.get("has_future_event") and parsed.get("suggested_time"):
+                import dateparser
+                dt = dateparser.parse(
+                    parsed["suggested_time"],
+                    settings={"PREFER_DATES_FROM": "future", "TIMEZONE": timezone_str},
+                )
+                if dt and dt < now_local.replace(tzinfo=None):
+                    parsed["has_future_event"] = False
+            return parsed
         except json.JSONDecodeError:
             logger.warning("Failed to parse future event JSON: %s", result)
             return None
