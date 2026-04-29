@@ -462,6 +462,11 @@ class SchedulerJobs:
         lines.append("🐰")
         text = "\n".join(lines)
 
+        # Delete BEFORE sending to prevent race condition with other
+        # DateTrigger jobs firing at the same time
+        for a in batch:
+            self.reminders.delete_fired_alert(a.id)
+
         chat_id = alert.chat_id
         if not chat_id:
             parent = self.reminders.get_reminder(parent_id)
@@ -471,8 +476,6 @@ class SchedulerJobs:
         else:
             await self._send_to_all(text)
 
-        for a in batch:
-            self.reminders.delete_fired_alert(a.id)
         logger.info("Fired and deleted %d alert(s): %s", len(batch), list(batch_ids))
 
     async def _reminder_check_job(self) -> None:
