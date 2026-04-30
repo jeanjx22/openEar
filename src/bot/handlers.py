@@ -376,20 +376,21 @@ class BotHandlers:
             await update.message.reply_text("No active reminders 🐰")
             return
 
-        lines = ["📋 Your reminders:\n"]
-        for i, r in enumerate(parent_reminders, 1):
+        from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
+        for r in parent_reminders:
             due_str = formatters.to_local(r.due_at, self.settings.timezone)
             recur = f" (repeats {r.recurrence})" if r.recurrence else ""
             alerts = self.reminders.get_alerts_for_reminder(r.id)
             alert_str = ""
             if alerts:
                 alert_labels = [a.alert_label or "Alert" for a in alerts]
-                alert_str = f"\n   🔔 {' · '.join(alert_labels)}"
-            lines.append(f"{i}. 🗓 {r.title}\n   📅 {due_str}{recur}{alert_str}\n")
-
-        lines.append("To manage: just tell me naturally 🐰")
-        lines.append('e.g. "cancel dentist" or "add alert for oil change"')
-        await update.message.reply_text("\n".join(lines))
+                alert_str = f"\n🔔 {' · '.join(alert_labels)}"
+            text = f"🗓 {r.title}\n📅 {due_str}{recur}{alert_str}"
+            markup = InlineKeyboardMarkup([[
+                InlineKeyboardButton("✅ Done", callback_data=f"checklist_done:{r.id}"),
+            ]])
+            await update.message.reply_text(text, reply_markup=markup)
 
     async def cmd_list_notes(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -1318,10 +1319,15 @@ class BotHandlers:
             text = formatters.format_reminder(reminder, self.settings.timezone)
             await query.edit_message_text(f"⏰ {text}\n\n🔔 Alerts: {summary}\n🐰")
 
-        elif data.startswith("reminder_done:"):
+        elif data.startswith("checklist_done:") or data.startswith("reminder_done:"):
             reminder_id = int(data.split(":")[1])
+            # Delete all associated alerts + cancel their scheduler jobs
+            alerts = self.reminders.get_alerts_for_reminder(reminder_id)
+            for a in alerts:
+                self._cancel_alert_job(a.id, context)
+                self.reminders.delete_fired_alert(a.id)
             self.reminders.complete_reminder(reminder_id)
-            await query.edit_message_text("✅ Reminder completed! 🐰")
+            await query.edit_message_text("✅ Done! 🐰")
 
         elif data.startswith("reminder_snooze_1h:"):
             reminder_id = int(data.split(":")[1])
