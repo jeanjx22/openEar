@@ -40,6 +40,7 @@ def _make_reminder(**overrides):
         source_ref=None,
         parent_id=None,
         alert_label=None,
+        chat_id=None,
         created_at=datetime(2026, 4, 24, 10, 0, tzinfo=timezone.utc),
         snoozed_until=None,
     )
@@ -1330,3 +1331,176 @@ class TestValidateSetupSettings:
         assert len(valid) == 0
         assert len(errors) == 1
         assert "Invalid stock symbol" in errors[0]
+
+
+# ===================================================================
+# 14. Checklist (interactive /reminders) tests
+# ===================================================================
+
+
+class TestChecklist:
+    """Tests for _build_checklist and checklist_done callback flow."""
+
+    def _make_handlers(self, reminder_service=None):
+        from src.bot.handlers import BotHandlers
+
+        mock_settings = MagicMock()
+        mock_settings.timezone = "America/Los_Angeles"
+        mock_settings.persona = {"name": "openEar", "emoji": ""}
+
+        return BotHandlers(
+            settings=mock_settings,
+            llm_service=MagicMock(),
+            email_service=MagicMock(),
+            reminder_service=reminder_service or MagicMock(),
+            note_service=MagicMock(),
+            health_service=MagicMock(),
+        )
+
+    def test_build_checklist_shows_all_reminders(self):
+        """3 reminders produce text with all titles and markup with 3 buttons."""
+        reminders = [
+            _make_reminder(id=1, title="Dentist appointment"),
+            _make_reminder(id=2, title="Buy groceries"),
+            _make_reminder(id=3, title="Call bank"),
+        ]
+
+        mock_svc = MagicMock()
+        mock_svc.auto_complete_past_events = MagicMock()
+        mock_svc.get_future_reminders.return_value = reminders
+        mock_svc.get_alerts_for_reminder.return_value = []
+
+        handlers = self._make_handlers(reminder_service=mock_svc)
+        text, markup = handlers._build_checklist()
+
+        assert "Dentist appointment" in text
+        assert "Buy groceries" in text
+        assert "Call bank" in text
+
+        buttons = _flat_buttons(markup)
+        assert len(buttons) == 3
+
+    def test_build_checklist_empty(self):
+        """Empty reminder list returns 'No active' text and None markup."""
+        mock_svc = MagicMock()
+        mock_svc.auto_complete_past_events = MagicMock()
+        mock_svc.get_future_reminders.return_value = []
+
+        handlers = self._make_handlers(reminder_service=mock_svc)
+        text, markup = handlers._build_checklist()
+
+        assert "No active" in text
+        assert markup is None
+
+    def test_build_checklist_buttons_have_correct_callback_data(self):
+        """Each button's callback_data follows 'checklist_done:{id}' format."""
+        reminders = [
+            _make_reminder(id=10, title="Alpha"),
+            _make_reminder(id=20, title="Bravo"),
+            _make_reminder(id=30, title="Charlie"),
+        ]
+
+        mock_svc = MagicMock()
+        mock_svc.auto_complete_past_events = MagicMock()
+        mock_svc.get_future_reminders.return_value = reminders
+        mock_svc.get_alerts_for_reminder.return_value = []
+
+        handlers = self._make_handlers(reminder_service=mock_svc)
+        _, markup = handlers._build_checklist()
+
+        buttons = _flat_buttons(markup)
+        assert buttons[0].callback_data == "checklist_done:10"
+        assert buttons[1].callback_data == "checklist_done:20"
+        assert buttons[2].callback_data == "checklist_done:30"
+
+    @pytest.mark.asyncio
+    async def test_checklist_done_removes_item(self):
+        """Tapping a checklist button completes the reminder and rebuilds the list."""
+        completed_reminder = _make_reminder(id=5, title="Task to finish")
+
+        mock_svc = MagicMock()
+        mock_svc.get_reminder.return_value = completed_reminder
+        mock_svc.get_alerts_for_reminder.return_value = []
+        mock_svc.complete_reminder = MagicMock()
+        # After completing, _build_checklist is called; remaining list is empty
+        mock_svc.auto_complete_past_events = MagicMock()
+        mock_svc.get_future_reminders.return_value = []
+
+        handlers = self._make_handlers(reminder_service=mock_svc)
+
+        mock_query = AsyncMock()
+        mock_query.data = "checklist_done:5"
+        mock_query.answer = AsyncMock()
+        mock_query.edit_message_text = AsyncMock()
+
+        mock_update = MagicMock()
+        mock_update.callback_query = mock_query
+        mock_update.effective_user.id = 12345
+
+        mock_context = MagicMock()
+
+        with patch("src.bot.handlers.auth_check", new_callable=AsyncMock, return_value=True):
+            await handlers.callback_handler(mock_update, mock_context)
+
+        mock_svc.complete_reminder.assert_called_once_with(5)
+
+        # Verify the message was updated (edit_message_text called)
+        mock_query.edit_message_text.assert_called_once()
+        sent_text = mock_query.edit_message_text.call_args[0][0]
+        assert "Task to finish" in sent_text
+        assert "done" in sent_text.lower()
+
+    @pytest.mark.asyncio
+    async def test_checklist_done_deletes_alerts(self):
+        """Checklist done calls get_alerts_for_reminder, delete_fired_alert,
+        and _cancel_alert_job for each alert."""
+        parent = _make_reminder(id=7, title="Event with alerts")
+        alert_a = _make_reminder(
+            id=101, title="Alert A", source="pre_alert", source_ref="7",
+        )
+        alert_b = _make_reminder(
+            id=102, title="Alert B", source="pre_alert", source_ref="7",
+        )
+
+        mock_svc = MagicMock()
+        mock_svc.get_reminder.return_value = parent
+        mock_svc.get_alerts_for_reminder.return_value = [alert_a, alert_b]
+        mock_svc.delete_fired_alert = MagicMock()
+        mock_svc.complete_reminder = MagicMock()
+        # Rebuild after completing: empty list
+        mock_svc.auto_complete_past_events = MagicMock()
+        mock_svc.get_future_reminders.return_value = []
+
+        handlers = self._make_handlers(reminder_service=mock_svc)
+
+        mock_query = AsyncMock()
+        mock_query.data = "checklist_done:7"
+        mock_query.answer = AsyncMock()
+        mock_query.edit_message_text = AsyncMock()
+
+        mock_update = MagicMock()
+        mock_update.callback_query = mock_query
+        mock_update.effective_user.id = 12345
+
+        mock_context = MagicMock()
+        mock_scheduler = MagicMock()
+        mock_context.bot_data = {"scheduler_jobs": mock_scheduler}
+
+        with patch("src.bot.handlers.auth_check", new_callable=AsyncMock, return_value=True):
+            await handlers.callback_handler(mock_update, mock_context)
+
+        mock_svc.get_alerts_for_reminder.assert_called_once_with(7)
+
+        # delete_fired_alert called for each alert
+        assert mock_svc.delete_fired_alert.call_count == 2
+        deleted_ids = [c[0][0] for c in mock_svc.delete_fired_alert.call_args_list]
+        assert 101 in deleted_ids
+        assert 102 in deleted_ids
+
+        # cancel_alert called on scheduler for each alert
+        assert mock_scheduler.cancel_alert.call_count == 2
+        cancelled_ids = [c[0][0] for c in mock_scheduler.cancel_alert.call_args_list]
+        assert 101 in cancelled_ids
+        assert 102 in cancelled_ids
+
+        mock_svc.complete_reminder.assert_called_once_with(7)

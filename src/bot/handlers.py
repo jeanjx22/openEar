@@ -361,6 +361,36 @@ class BotHandlers:
                 "scripts/setup_gmail.py."
             )
 
+    def _build_checklist(self) -> tuple[str, "InlineKeyboardMarkup | None"]:
+        """Build the checklist message text and inline keyboard."""
+        from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
+        self.reminders.auto_complete_past_events(grace_hours=0)
+        parent_reminders = self.reminders.get_future_reminders()
+
+        if not parent_reminders:
+            return "No active reminders 🐰", None
+
+        lines = ["📋 Your reminders:\n"]
+        buttons = []
+        for i, r in enumerate(parent_reminders, 1):
+            due_str = formatters.to_local(r.due_at, self.settings.timezone)
+            recur = f" (repeats {r.recurrence})" if r.recurrence else ""
+            alerts = self.reminders.get_alerts_for_reminder(r.id)
+            alert_str = ""
+            if alerts:
+                alert_labels = [a.alert_label or "Alert" for a in alerts]
+                alert_str = f"\n   🔔 {' · '.join(alert_labels)}"
+            lines.append(f"{i}. 🗓 {r.title}\n   📅 {due_str}{recur}{alert_str}\n")
+            short_title = r.title[:15] + "…" if len(r.title) > 15 else r.title
+            buttons.append(
+                InlineKeyboardButton(f"✅ {i}. {short_title}", callback_data=f"checklist_done:{r.id}")
+            )
+
+        rows = [buttons[i:i+2] for i in range(0, len(buttons), 2)]
+        markup = InlineKeyboardMarkup(rows)
+        return "\n".join(lines), markup
+
     async def cmd_list_reminders(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
@@ -368,29 +398,8 @@ class BotHandlers:
             return
         self._track_chat(update, context)
 
-        self.reminders.auto_complete_past_events(grace_hours=0)
-
-        parent_reminders = self.reminders.get_future_reminders()
-
-        if not parent_reminders:
-            await update.message.reply_text("No active reminders 🐰")
-            return
-
-        from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-
-        for r in parent_reminders:
-            due_str = formatters.to_local(r.due_at, self.settings.timezone)
-            recur = f" (repeats {r.recurrence})" if r.recurrence else ""
-            alerts = self.reminders.get_alerts_for_reminder(r.id)
-            alert_str = ""
-            if alerts:
-                alert_labels = [a.alert_label or "Alert" for a in alerts]
-                alert_str = f"\n🔔 {' · '.join(alert_labels)}"
-            text = f"🗓 {r.title}\n📅 {due_str}{recur}{alert_str}"
-            markup = InlineKeyboardMarkup([[
-                InlineKeyboardButton("✅ Done", callback_data=f"checklist_done:{r.id}"),
-            ]])
-            await update.message.reply_text(text, reply_markup=markup)
+        text, markup = self._build_checklist()
+        await update.message.reply_text(text, reply_markup=markup)
 
     async def cmd_list_notes(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -1321,13 +1330,23 @@ class BotHandlers:
 
         elif data.startswith("checklist_done:") or data.startswith("reminder_done:"):
             reminder_id = int(data.split(":")[1])
-            # Delete all associated alerts + cancel their scheduler jobs
+            reminder = self.reminders.get_reminder(reminder_id)
+            title = reminder.title if reminder else "Reminder"
             alerts = self.reminders.get_alerts_for_reminder(reminder_id)
             for a in alerts:
                 self._cancel_alert_job(a.id, context)
                 self.reminders.delete_fired_alert(a.id)
             self.reminders.complete_reminder(reminder_id)
-            await query.edit_message_text("✅ Done! 🐰")
+
+            if data.startswith("checklist_done:"):
+                text, markup = self._build_checklist()
+                if markup:
+                    text = f"✅ {title} — done!\n\n{text}"
+                    await query.edit_message_text(text, reply_markup=markup)
+                else:
+                    await query.edit_message_text(f"✅ {title} — done!\n\nAll clear! 🐰")
+            else:
+                await query.edit_message_text("✅ Done! 🐰")
 
         elif data.startswith("reminder_snooze_1h:"):
             reminder_id = int(data.split(":")[1])

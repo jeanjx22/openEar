@@ -170,11 +170,15 @@ class ReminderService:
         """Mark a reminder as completed. If recurring, schedule next occurrence.
 
         C2: Accepts reminders in "active" or "notified" status.
+        Idempotent: returns immediately if already completed.
         """
         with get_session() as session:
             reminder = session.get(Reminder, reminder_id)
             if not reminder:
                 return None
+            if reminder.status == "completed":
+                session.expunge(reminder)
+                return reminder
             reminder.status = "completed"
 
             # Handle recurrence
@@ -426,12 +430,12 @@ class ReminderService:
             return current_due + timedelta(days=1)
         elif recurrence == "weekly":
             return current_due + timedelta(weeks=1)
+        elif recurrence == "biweekly":
+            return current_due + timedelta(weeks=2)
         elif recurrence == "monthly":
-            # Approximate: add 30 days
             return current_due + timedelta(days=30)
         else:
-            # Default to daily for unknown patterns
-            return current_due + timedelta(days=1)
+            return current_due + timedelta(weeks=1)
 
     def _parse_duration(self, duration: str) -> timedelta:
         """Parse a duration string like '1h', '30m', '1d', 'tomorrow'."""
