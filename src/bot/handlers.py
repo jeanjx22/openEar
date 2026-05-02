@@ -361,12 +361,16 @@ class BotHandlers:
                 "scripts/setup_gmail.py."
             )
 
-    def _build_checklist(self) -> tuple[str, "InlineKeyboardMarkup | None"]:
+    def _build_checklist(self, chat_id: int | None = None) -> tuple[str, "InlineKeyboardMarkup | None"]:
         """Build the checklist message text and inline keyboard."""
         from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
         self.reminders.auto_complete_past_events(grace_hours=0)
-        parent_reminders = self.reminders.get_future_reminders()
+        all_reminders = self.reminders.get_future_reminders()
+        if chat_id:
+            parent_reminders = [r for r in all_reminders if r.chat_id == chat_id or r.chat_id is None]
+        else:
+            parent_reminders = all_reminders
 
         if not parent_reminders:
             return "No active reminders 🐰", None
@@ -398,7 +402,7 @@ class BotHandlers:
             return
         self._track_chat(update, context)
 
-        text, markup = self._build_checklist()
+        text, markup = self._build_checklist(chat_id=update.effective_chat.id)
         await update.message.reply_text(text, reply_markup=markup)
 
     async def cmd_list_notes(
@@ -1339,7 +1343,7 @@ class BotHandlers:
             self.reminders.complete_reminder(reminder_id)
 
             if data.startswith("checklist_done:"):
-                text, markup = self._build_checklist()
+                text, markup = self._build_checklist(chat_id=update.effective_chat.id)
                 if markup:
                     text = f"✅ {title} — done!\n\n{text}"
                     await query.edit_message_text(text, reply_markup=markup)
