@@ -173,16 +173,17 @@ class SchedulerJobs:
             replace_existing=True,
         )
 
-        # Daily heartbeat
-        heartbeat_time = health_config.get("heartbeat_time", "08:00")
-        hb_hour, hb_minute = map(int, heartbeat_time.split(":"))
-        self.scheduler.add_job(
-            self._heartbeat_job,
-            CronTrigger(hour=hb_hour, minute=hb_minute, timezone=tz),
-            id="heartbeat",
-            name="Daily heartbeat",
-            replace_existing=True,
-        )
+        # Daily heartbeat (disabled by default)
+        if health_config.get("heartbeat_enabled", False):
+            heartbeat_time = health_config.get("heartbeat_time", "08:00")
+            hb_hour, hb_minute = map(int, heartbeat_time.split(":"))
+            self.scheduler.add_job(
+                self._heartbeat_job,
+                CronTrigger(hour=hb_hour, minute=hb_minute, timezone=tz),
+                id="heartbeat",
+                name="Daily heartbeat",
+                replace_existing=True,
+            )
 
         # Daily S3 backup
         backup_time = health_config.get("backup_time", "03:00")
