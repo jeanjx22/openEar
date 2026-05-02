@@ -382,12 +382,12 @@ class BotHandlers:
                 alert_labels = [a.alert_label or "Alert" for a in alerts]
                 alert_str = f"\n   🔔 {' · '.join(alert_labels)}"
             lines.append(f"{i}. 🗓 {r.title}\n   📅 {due_str}{recur}{alert_str}\n")
-            short_title = r.title[:15] + "…" if len(r.title) > 15 else r.title
+            full_title = r.title[:50]
             buttons.append(
-                InlineKeyboardButton(f"✅ {i}. {short_title}", callback_data=f"checklist_done:{r.id}")
+                InlineKeyboardButton(f"✅ {full_title}", callback_data=f"checklist_done:{r.id}")
             )
 
-        rows = [buttons[i:i+2] for i in range(0, len(buttons), 2)]
+        rows = [[b] for b in buttons]  # one button per row for readability
         markup = InlineKeyboardMarkup(rows)
         return "\n".join(lines), markup
 
