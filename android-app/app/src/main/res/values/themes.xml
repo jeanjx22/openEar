@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.OpenEarTodo" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#3DDC84</item>
+        <item name="colorPrimaryVariant">#2AB673</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#3DDC84</item>
+        <item name="colorSecondaryVariant">#2AB673</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="android:statusBarColor">#2AB673</item>
+    </style>
+</resources>

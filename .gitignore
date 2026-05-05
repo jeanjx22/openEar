@@ -35,3 +35,9 @@ credentials.json
 token.json
 token.pickle
 client_secret_*.json
+.aider*
+
+# Android
+android-app/.gradle/
+android-app/local.properties
+android-app/**/build/
