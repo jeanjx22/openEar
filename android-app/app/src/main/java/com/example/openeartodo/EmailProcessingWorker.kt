@@ -1,24 +1,27 @@
 package com.example.openeartodo
 
 import android.content.Context
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 
 class EmailProcessingWorker(
     context: Context,
-    workerParams: WorkerParameters
-) : Worker(context, workerParams) {
-    
-    override fun doWork(): Result {
-        val notificationTitle = "New Task"
-        val notificationMessage = "Reminder added to your list"
-        NotificationHelper.showNotification(applicationContext, notificationTitle, notificationMessage)
-        
-        return Result.success()
-    }
-    
-    companion object {
-        fun createWorkRequest() = 
-            androidx.work.OneTimeWorkRequestBuilder<EmailProcessingWorker>().build()
+    params: WorkerParameters
+) : CoroutineWorker(context, params) {
+
+    override suspend fun doWork(): Result {
+        return try {
+            val count = EmailProcessor.processNewEmails(applicationContext)
+            if (count > 0) {
+                NotificationHelper.showNotification(
+                    applicationContext,
+                    "New TODOs from email",
+                    "Extracted $count new todo(s)"
+                )
+            }
+            Result.success()
+        } catch (e: Exception) {
+            Result.retry()
+        }
     }
 }

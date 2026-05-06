@@ -241,6 +241,23 @@ class EmailService:
                 return entry.label
         return None
 
+    async def fetch_email_body(self, gmail_id: str) -> str | None:
+        """Fetch a single email body from Gmail by message ID."""
+        try:
+            service = await asyncio.to_thread(self._build_service_sync)
+            msg = await asyncio.to_thread(
+                lambda: service.users()
+                .messages()
+                .get(userId="me", id=gmail_id, format="full")
+                .execute()
+            )
+            return self._extract_body(msg.get("payload", {}))
+        except (EmailServiceUnavailable, RefreshError):
+            raise
+        except Exception as e:
+            logger.error("Error fetching email body %s: %s", gmail_id, e)
+            return None
+
     async def process_emails(self) -> list[dict]:
         """Fetch, classify, summarize, and store emails.
 

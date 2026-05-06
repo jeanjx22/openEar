@@ -745,6 +745,46 @@ Return ONLY the JSON array, nothing else. Return [] if input is not an alert tim
 
         return alerts if alerts else None
 
+    async def extract_todos_from_email(
+        self, sender: str, subject: str, body: str
+    ) -> list[str]:
+        """Extract actionable TODO items from an email.
+
+        Returns a list of short, actionable task strings.
+        """
+        system_prompt = """Extract actionable TODO items from this email. Return ONLY a JSON array of short, actionable task strings.
+
+Rules:
+- Each item should be a concrete action the recipient needs to take
+- Keep items short (under 80 chars)
+- Include deadlines in the task text if mentioned
+- Skip informational content that requires no action
+- If there are no actionable items, return an empty array []
+
+Examples:
+- ["Sign permission slip by Friday", "Send $15 lunch money via Venmo", "RSVP for parent-teacher conference Oct 12"]
+- ["Schedule dentist follow-up appointment", "Pick up prescription at CVS"]
+- []"""
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {
+                "role": "user",
+                "content": f"From: {sender}\nSubject: {subject}\n\n{body[:3000]}",
+            },
+        ]
+        result = await self.call_groq(messages, temperature=0.1)
+        if result is None:
+            return []
+        try:
+            parsed = json.loads(_clean_json(result))
+            if isinstance(parsed, list):
+                return [str(item) for item in parsed]
+            return []
+        except json.JSONDecodeError:
+            logger.warning("Failed to parse todo extraction JSON: %s", result)
+            return []
+
     @staticmethod
     def validate_setup_settings(settings: list[dict]) -> tuple[list[dict], list[str]]:
         """Validate parsed setup settings.

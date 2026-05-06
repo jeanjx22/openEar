@@ -1,10 +1,10 @@
 package com.example.openeartodo
 
 import android.app.Application
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 class TodoViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: TodoRepository
@@ -17,14 +17,14 @@ class TodoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun insert(todo: TodoItem) {
-        repository.insert(todo, viewModelScope)
+        viewModelScope.launch { repository.insert(todo) }
     }
 
     fun update(todo: TodoItem) {
-        repository.update(todo, viewModelScope)
+        viewModelScope.launch { repository.update(todo) }
     }
 
     fun delete(todo: TodoItem) {
-        repository.delete(todo, viewModelScope)
+        viewModelScope.launch { repository.delete(todo) }
     }
 }

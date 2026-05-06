@@ -22,7 +22,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".EmailSelectorActivity" />
+        <activity android:name=".SettingsActivity" />
+
         <receiver android:name=".AlarmReceiver" />
-        <service android:name=".EmailService" />
     </application>
 </manifest>

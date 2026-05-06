@@ -86,7 +86,7 @@ def load_settings() -> Settings:
         ),
         telegram_allowed_user_ids=allowed_ids,
         llm_provider=os.getenv("LLM_PROVIDER", "cohere"),
-        llm_model=os.getenv("LLM_MODEL", "command-r"),
+        llm_model=os.getenv("LLM_MODEL", "command-r-08-2024"),
         groq_api_key=(
             ssm_secrets.get("groq_api_key", "")
             or os.getenv("GROQ_API_KEY", "")

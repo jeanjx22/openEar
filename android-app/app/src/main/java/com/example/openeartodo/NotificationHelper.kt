@@ -33,6 +33,7 @@ object NotificationHelper {
         )
         
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(title)
             .setContentText(message)
             .setAutoCancel(true)
