@@ -8,16 +8,23 @@ import kotlinx.coroutines.launch
 
 class TodoViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: TodoRepository
-    val allTodos: LiveData<List<TodoItem>>
+    val activeTodos: LiveData<List<TodoItem>>
 
     init {
         val todoDao = TodoDatabase.getInstance(application).todoDao()
         repository = TodoRepository(todoDao)
-        allTodos = repository.allTodos
+        activeTodos = repository.activeTodos
+        viewModelScope.launch { repository.cleanupOldCompleted() }
     }
 
     fun insert(todo: TodoItem) {
         viewModelScope.launch { repository.insert(todo) }
+    }
+
+    fun complete(todo: TodoItem) {
+        viewModelScope.launch {
+            repository.update(todo.copy(isCompleted = true, completedAt = System.currentTimeMillis()))
+        }
     }
 
     fun update(todo: TodoItem) {

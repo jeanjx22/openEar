@@ -24,6 +24,8 @@ object GmailClient {
 
     data class EmailInfo(
         val gmailId: String,
+        val threadId: String?,
+        val rfc822MsgId: String?,
         val sender: String,
         val subject: String,
         val date: String,
@@ -57,8 +59,8 @@ object GmailClient {
         val messages: List<MessageRef>?,
         val nextPageToken: String?
     )
-    data class MessageRef(val id: String)
-    data class Message(val id: String, val snippet: String?, val payload: Payload?)
+    data class MessageRef(val id: String, val threadId: String?)
+    data class Message(val id: String, val threadId: String?, val snippet: String?, val payload: Payload?)
     data class Payload(
         val mimeType: String?,
         val headers: List<GmailHeader>?,
@@ -109,11 +111,13 @@ object GmailClient {
                     val msg = api.getMessage(
                         auth, ref.id,
                         format = "metadata",
-                        headers = listOf("From", "Subject", "Date")
+                        headers = listOf("From", "Subject", "Date", "Message-ID")
                     )
                     val hdrs = msg.payload?.headers ?: emptyList()
                     EmailInfo(
                         gmailId = msg.id,
+                        threadId = msg.threadId,
+                        rfc822MsgId = hdrs.find { it.name.equals("Message-ID", true) }?.value,
                         sender = hdrs.find { it.name.equals("From", true) }?.value ?: "Unknown",
                         subject = hdrs.find { it.name.equals("Subject", true) }?.value ?: "(no subject)",
                         date = hdrs.find { it.name.equals("Date", true) }?.value ?: "",

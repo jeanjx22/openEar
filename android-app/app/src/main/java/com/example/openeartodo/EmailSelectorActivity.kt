@@ -185,10 +185,9 @@ class EmailSelectorActivity : AppCompatActivity() {
 
                 val db = TodoDatabase.getInstance(applicationContext)
 
-                val domains = selected.map { EmailProcessor.extractSenderDomain(it.sender) }.toSet()
-                for (domain in domains) {
-                    val label = domain.removePrefix("*@")
-                    db.allowedSenderDao().insert(AllowedSender(pattern = domain, label = label))
+                val senderPatterns = selected.map { EmailProcessor.extractSenderPattern(it.sender) }.toSet()
+                for (pattern in senderPatterns) {
+                    db.allowedSenderDao().insert(AllowedSender(pattern = pattern, label = pattern))
                 }
 
                 var todoCount = 0
@@ -198,21 +197,27 @@ class EmailSelectorActivity : AppCompatActivity() {
                     } catch (e: Exception) {
                         throw Exception("Gmail fetch failed: ${e.message}", e)
                     }
-                    val todos = try {
-                        LlmClient.extractTodos(apiKey, provider, email.sender, email.subject, body)
+                    val result = try {
+                        LlmClient.extractTodosWithSummary(apiKey, provider, email.sender, email.subject, body)
                     } catch (e: Exception) {
                         throw Exception("LLM call failed ($provider): ${e.message}", e)
                     }
-                    for (text in todos) {
-                        db.todoDao().insert(TodoItem(text = text, sourceGmailId = email.gmailId))
+                    val summary = "From: ${email.sender}\nSubject: ${email.subject}\n\n${result.summary}\n\n--- Full Email ---\n${body.take(5000)}"
+                    for (text in result.todos) {
+                        db.todoDao().insert(TodoItem(
+                            text = text,
+                            sourceGmailId = email.gmailId,
+                            sourceRfc822Id = email.rfc822MsgId,
+                            sourceEmailSummary = summary
+                        ))
                     }
                     db.processedEmailDao().insert(ProcessedEmail(gmailId = email.gmailId))
-                    todoCount += todos.size
+                    todoCount += result.todos.size
                 }
 
                 Toast.makeText(
                     this@EmailSelectorActivity,
-                    "Watching ${domains.size} sender(s), extracted $todoCount todo(s)",
+                    "Watching ${senderPatterns.size} sender(s), extracted $todoCount todo(s)",
                     Toast.LENGTH_SHORT
                 ).show()
                 setResult(Activity.RESULT_OK)

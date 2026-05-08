@@ -25,4 +25,16 @@ object Prefs {
 
     fun setGmailAccount(context: Context, email: String?) =
         prefs(context).edit().putString("gmail_account", email).apply()
+
+    fun getLastSyncTime(context: Context): Long =
+        prefs(context).getLong("last_sync_time", 0L)
+
+    fun setLastSyncTime(context: Context, time: Long) =
+        prefs(context).edit().putLong("last_sync_time", time).apply()
+
+    fun getLookbackOverride(context: Context): String =
+        prefs(context).getString("lookback_override", "") ?: ""
+
+    fun setLookbackOverride(context: Context, value: String) =
+        prefs(context).edit().putString("lookback_override", value).apply()
 }

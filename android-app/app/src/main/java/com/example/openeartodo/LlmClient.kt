@@ -1,6 +1,7 @@
 package com.example.openeartodo
 
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -18,7 +19,6 @@ object LlmClient {
         "groq" to ProviderConfig("https://api.groq.com/openai/v1/", "llama-3.3-70b-versatile")
     )
 
-    // OpenAI-compatible chat API
     interface ChatApi {
         @POST("chat/completions")
         suspend fun complete(
@@ -36,6 +36,11 @@ object LlmClient {
     data class ChatResponse(val choices: List<Choice>)
     data class Choice(val message: Msg)
 
+    data class ExtractionResult(
+        val todos: List<String>,
+        val summary: String
+    )
+
     private val httpClient = OkHttpClient.Builder()
         .readTimeout(60, TimeUnit.SECONDS)
         .connectTimeout(30, TimeUnit.SECONDS)
@@ -49,29 +54,83 @@ object LlmClient {
             .build()
             .create(ChatApi::class.java)
 
-    suspend fun extractTodos(
+    private fun cleanJson(text: String): String =
+        text.trim().removePrefix("```json").removePrefix("```").removeSuffix("```").trim()
+
+    suspend fun classifyEmailsBatch(
+        apiKey: String,
+        provider: String,
+        emails: List<Triple<String, String, String>>
+    ): List<Boolean> {
+        val config = providers[provider] ?: providers["cohere"]!!
+        val api = buildApi(config.baseUrl)
+
+        val emailLines = emails.mapIndexed { i, (sender, subject, snippet) ->
+            "${i + 1}. From: $sender | Subject: $subject | Preview: ${snippet.take(150)}"
+        }.joinToString("\n")
+
+        val systemPrompt = """Classify each email as IMPORTANT or NOT IMPORTANT. An email is IMPORTANT if it likely requires the user's attention, awareness, or action.
+
+IMPORTANT examples: appointments, school notices, medical info, security alerts, bills, schedule changes, forms to fill, events to attend, deadlines, deliveries.
+NOT IMPORTANT examples: marketing, promotions, newsletters, social media notifications, automated receipts, spam.
+
+Return ONLY a JSON array of booleans in the same order. Example: [true, false, true]"""
+
+        val request = ChatRequest(
+            model = config.model,
+            messages = listOf(
+                Msg("system", systemPrompt),
+                Msg("user", "Classify these emails:\n$emailLines")
+            )
+        )
+
+        val response = api.complete("Bearer $apiKey", request)
+        val content = response.choices.firstOrNull()?.message?.content
+            ?: return List(emails.size) { false }
+
+        return try {
+            val parsed = Gson().fromJson(cleanJson(content), Array<Boolean>::class.java).toList()
+            if (parsed.size == emails.size) parsed else List(emails.size) { false }
+        } catch (e: Exception) {
+            List(emails.size) { false }
+        }
+    }
+
+    suspend fun extractTodosWithSummary(
         apiKey: String,
         provider: String,
         sender: String,
         subject: String,
         body: String
-    ): List<String> {
+    ): ExtractionResult {
         val config = providers[provider] ?: providers["cohere"]!!
         val api = buildApi(config.baseUrl)
 
-        val systemPrompt = """Extract actionable TODO items from this email. Return ONLY a JSON array of short, actionable task strings.
+        val systemPrompt = """Analyze this email and return a JSON object with two fields:
 
-Rules:
-- Each item should be a concrete action the recipient needs to take
-- Keep items short (under 80 chars)
-- Include deadlines in the task text if mentioned
-- Skip informational content that requires no action
-- If there are no actionable items, return an empty array []
+1. "todos": array of short task strings (under 80 chars each). Extract ANYTHING that might need the user's attention, awareness, or action. When in doubt, include it.
+2. "summary": a 2-3 sentence summary of the email covering the key points.
 
-Examples:
-- ["Sign permission slip by Friday", "Send lunch money via Venmo", "RSVP for conference Oct 12"]
-- ["Schedule dentist follow-up", "Pick up prescription at CVS"]
-- []"""
+Extract items for ANY of these:
+- Appointments, meetings, events (even just "be aware" reminders)
+- Deadlines, due dates, expirations
+- Requests requiring a response (RSVPs, forms, signatures, replies)
+- Security alerts, password changes, account warnings
+- Payments due, bills, invoices
+- Schedule changes, cancellations, delays
+- Medical: appointments, prescriptions, test results, follow-ups
+- School: events, homework, supplies, teacher communications
+- Deliveries, pickups, reservations
+- Anything time-sensitive or that the user should not forget
+
+Include dates/times in the task text when mentioned.
+If an email is just a reminder about something, extract it (e.g. "Dentist appointment tomorrow 2pm").
+If an email warns about something, extract it (e.g. "Google: new sign-in from unknown device").
+
+Only skip: pure marketing/promotions, social media notifications, automated "no-reply" receipts with no action needed.
+
+Return ONLY valid JSON:
+{"todos": ["task1", "task2"], "summary": "Summary of the email..."}"""
 
         val request = ChatRequest(
             model = config.model,
@@ -82,15 +141,16 @@ Examples:
         )
 
         val response = api.complete("Bearer $apiKey", request)
-        val content = response.choices.firstOrNull()?.message?.content ?: return emptyList()
+        val content = response.choices.firstOrNull()?.message?.content
+            ?: return ExtractionResult(emptyList(), "")
 
         return try {
-            val cleaned = content.trim()
-                .removePrefix("```json").removePrefix("```")
-                .removeSuffix("```").trim()
-            Gson().fromJson(cleaned, Array<String>::class.java).toList()
+            val json = Gson().fromJson(cleanJson(content), JsonObject::class.java)
+            val todos = json.getAsJsonArray("todos")?.map { it.asString } ?: emptyList()
+            val summary = json.get("summary")?.asString ?: ""
+            ExtractionResult(todos, summary)
         } catch (e: Exception) {
-            emptyList()
+            ExtractionResult(emptyList(), "")
         }
     }
 }

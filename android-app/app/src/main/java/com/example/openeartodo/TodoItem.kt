@@ -8,6 +8,12 @@ data class TodoItem(
     val text: String,
     val createdAt: Long = System.currentTimeMillis(),
     var isCompleted: Boolean = false,
+    val completedAt: Long? = null,
+    val reminderAt: Long? = null,
+    val reminderType: String? = null,
+    val alarmAt: Long? = null,
     val sourceGmailId: String? = null,
+    val sourceRfc822Id: String? = null,
+    val sourceEmailSummary: String? = null,
     @PrimaryKey(autoGenerate = true) val id: Long = 0
 )

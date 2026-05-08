@@ -11,12 +11,12 @@ class EmailProcessingWorker(
 
     override suspend fun doWork(): Result {
         return try {
-            val count = EmailProcessor.processNewEmails(applicationContext)
-            if (count > 0) {
+            val report = EmailProcessor.processNewEmails(applicationContext)
+            if (report.todosExtracted > 0) {
                 NotificationHelper.showNotification(
                     applicationContext,
                     "New TODOs from email",
-                    "Extracted $count new todo(s)"
+                    "Extracted ${report.todosExtracted} new todo(s) from ${report.newProcessed} email(s)"
                 )
             }
             Result.success()
