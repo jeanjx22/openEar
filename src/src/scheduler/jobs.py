@@ -349,71 +349,87 @@ class SchedulerJobs:
         Preview" grouping is used.
         """
         logger.info("Running email briefing job (check_time=%s)", check_time)
-        try:
-            emails = await self.email.process_emails()
-            text = formatters.format_briefing(emails, self.settings.timezone)
 
-            # Determine morning vs evening from check_time
-            hour = int(check_time.split(":")[0])
-            is_morning = hour < 12
-            tz = ZoneInfo(self.settings.timezone)
-            now_local = datetime.now(tz)
-            is_weekday = now_local.weekday() < 5  # Mon-Fri
-            is_sunday = now_local.weekday() == 6
+        # Determine morning vs evening from check_time
+        hour = int(check_time.split(":")[0])
+        is_morning = hour < 12
+        tz = ZoneInfo(self.settings.timezone)
+        now_local = datetime.now(tz)
+        is_weekday = now_local.weekday() < 5  # Mon-Fri
+        is_sunday = now_local.weekday() == 6
 
-            # --- Morning enrichment: stock quotes on weekdays ---
-            if is_morning and is_weekday:
-                rules = self.settings.rules.get("briefing", {})
-                morning_cfg = rules.get("morning", {})
-                include_stocks = morning_cfg.get("include_stocks", False)
-                stock_symbols = morning_cfg.get("stock_symbols", [])
+        # Build enrichment text once (shared across chats)
+        enrichment = ""
 
-                if include_stocks and stock_symbols:
-                    try:
-                        quotes = await asyncio.gather(
-                            *[
-                                asyncio.wait_for(get_stock_quote(sym), timeout=8)
-                                for sym in stock_symbols
-                            ],
-                            return_exceptions=True,
-                        )
-                        text += formatters.format_stock_briefing(quotes)
-                    except Exception as e:
-                        logger.warning("Stock enrichment failed: %s", e)
+        # --- Morning enrichment: stock quotes on weekdays ---
+        if is_morning and is_weekday:
+            rules = self.settings.rules.get("briefing", {})
+            morning_cfg = rules.get("morning", {})
+            include_stocks = morning_cfg.get("include_stocks", False)
+            stock_symbols = morning_cfg.get("stock_symbols", [])
 
-            # --- Evening enrichment: upcoming events (next 7 days) ---
-            if not is_morning:
+            if include_stocks and stock_symbols:
                 try:
-                    all_future = self.reminders.get_future_reminders()
-                    now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
-                    cutoff = now_utc + timedelta(days=7)
-                    upcoming = [
-                        r for r in all_future
-                        if r.due_at and r.due_at <= cutoff
-                    ]
-                    text += formatters.format_upcoming_events(
-                        upcoming, self.settings.timezone, is_sunday=is_sunday,
+                    quotes = await asyncio.gather(
+                        *[
+                            asyncio.wait_for(get_stock_quote(sym), timeout=8)
+                            for sym in stock_symbols
+                        ],
+                        return_exceptions=True,
                     )
+                    enrichment += formatters.format_stock_briefing(quotes)
                 except Exception as e:
-                    logger.warning("Evening event enrichment failed: %s", e)
+                    logger.warning("Stock enrichment failed: %s", e)
 
-            await self._send_to_all(text)
+        # --- Evening enrichment: upcoming events (next 7 days) ---
+        if not is_morning:
+            try:
+                all_future = self.reminders.get_future_reminders()
+                now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
+                cutoff = now_utc + timedelta(days=7)
+                upcoming = [
+                    r for r in all_future
+                    if r.due_at and r.due_at <= cutoff
+                ]
+                enrichment += formatters.format_upcoming_events(
+                    upcoming, self.settings.timezone, is_sunday=is_sunday,
+                )
+            except Exception as e:
+                logger.warning("Evening event enrichment failed: %s", e)
 
-            # Send action keyboards for each important email
-            for i, email in enumerate(emails):
-                if email.get("summary"):
-                    await self._send_to_all(
-                        f"Actions for: {email['subject']}",
-                        reply_markup=keyboards.briefing_actions(i),
-                    )
-        except EmailServiceUnavailable as e:
-            await self._send_to_all(
-                f"Email service unavailable: {e}\n"
-                "Re-authenticate via scripts/reauth_gmail.py or "
-                "scripts/setup_gmail.py."
-            )
-        except Exception as e:
-            logger.error("Email briefing job failed: %s", e)
+        # Send per-chat briefings (only to chats with whitelist entries)
+        chat_ids = self.app.bot_data.get("active_chat_ids", set())
+        if not chat_ids:
+            chat_ids = self.settings.telegram_allowed_user_ids
+
+        for chat_id in chat_ids:
+            try:
+                if not self.email.has_whitelist_entries(chat_id):
+                    logger.info("Skipping briefing for chat_id=%s (no whitelist entries)", chat_id)
+                    continue
+
+                emails = await self.email.process_emails(chat_id=chat_id)
+                text = formatters.format_briefing(emails, self.settings.timezone)
+                text += enrichment
+
+                await self._send_to_chat(chat_id, text)
+
+                for i, email in enumerate(emails):
+                    if email.get("summary"):
+                        await self._send_to_chat(
+                            chat_id,
+                            f"Actions for: {email['subject']}",
+                            reply_markup=keyboards.briefing_actions(i),
+                        )
+            except EmailServiceUnavailable as e:
+                await self._send_to_chat(
+                    chat_id,
+                    f"Email service unavailable: {e}\n"
+                    "Re-authenticate via scripts/reauth_gmail.py or "
+                    "scripts/setup_gmail.py."
+                )
+            except Exception as e:
+                logger.error("Email briefing job failed for chat_id=%s: %s", chat_id, e)
 
     async def _fire_alert_job(self, alert_id: int, parent_id: int) -> None:
         """Fire a pre-alert notification (called by DateTrigger).
