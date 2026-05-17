@@ -1,5 +1,6 @@
 package com.example.openeartodo
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Entity
 import androidx.room.Insert
@@ -17,6 +18,9 @@ data class IgnoredSender(
 interface IgnoredSenderDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(sender: IgnoredSender)
+
+    @Query("SELECT * FROM ignored_sender ORDER BY createdAt DESC")
+    fun getAll(): LiveData<List<IgnoredSender>>
 
     @Query("SELECT pattern FROM ignored_sender")
     suspend fun getAllPatterns(): List<String>

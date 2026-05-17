@@ -1,6 +1,7 @@
 package com.example.openeartodo
 
 import android.content.Context
+import com.google.android.gms.auth.UserRecoverableAuthException
 
 data class SyncReport(
     val query: String,
@@ -9,7 +10,8 @@ data class SyncReport(
     val newProcessed: Int,
     val todosExtracted: Int,
     val errors: Int,
-    val senderBreakdown: Map<String, SenderStats>
+    val senderBreakdown: Map<String, SenderStats>,
+    val authError: Boolean = false
 )
 
 data class SenderStats(
@@ -32,7 +34,13 @@ object EmailProcessor {
         val senders = db.allowedSenderDao().getAllSync()
         if (senders.isEmpty()) return emptyReport
 
-        val token = GmailClient.getAccessToken(context, account)
+        val token = try {
+            GmailClient.getAccessToken(context, account)
+        } catch (e: UserRecoverableAuthException) {
+            return emptyReport.copy(authError = true)
+        } catch (e: Exception) {
+            return emptyReport.copy(authError = true)
+        }
 
         val lookback = lookbackOverride ?: getLookbackQuery(context)
         val query = buildGmailQuery(senders.map { it.pattern }, lookback)
@@ -64,13 +72,20 @@ object EmailProcessor {
                         apiKey, provider, email.sender, email.subject, body
                     )
                     val summary = "From: ${email.sender}\nSubject: ${email.subject}\n\n${result.summary}\n\n--- Full Email ---\n${body.take(5000)}"
-                    for (text in result.todos) {
-                        db.todoDao().insert(TodoItem(
-                            text = text,
+                    for (extracted in result.todos) {
+                        val eventAt = ReminderDefaults.parseEventTime(extracted.eventTime)
+                        val todo = TodoItem(
+                            text = extracted.text,
+                            eventAt = eventAt,
+                            reminderAt = eventAt?.let { ReminderDefaults.defaultNotificationTime(it) },
+                            alarmAt = eventAt?.let { ReminderDefaults.defaultAlarmTime(it) },
+                            reminderType = if (eventAt != null) "both" else null,
                             sourceGmailId = email.gmailId,
                             sourceRfc822Id = email.rfc822MsgId,
                             sourceEmailSummary = summary
-                        ))
+                        )
+                        db.todoDao().insert(todo)
+                        if (eventAt != null) AlarmScheduler.schedule(context, todo)
                     }
                     db.processedEmailDao().insert(ProcessedEmail(gmailId = email.gmailId))
                     newProcessed++
@@ -85,8 +100,75 @@ object EmailProcessor {
             pageToken = page.nextPageToken
         } while (pageToken != null)
 
+        // Phase 2: auto-discover — classify new senders from recent emails
+        val discoveredTodos = autoDiscoverNewSenders(context, token, apiKey, provider, db, lookback)
+        todosExtracted += discoveredTodos
+
         Prefs.setLastSyncTime(context, System.currentTimeMillis())
         return SyncReport(query, totalFetched, alreadyProcessed, newProcessed, todosExtracted, errors, breakdown)
+    }
+
+    private suspend fun autoDiscoverNewSenders(
+        context: Context, token: String, apiKey: String, provider: String,
+        db: TodoDatabase, lookback: String
+    ): Int {
+        val tracked = db.allowedSenderDao().getAllSync().map { it.pattern }
+        val ignored = db.ignoredSenderDao().getAllPatterns()
+        val knownPatterns = tracked + ignored
+
+        val page = GmailClient.fetchEmails(token, query = lookback, maxResults = 20)
+        val newSenderEmails = mutableMapOf<String, GmailClient.EmailInfo>()
+
+        for (email in page.emails) {
+            val addr = extractSenderPattern(email.sender)
+            if (matchesSenderList(email.sender, knownPatterns)) continue
+            if (db.processedEmailDao().isProcessed(email.gmailId)) continue
+            newSenderEmails.putIfAbsent(addr, email)
+        }
+
+        if (newSenderEmails.isEmpty()) return 0
+
+        val representatives = newSenderEmails.values.toList()
+        var pendingCount = 0
+
+        try {
+            val triples = representatives.map { Triple(it.sender, it.subject, it.snippet) }
+            val results = LlmClient.classifyEmailsBatch(apiKey, provider, triples)
+
+            for ((i, isImportant) in results.withIndex()) {
+                val email = representatives[i]
+                val addr = extractSenderPattern(email.sender)
+                if (isImportant) {
+                    try {
+                        val body = GmailClient.fetchEmailBody(token, email.gmailId)
+                        val result = LlmClient.extractTodosWithSummary(apiKey, provider, email.sender, email.subject, body)
+                        if (result.todos.isNotEmpty()) {
+                            val todoPreview = result.todos.joinToString(", ") { it.text }
+                            db.pendingSenderDao().insert(PendingSender(
+                                pattern = addr,
+                                displayName = email.sender,
+                                sampleSubject = email.subject,
+                                sampleTodos = todoPreview,
+                                sampleGmailId = email.gmailId
+                            ))
+                            pendingCount++
+                        }
+                    } catch (_: Exception) { }
+                } else {
+                    db.ignoredSenderDao().insert(IgnoredSender(pattern = addr))
+                }
+                db.processedEmailDao().insert(ProcessedEmail(gmailId = email.gmailId))
+            }
+        } catch (_: Exception) { }
+
+        if (pendingCount > 0) {
+            NotificationHelper.showNotification(
+                context,
+                "New senders detected",
+                "$pendingCount new sender(s) with action items — tap to review"
+            )
+        }
+        return 0
     }
 
     private fun getLookbackQuery(context: Context): String {

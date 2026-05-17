@@ -2,6 +2,7 @@ package com.example.openeartodo
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.RingtoneManager
@@ -39,22 +40,29 @@ object NotificationHelper {
         }
     }
 
-    fun showNotification(context: Context, title: String, message: String) {
+    fun showNotification(
+        context: Context, title: String, message: String,
+        snooze1h: PendingIntent? = null, snoozeTomorrow: PendingIntent? = null
+    ) {
         val mgr = context.getSystemService(NotificationManager::class.java)
-        val notification = NotificationCompat.Builder(context, CHANNEL_NOTIFY)
+        val builder = NotificationCompat.Builder(context, CHANNEL_NOTIFY)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(title)
             .setContentText(message)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .build()
-        mgr.notify(System.currentTimeMillis().toInt(), notification)
+        if (snooze1h != null) builder.addAction(0, "Snooze 1hr", snooze1h)
+        if (snoozeTomorrow != null) builder.addAction(0, "Tomorrow 8am", snoozeTomorrow)
+        mgr.notify(System.currentTimeMillis().toInt(), builder.build())
     }
 
-    fun showAlarm(context: Context, title: String, message: String) {
+    fun showAlarm(
+        context: Context, title: String, message: String,
+        snooze1h: PendingIntent? = null, snoozeTomorrow: PendingIntent? = null
+    ) {
         val mgr = context.getSystemService(NotificationManager::class.java)
         val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-        val notification = NotificationCompat.Builder(context, CHANNEL_ALARM)
+        val builder = NotificationCompat.Builder(context, CHANNEL_ALARM)
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
             .setContentTitle(title)
             .setContentText(message)
@@ -64,7 +72,8 @@ object NotificationHelper {
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setOngoing(true)
-            .build()
-        mgr.notify(System.currentTimeMillis().toInt(), notification)
+        if (snooze1h != null) builder.addAction(0, "Snooze 1hr", snooze1h)
+        if (snoozeTomorrow != null) builder.addAction(0, "Tomorrow 8am", snoozeTomorrow)
+        mgr.notify(System.currentTimeMillis().toInt(), builder.build())
     }
 }

@@ -27,7 +27,7 @@ from googleapiclient.discovery import build
 
 from src.config import Settings
 from src.db.database import get_session, insert_email_ignore_duplicate
-from src.db.models import Email, SenderWhitelist
+from src.db.models import Email, SenderIgnorelist, SenderPendingExclusion, SenderWhitelist
 from src.services.llm_service import LLMService
 
 logger = logging.getLogger(__name__)
@@ -258,6 +258,38 @@ class EmailService:
             logger.error("Error fetching email body %s: %s", gmail_id, e)
             return None
 
+    def _extract_sender_address(self, sender: str) -> str:
+        import re as _re
+        match = _re.search(r'<([^>]+)>', sender)
+        return (match.group(1) if match else sender).lower().strip()
+
+    def _match_ignorelist(self, sender: str) -> bool:
+        sender_addr = self._extract_sender_address(sender)
+        with get_session() as session:
+            ignorelist = session.query(SenderIgnorelist).all()
+            for entry in ignorelist:
+                session.expunge(entry)
+            pending = session.query(SenderPendingExclusion).all()
+            for entry in pending:
+                session.expunge(entry)
+        for entry in ignorelist:
+            if fnmatch.fnmatch(sender_addr, entry.pattern.lower()):
+                return True
+        for entry in pending:
+            if fnmatch.fnmatch(sender_addr, entry.pattern.lower()):
+                return True
+        return False
+
+    def _add_to_pending_exclusion(self, sender_addr: str, sender_display: str, subject: str) -> None:
+        with get_session() as session:
+            from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+            stmt = sqlite_insert(SenderPendingExclusion).values(
+                pattern=sender_addr.lower(),
+                sample_sender=sender_display,
+                sample_subject=subject,
+            ).on_conflict_do_nothing(index_elements=["pattern"])
+            session.execute(stmt)
+
     async def process_emails(self) -> list[dict]:
         """Fetch, classify, summarize, and store emails.
 
@@ -269,34 +301,51 @@ class EmailService:
 
         important_emails = []
         non_whitelisted = []
-        non_whitelisted_indices = []
+        ignored_emails = []
 
-        # Phase 1: whitelist check
-        for i, email in enumerate(raw_emails):
+        # Phase 1: whitelist + ignorelist check
+        for email in raw_emails:
             label = self._match_whitelist(email["sender"])
             if label:
                 email["label"] = label
                 email["is_important"] = True
                 important_emails.append(email)
+            elif self._match_ignorelist(email["sender"]):
+                ignored_emails.append(email)
             else:
                 non_whitelisted.append(email)
-                non_whitelisted_indices.append(i)
 
-        # Phase 2: batch LLM classification for non-whitelisted emails
+        # Phase 2: classify only NEW senders (one email per sender)
         if non_whitelisted and not self.llm.circuit_breaker.is_open:
             criteria = ["school", "medical", "urgent", "family"]
-            # Process in batches of 10
-            for batch_start in range(0, len(non_whitelisted), 10):
-                batch = non_whitelisted[batch_start : batch_start + 10]
+            sender_groups: dict[str, list[dict]] = {}
+            for email in non_whitelisted:
+                addr = self._extract_sender_address(email["sender"])
+                sender_groups.setdefault(addr, []).append(email)
+
+            representative_emails = []
+            representative_addrs = []
+            for addr, emails in sender_groups.items():
+                representative_emails.append(emails[0])
+                representative_addrs.append(addr)
+
+            for batch_start in range(0, len(representative_emails), 10):
+                batch = representative_emails[batch_start : batch_start + 10]
+                batch_addrs = representative_addrs[batch_start : batch_start + 10]
                 batch_data = [
                     {"sender": e["sender"], "subject": e["subject"]} for e in batch
                 ]
                 results = await self.llm.classify_emails_batch(batch_data, criteria)
                 for j, is_relevant in enumerate(results):
+                    addr = batch_addrs[j]
                     if is_relevant:
-                        batch[j]["is_important"] = True
-                        batch[j]["label"] = "LLM-classified"
-                        important_emails.append(batch[j])
+                        for e in sender_groups[addr]:
+                            e["is_important"] = True
+                            e["label"] = "LLM-classified"
+                            important_emails.append(e)
+                    else:
+                        rep = sender_groups[addr][0]
+                        self._add_to_pending_exclusion(addr, rep["sender"], rep["subject"])
 
         # Phase 3: summarize important emails
         for email in important_emails:

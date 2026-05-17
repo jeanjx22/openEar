@@ -203,13 +203,20 @@ class EmailSelectorActivity : AppCompatActivity() {
                         throw Exception("LLM call failed ($provider): ${e.message}", e)
                     }
                     val summary = "From: ${email.sender}\nSubject: ${email.subject}\n\n${result.summary}\n\n--- Full Email ---\n${body.take(5000)}"
-                    for (text in result.todos) {
-                        db.todoDao().insert(TodoItem(
-                            text = text,
+                    for (extracted in result.todos) {
+                        val eventAt = ReminderDefaults.parseEventTime(extracted.eventTime)
+                        val todo = TodoItem(
+                            text = extracted.text,
+                            eventAt = eventAt,
+                            reminderAt = eventAt?.let { ReminderDefaults.defaultNotificationTime(it) },
+                            alarmAt = eventAt?.let { ReminderDefaults.defaultAlarmTime(it) },
+                            reminderType = if (eventAt != null) "both" else null,
                             sourceGmailId = email.gmailId,
                             sourceRfc822Id = email.rfc822MsgId,
                             sourceEmailSummary = summary
-                        ))
+                        )
+                        db.todoDao().insert(todo)
+                        if (eventAt != null) AlarmScheduler.schedule(applicationContext, todo)
                     }
                     db.processedEmailDao().insert(ProcessedEmail(gmailId = email.gmailId))
                     todoCount += result.todos.size

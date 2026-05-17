@@ -1,8 +1,11 @@
 package com.example.openeartodo
 
+import android.Manifest
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -47,24 +50,31 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         NotificationHelper.createNotificationChannel(this)
+        requestNotificationPermission()
         todoInput = findViewById(R.id.todoInput)
 
         setupTodoList()
         setupListeners()
         scheduleEmailCheck()
+        rescheduleActiveReminders()
     }
 
     override fun onResume() {
         super.onResume()
         checkEmailsOnOpen()
+        checkPendingSenders()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(0, 1, 0, "Discover Senders")
+        menu.add(0, 1, 0, "Review New Senders")
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
-        menu.add(0, 2, 1, "Tracked Senders")
+        menu.add(0, 2, 1, "Discover Senders")
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
-        menu.add(0, 3, 2, "Settings")
+        menu.add(0, 3, 2, "Tracked Senders")
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+        menu.add(0, 5, 3, "Excluded Senders")
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+        menu.add(0, 4, 4, "Settings")
             .setIcon(android.R.drawable.ic_menu_preferences)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         return true
@@ -72,9 +82,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            1 -> { startActivity(Intent(this, DiscoverActivity::class.java)); true }
-            2 -> { startActivity(Intent(this, TrackedSendersActivity::class.java)); true }
-            3 -> { startActivity(Intent(this, SettingsActivity::class.java)); true }
+            1 -> { startActivity(Intent(this, PendingSendersActivity::class.java)); true }
+            2 -> { startActivity(Intent(this, DiscoverActivity::class.java)); true }
+            3 -> { startActivity(Intent(this, TrackedSendersActivity::class.java)); true }
+            4 -> { startActivity(Intent(this, SettingsActivity::class.java)); true }
+            5 -> { startActivity(Intent(this, IgnoredSendersActivity::class.java)); true }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -148,28 +160,93 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 100)
+            }
+        }
+    }
+
+    private fun rescheduleActiveReminders() {
+        lifecycleScope.launch {
+            try {
+                val db = TodoDatabase.getInstance(applicationContext)
+                val todos = db.todoDao().getActiveTodosSync()
+                val now = System.currentTimeMillis()
+                for (todo in todos) {
+                    val hasReminder = (todo.reminderAt != null && todo.reminderAt > now) ||
+                                     (todo.alarmAt != null && todo.alarmAt > now)
+                    if (hasReminder) {
+                        AlarmScheduler.schedule(applicationContext, todo)
+                    }
+                }
+            } catch (_: Exception) { }
+        }
+    }
+
     private fun showReminderPicker(todo: TodoItem) {
         val hasReminder = (todo.reminderAt != null && todo.reminderAt > System.currentTimeMillis()) ||
                           (todo.alarmAt != null && todo.alarmAt > System.currentTimeMillis())
         if (hasReminder) {
             val timeFmt = SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
             val lines = mutableListOf<String>()
+            if (todo.eventAt != null) lines.add("Event: ${timeFmt.format(Date(todo.eventAt))}")
             if (todo.reminderAt != null) lines.add("Notification: ${timeFmt.format(Date(todo.reminderAt))}")
             if (todo.alarmAt != null) lines.add("Alarm: ${timeFmt.format(Date(todo.alarmAt))}")
+            if (todo.recurrence != null) lines.add("Repeats: ${todo.recurrence}")
+
+            val items = mutableListOf("Change reminders", "Snooze 1 hour", "Snooze to tomorrow 8am", "Set recurrence", "Remove reminders")
             MaterialAlertDialogBuilder(this)
                 .setTitle("Reminder")
                 .setMessage(lines.joinToString("\n"))
-                .setPositiveButton("Change") { _, _ -> pickReminderType(todo) }
-                .setNeutralButton("Remove") { _, _ ->
-                    AlarmScheduler.cancel(this, todo.id)
-                    todoViewModel.update(todo.copy(reminderAt = null, reminderType = null, alarmAt = null))
-                    Toast.makeText(this, "Reminders removed", Toast.LENGTH_SHORT).show()
+                .setItems(items.toTypedArray()) { _, which ->
+                    when (which) {
+                        0 -> pickReminderType(todo)
+                        1 -> {
+                            todoViewModel.snooze(todo, 60 * 60 * 1000L)
+                            Toast.makeText(this, "Snoozed for 1 hour", Toast.LENGTH_SHORT).show()
+                        }
+                        2 -> {
+                            todoViewModel.snooze(todo, 0)
+                            val cal = Calendar.getInstance()
+                            cal.add(Calendar.DAY_OF_YEAR, 1)
+                            cal.set(Calendar.HOUR_OF_DAY, 8)
+                            cal.set(Calendar.MINUTE, 0)
+                            val snoozedUntil = cal.timeInMillis
+                            val updated = todo.copy(snoozedUntil = snoozedUntil, reminderAt = snoozedUntil, reminderType = "notification")
+                            AlarmScheduler.cancel(this, todo.id)
+                            todoViewModel.update(updated)
+                            AlarmScheduler.schedule(this, updated)
+                            Toast.makeText(this, "Snoozed to tomorrow 8am", Toast.LENGTH_SHORT).show()
+                        }
+                        3 -> pickRecurrence(todo)
+                        4 -> {
+                            AlarmScheduler.cancel(this, todo.id)
+                            todoViewModel.update(todo.copy(reminderAt = null, reminderType = null, alarmAt = null, recurrence = null))
+                            Toast.makeText(this, "Reminders removed", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
-                .setNegativeButton("Cancel", null)
                 .show()
         } else {
             pickReminderType(todo)
         }
+    }
+
+    private fun pickRecurrence(todo: TodoItem) {
+        val options = arrayOf("None", "Daily", "Weekly", "Biweekly", "Monthly")
+        val values = arrayOf(null, "daily", "weekly", "biweekly", "monthly")
+        val current = values.indexOf(todo.recurrence).coerceAtLeast(0)
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Repeat")
+            .setSingleChoiceItems(options, current) { dialog, which ->
+                todoViewModel.update(todo.copy(recurrence = values[which]))
+                Toast.makeText(this, if (which == 0) "Recurrence removed" else "Repeats ${options[which].lowercase()}", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun pickReminderType(todo: TodoItem) {
@@ -227,6 +304,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showSyncReport(report: SyncReport) {
+        if (report.authError) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Gmail Auth Error")
+                .setMessage("Gmail authentication failed. Please sign out and sign back in from Settings.")
+                .setPositiveButton("Open Settings") { _, _ ->
+                    startActivity(Intent(this, SettingsActivity::class.java))
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+            return
+        }
+
         val sb = StringBuilder()
         sb.appendLine("Query: ${report.query}")
         sb.appendLine("Emails found: ${report.totalFetched}")
@@ -246,6 +335,21 @@ class MainActivity : AppCompatActivity() {
             .setMessage(sb.toString())
             .setPositiveButton("OK", null)
             .show()
+    }
+
+    private fun checkPendingSenders() {
+        lifecycleScope.launch {
+            try {
+                val count = TodoDatabase.getInstance(applicationContext).pendingSenderDao().count()
+                if (count > 0) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "$count new sender(s) to review — check menu",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            } catch (_: Exception) { }
+        }
     }
 
     private fun checkEmailsOnOpen() {

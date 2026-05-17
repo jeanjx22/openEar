@@ -50,15 +50,20 @@ class TodoAdapter(
         }
 
         val now = System.currentTimeMillis()
+        val parts = mutableListOf<String>()
+        if (item.eventAt != null) {
+            parts.add("📅 Event: ${timeFmt.format(Date(item.eventAt))}")
+        }
         val hasNotify = item.reminderAt != null && item.reminderAt > now
         val hasAlarm = item.alarmAt != null && item.alarmAt > now
-        if (hasNotify || hasAlarm) {
-            holder.ivAlarm.alpha = 1.0f
+        if (hasNotify) parts.add("🔔 Notification: ${timeFmt.format(Date(item.reminderAt!!))}")
+        if (hasAlarm) parts.add("⏰ Alarm: ${timeFmt.format(Date(item.alarmAt!!))}")
+        if (item.recurrence != null) parts.add("🔁 Repeats ${item.recurrence}")
+
+        if (parts.isNotEmpty()) {
+            holder.ivAlarm.alpha = if (hasNotify || hasAlarm) 1.0f else 0.6f
             holder.tvReminder.visibility = View.VISIBLE
-            val parts = mutableListOf<String>()
-            if (hasNotify) parts.add("🔔 Notification: ${timeFmt.format(Date(item.reminderAt!!))}")
-            if (hasAlarm) parts.add("⏰ Alarm: ${timeFmt.format(Date(item.alarmAt!!))}")
-            holder.tvReminder.text = parts.joinToString("  ")
+            holder.tvReminder.text = parts.joinToString("\n")
         } else {
             holder.ivAlarm.alpha = 0.4f
             holder.tvReminder.visibility = View.GONE

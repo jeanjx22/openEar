@@ -27,7 +27,15 @@
         <activity android:name=".SettingsActivity" />
         <activity android:name=".TrackedSendersActivity" />
         <activity android:name=".DiscoverActivity" />
+        <activity android:name=".PendingSendersActivity" />
+        <activity android:name=".IgnoredSendersActivity" />
 
         <receiver android:name=".AlarmReceiver" />
+        <receiver android:name=".SnoozeReceiver" />
+        <receiver android:name=".BootReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

@@ -286,6 +286,23 @@ def confirm_cancel() -> InlineKeyboardMarkup:
     )
 
 
+def pending_exclusion_actions(pattern: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "Confirm Ignore",
+                    callback_data=f"exclude_confirm:{pattern}",
+                ),
+                InlineKeyboardButton(
+                    "Actually Track",
+                    callback_data=f"exclude_track:{pattern}",
+                ),
+            ]
+        ]
+    )
+
+
 def confirm_settings(settings_id: str) -> InlineKeyboardMarkup:
     """Confirm/Cancel keyboard for setup settings changes.
 

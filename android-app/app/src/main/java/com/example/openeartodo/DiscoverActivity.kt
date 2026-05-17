@@ -174,7 +174,7 @@ class DiscoverActivity : AppCompatActivity() {
                         senderPattern = pattern,
                         senderDisplay = senderDisplayNames[pattern] ?: pattern,
                         emailCount = emails.size,
-                        todos = allTodos,
+                        todos = allTodos.map { it.text },
                         emailDetails = emails
                     )
                 }.sortedByDescending { it.todos.size }
@@ -218,13 +218,20 @@ class DiscoverActivity : AppCompatActivity() {
                 )
                 for (email in group.emailDetails) {
                     val summary = "From: ${email.sender}\nSubject: ${email.subject}\n\n${email.summary}\n\n--- Full Email ---\n${email.body.take(5000)}"
-                    for (text in email.todos) {
-                        db.todoDao().insert(TodoItem(
-                            text = text,
+                    for (extracted in email.todos) {
+                        val eventAt = ReminderDefaults.parseEventTime(extracted.eventTime)
+                        val todo = TodoItem(
+                            text = extracted.text,
+                            eventAt = eventAt,
+                            reminderAt = eventAt?.let { ReminderDefaults.defaultNotificationTime(it) },
+                            alarmAt = eventAt?.let { ReminderDefaults.defaultAlarmTime(it) },
+                            reminderType = if (eventAt != null) "both" else null,
                             sourceGmailId = email.gmailId,
                             sourceRfc822Id = email.rfc822MsgId,
                             sourceEmailSummary = summary
-                        ))
+                        )
+                        db.todoDao().insert(todo)
+                        if (eventAt != null) AlarmScheduler.schedule(applicationContext, todo)
                     }
                     db.processedEmailDao().insert(ProcessedEmail(gmailId = email.gmailId))
                 }

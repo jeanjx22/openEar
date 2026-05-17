@@ -104,6 +104,24 @@ class Todo(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
 
+class SenderIgnorelist(Base):
+    __tablename__ = "sender_ignorelist"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    pattern: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
+class SenderPendingExclusion(Base):
+    __tablename__ = "sender_pending_exclusion"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    pattern: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    sample_sender: Mapped[str] = mapped_column(String, nullable=False)
+    sample_subject: Mapped[str] = mapped_column(String, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
 class HealthLog(Base):
     __tablename__ = "health_log"
 

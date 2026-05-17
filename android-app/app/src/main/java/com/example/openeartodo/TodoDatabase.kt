@@ -8,8 +8,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
-    entities = [TodoItem::class, AllowedSender::class, ProcessedEmail::class, IgnoredSender::class],
-    version = 11,
+    entities = [TodoItem::class, AllowedSender::class, ProcessedEmail::class, IgnoredSender::class, PendingSender::class],
+    version = 14,
     exportSchema = false
 )
 abstract class TodoDatabase : RoomDatabase() {
@@ -17,6 +17,7 @@ abstract class TodoDatabase : RoomDatabase() {
     abstract fun allowedSenderDao(): AllowedSenderDao
     abstract fun processedEmailDao(): ProcessedEmailDao
     abstract fun ignoredSenderDao(): IgnoredSenderDao
+    abstract fun pendingSenderDao(): PendingSenderDao
 
     companion object {
         @Volatile
@@ -50,42 +51,31 @@ abstract class TodoDatabase : RoomDatabase() {
             }
         }
 
-        private val MIGRATION_CREATE_ALL = object : Migration(1, 11) {
+        private val MIGRATION_11_12 = object : Migration(11, 12) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                createAllTables(db)
+                db.execSQL("ALTER TABLE `todoitem` ADD COLUMN `eventAt` INTEGER")
             }
         }
 
-        private fun createAllTables(db: SupportSQLiteDatabase) {
-            db.execSQL("""CREATE TABLE IF NOT EXISTS `todoitem` (
-                `text` TEXT NOT NULL,
-                `createdAt` INTEGER NOT NULL,
-                `isCompleted` INTEGER NOT NULL DEFAULT 0,
-                `completedAt` INTEGER,
-                `reminderAt` INTEGER,
-                `reminderType` TEXT,
-                `alarmAt` INTEGER,
-                `sourceGmailId` TEXT,
-                `sourceRfc822Id` TEXT,
-                `sourceEmailSummary` TEXT,
-                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-            )""")
-            db.execSQL("""CREATE TABLE IF NOT EXISTS `allowed_sender` (
-                `pattern` TEXT NOT NULL,
-                `label` TEXT NOT NULL,
-                `createdAt` INTEGER NOT NULL,
-                PRIMARY KEY(`pattern`)
-            )""")
-            db.execSQL("""CREATE TABLE IF NOT EXISTS `processed_email` (
-                `gmailId` TEXT NOT NULL,
-                `processedAt` INTEGER NOT NULL,
-                PRIMARY KEY(`gmailId`)
-            )""")
-            db.execSQL("""CREATE TABLE IF NOT EXISTS `ignored_sender` (
-                `pattern` TEXT NOT NULL,
-                `createdAt` INTEGER NOT NULL,
-                PRIMARY KEY(`pattern`)
-            )""")
+        private val MIGRATION_12_13 = object : Migration(12, 13) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `todoitem` ADD COLUMN `recurrence` TEXT")
+                db.execSQL("ALTER TABLE `todoitem` ADD COLUMN `snoozedUntil` INTEGER")
+            }
+        }
+
+        private val MIGRATION_13_14 = object : Migration(13, 14) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""CREATE TABLE IF NOT EXISTS `pending_sender` (
+                    `pattern` TEXT NOT NULL,
+                    `displayName` TEXT NOT NULL,
+                    `sampleSubject` TEXT NOT NULL,
+                    `sampleTodos` TEXT NOT NULL,
+                    `sampleGmailId` TEXT,
+                    `createdAt` INTEGER NOT NULL,
+                    PRIMARY KEY(`pattern`)
+                )""")
+            }
         }
 
         fun getInstance(context: Context): TodoDatabase {
@@ -95,7 +85,7 @@ abstract class TodoDatabase : RoomDatabase() {
                     TodoDatabase::class.java,
                     "todo_database"
                 )
-                    .addMigrations(MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11)
+                    .addMigrations(MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14)
                     .fallbackToDestructiveMigrationFrom(1, 2, 3, 4, 5, 6)
                     .build()
                 INSTANCE = instance

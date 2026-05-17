@@ -354,6 +354,21 @@ class BotHandlers:
                         f"Actions for: {email['subject']}",
                         reply_markup=keyboards.briefing_actions(i),
                     )
+
+            # Show pending exclusions for review
+            with get_session() as session:
+                from src.db.models import SenderPendingExclusion
+                pending = session.query(SenderPendingExclusion).all()
+                for entry in pending:
+                    session.expunge(entry)
+            if pending:
+                for entry in pending:
+                    await update.message.reply_text(
+                        f"🔍 New sender detected — ignore?\n"
+                        f"From: {entry.sample_sender}\n"
+                        f"Subject: {entry.sample_subject}",
+                        reply_markup=keyboards.pending_exclusion_actions(entry.pattern),
+                    )
         except EmailServiceUnavailable as e:
             await update.message.reply_text(
                 f"Email service is currently unavailable: {e}\n"
@@ -1496,6 +1511,34 @@ class BotHandlers:
 
         elif data.startswith("email_dismiss:"):
             await query.edit_message_text("👋 Dismissed 🐰")
+
+        elif data.startswith("exclude_confirm:"):
+            pattern = data.split(":", 1)[1]
+            with get_session() as session:
+                from src.db.models import SenderIgnorelist, SenderPendingExclusion
+                from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+                stmt = sqlite_insert(SenderIgnorelist).values(
+                    pattern=pattern
+                ).on_conflict_do_nothing(index_elements=["pattern"])
+                session.execute(stmt)
+                session.query(SenderPendingExclusion).filter(
+                    SenderPendingExclusion.pattern == pattern
+                ).delete()
+            await query.edit_message_text(f"✅ {pattern} permanently ignored.")
+
+        elif data.startswith("exclude_track:"):
+            pattern = data.split(":", 1)[1]
+            with get_session() as session:
+                from src.db.models import SenderPendingExclusion, SenderWhitelist
+                from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+                stmt = sqlite_insert(SenderWhitelist).values(
+                    pattern=pattern, label="User-tracked"
+                ).on_conflict_do_nothing(index_elements=["pattern"])
+                session.execute(stmt)
+                session.query(SenderPendingExclusion).filter(
+                    SenderPendingExclusion.pattern == pattern
+                ).delete()
+            await query.edit_message_text(f"✅ {pattern} added to tracked senders.")
 
         elif data.startswith("disambig_new_reminder:"):
             # User confirmed they want a new reminder, not an alert

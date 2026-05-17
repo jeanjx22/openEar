@@ -20,7 +20,7 @@ data class DiscoverEmail(
     val rfc822MsgId: String?,
     val subject: String,
     val sender: String,
-    val todos: List<String>,
+    val todos: List<LlmClient.ExtractedTodo>,
     val summary: String,
     val body: String
 )
