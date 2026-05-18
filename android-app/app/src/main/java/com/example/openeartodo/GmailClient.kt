@@ -29,7 +29,8 @@ object GmailClient {
         val sender: String,
         val subject: String,
         val date: String,
-        val snippet: String
+        val snippet: String,
+        var accountEmail: String? = null
     )
 
     data class EmailPage(

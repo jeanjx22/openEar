@@ -20,11 +20,34 @@ object Prefs {
     fun setLlmProvider(context: Context, provider: String) =
         prefs(context).edit().putString("llm_provider", provider).apply()
 
-    fun getGmailAccount(context: Context): String? =
-        prefs(context).getString("gmail_account", null)
+    fun getGmailAccounts(context: Context): Set<String> {
+        val p = prefs(context)
+        val set = p.getStringSet("gmail_accounts", null)
+        if (set != null) return set
+        // Migrate from single-account
+        val legacy = p.getString("gmail_account", null)
+        return if (legacy != null) {
+            val migrated = setOf(legacy)
+            p.edit().putStringSet("gmail_accounts", migrated).apply()
+            migrated
+        } else emptySet()
+    }
 
-    fun setGmailAccount(context: Context, email: String?) =
-        prefs(context).edit().putString("gmail_account", email).apply()
+    fun addGmailAccount(context: Context, email: String) {
+        val current = getGmailAccounts(context).toMutableSet()
+        current.add(email)
+        prefs(context).edit().putStringSet("gmail_accounts", current).apply()
+    }
+
+    fun removeGmailAccount(context: Context, email: String) {
+        val current = getGmailAccounts(context).toMutableSet()
+        current.remove(email)
+        prefs(context).edit().putStringSet("gmail_accounts", current).apply()
+    }
+
+    // Backward-compat: returns first account, used by code that doesn't loop
+    fun getGmailAccount(context: Context): String? =
+        getGmailAccounts(context).firstOrNull()
 
     fun getLastSyncTime(context: Context): Long =
         prefs(context).getLong("last_sync_time", 0L)

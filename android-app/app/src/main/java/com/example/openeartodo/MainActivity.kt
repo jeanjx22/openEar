@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun manualSync() {
         val btnSync = findViewById<Button>(R.id.btnSync)
-        if (Prefs.getGmailAccount(this) == null || Prefs.getLlmApiKey(this).isBlank()) {
+        if (Prefs.getGmailAccounts(this).isEmpty() || Prefs.getLlmApiKey(this).isBlank()) {
             Toast.makeText(this, "Set up Gmail and API key in Settings first", Toast.LENGTH_LONG).show()
             return
         }
@@ -353,7 +353,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkEmailsOnOpen() {
-        if (Prefs.getGmailAccount(this) == null || Prefs.getLlmApiKey(this).isBlank()) return
+        if (Prefs.getGmailAccounts(this).isEmpty() || Prefs.getLlmApiKey(this).isBlank()) return
 
         lifecycleScope.launch {
             try {

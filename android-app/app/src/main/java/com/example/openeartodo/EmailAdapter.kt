@@ -15,6 +15,7 @@ class EmailAdapter(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val cbSelect: CheckBox = itemView.findViewById(R.id.cbSelect)
         val tvSender: TextView = itemView.findViewById(R.id.tvSender)
+        val tvAccount: TextView = itemView.findViewById(R.id.tvAccount)
         val tvSubject: TextView = itemView.findViewById(R.id.tvSubject)
         val tvSummary: TextView = itemView.findViewById(R.id.tvSummary)
     }
@@ -44,9 +45,16 @@ class EmailAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val email = items[position]
 
-        holder.tvSender.text = email.sender
+        val senderName = email.sender
             .substringBefore('<').trim()
             .ifEmpty { email.sender }
+        holder.tvSender.text = senderName
+        if (email.accountEmail != null) {
+            holder.tvAccount.text = "✉️ ${email.accountEmail}"
+            holder.tvAccount.visibility = View.VISIBLE
+        } else {
+            holder.tvAccount.visibility = View.GONE
+        }
         holder.tvSubject.text = email.subject
         holder.tvSummary.text = email.snippet
         holder.tvSummary.visibility =

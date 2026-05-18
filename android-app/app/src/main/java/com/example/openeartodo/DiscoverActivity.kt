@@ -49,9 +49,9 @@ class DiscoverActivity : AppCompatActivity() {
     }
 
     private fun startScan() {
-        val account = Prefs.getGmailAccount(this)
+        val accounts = Prefs.getGmailAccounts(this)
         val apiKey = Prefs.getLlmApiKey(this)
-        if (account == null || apiKey.isBlank()) {
+        if (accounts.isEmpty() || apiKey.isBlank()) {
             Toast.makeText(this, "Set up Gmail and API key in Settings first", Toast.LENGTH_LONG).show()
             return
         }
@@ -67,23 +67,32 @@ class DiscoverActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val db = TodoDatabase.getInstance(applicationContext)
-                val token = GmailClient.getAccessToken(this@DiscoverActivity, account)
 
                 // Get exclusion lists
                 val tracked = db.allowedSenderDao().getAllSync().map { it.pattern }
                 val ignored = db.ignoredSenderDao().getAllPatterns()
                 val excludeList = tracked + ignored
 
-                // Phase 1: Fetch all emails from past week
+                // Phase 1: Fetch emails from all accounts in the past week
                 tvStatus.text = "Fetching emails..."
                 val allEmails = mutableListOf<GmailClient.EmailInfo>()
-                var pageToken: String? = null
-                do {
-                    val page = GmailClient.fetchEmails(token, query = "newer_than:7d", pageToken = pageToken)
-                    allEmails.addAll(page.emails)
-                    pageToken = page.nextPageToken
-                    tvStatus.text = "Fetched ${allEmails.size} emails..."
-                } while (pageToken != null)
+                val tokenByEmail = mutableMapOf<String, String>()
+                for (account in accounts) {
+                    try {
+                        val token = GmailClient.getAccessToken(this@DiscoverActivity, account)
+                        var pageToken: String? = null
+                        do {
+                            val page = GmailClient.fetchEmails(token, query = "newer_than:7d", pageToken = pageToken)
+                            for (email in page.emails) {
+                                email.accountEmail = account
+                                tokenByEmail[email.gmailId] = token
+                                allEmails.add(email)
+                            }
+                            pageToken = page.nextPageToken
+                            tvStatus.text = "Fetched ${allEmails.size} emails ($account)..."
+                        } while (pageToken != null)
+                    } catch (_: Exception) { }
+                }
 
                 // Filter out tracked, ignored, and already-processed senders
                 val untracked = allEmails.filter { email ->
@@ -138,6 +147,7 @@ class DiscoverActivity : AppCompatActivity() {
                 var extractErrors = 0
                 for ((i, email) in important.withIndex()) {
                     try {
+                        val token = tokenByEmail[email.gmailId] ?: continue
                         val body = GmailClient.fetchEmailBody(token, email.gmailId)
                         val result = LlmClient.extractTodosWithSummary(
                             apiKey, provider, email.sender, email.subject, body
@@ -154,7 +164,8 @@ class DiscoverActivity : AppCompatActivity() {
                                 sender = email.sender,
                                 todos = result.todos,
                                 summary = result.summary,
-                                body = body
+                                body = body,
+                                account = email.accountEmail
                             )
                         )
                     } catch (e: Exception) {
@@ -228,7 +239,8 @@ class DiscoverActivity : AppCompatActivity() {
                             reminderType = if (eventAt != null) "both" else null,
                             sourceGmailId = email.gmailId,
                             sourceRfc822Id = email.rfc822MsgId,
-                            sourceEmailSummary = summary
+                            sourceEmailSummary = summary,
+                            sourceAccount = email.account
                         )
                         db.todoDao().insert(todo)
                         if (eventAt != null) AlarmScheduler.schedule(applicationContext, todo)

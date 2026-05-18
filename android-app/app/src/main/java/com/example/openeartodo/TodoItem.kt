@@ -18,5 +18,6 @@ data class TodoItem(
     val sourceGmailId: String? = null,
     val sourceRfc822Id: String? = null,
     val sourceEmailSummary: String? = null,
+    val sourceAccount: String? = null,
     @PrimaryKey(autoGenerate = true) val id: Long = 0
 )

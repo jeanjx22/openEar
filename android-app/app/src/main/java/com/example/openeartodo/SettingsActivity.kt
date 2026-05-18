@@ -1,9 +1,12 @@
 package com.example.openeartodo
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -14,6 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -23,9 +27,9 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var etApiKey: EditText
     private lateinit var etLookback: EditText
     private lateinit var spinnerProvider: Spinner
-    private lateinit var tvGmailAccount: TextView
+    private lateinit var accountsList: LinearLayout
     private lateinit var tvLastSync: TextView
-    private lateinit var btnGmail: Button
+    private lateinit var btnAddAccount: Button
 
     private val providerNames = arrayOf("Cohere", "Groq")
     private val providerKeys = arrayOf("cohere", "groq")
@@ -37,9 +41,9 @@ class SettingsActivity : AppCompatActivity() {
             val account = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 .getResult(ApiException::class.java)
             val email = account.email ?: return@registerForActivityResult
-            Prefs.setGmailAccount(this, email)
-            updateGmailUI(email)
-            Toast.makeText(this, "Signed in as $email", Toast.LENGTH_SHORT).show()
+            Prefs.addGmailAccount(this, email)
+            refreshAccountsUI()
+            Toast.makeText(this, "Added $email", Toast.LENGTH_SHORT).show()
         } catch (e: ApiException) {
             Toast.makeText(this, "Sign-in failed: ${e.statusCode}", Toast.LENGTH_LONG).show()
         }
@@ -57,9 +61,9 @@ class SettingsActivity : AppCompatActivity() {
         etApiKey = findViewById(R.id.etApiKey)
         etLookback = findViewById(R.id.etLookback)
         spinnerProvider = findViewById(R.id.spinnerProvider)
-        tvGmailAccount = findViewById(R.id.tvGmailAccount)
+        accountsList = findViewById(R.id.accountsList)
         tvLastSync = findViewById(R.id.tvLastSync)
-        btnGmail = findViewById(R.id.btnGmail)
+        btnAddAccount = findViewById(R.id.btnAddAccount)
 
         spinnerProvider.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, providerNames)
 
@@ -68,17 +72,10 @@ class SettingsActivity : AppCompatActivity() {
         val savedProvider = Prefs.getLlmProvider(this)
         spinnerProvider.setSelection(providerKeys.indexOf(savedProvider).coerceAtLeast(0))
 
-        val gmailAccount = Prefs.getGmailAccount(this)
-        updateGmailUI(gmailAccount)
+        refreshAccountsUI()
         updateLastSyncUI()
 
-        btnGmail.setOnClickListener {
-            if (Prefs.getGmailAccount(this) != null) {
-                signOut()
-            } else {
-                startGmailSignIn()
-            }
-        }
+        btnAddAccount.setOnClickListener { startGmailSignIn() }
 
         findViewById<Button>(R.id.btnSave).setOnClickListener {
             Prefs.setLlmApiKey(this, etApiKey.text.toString().trim())
@@ -89,14 +86,52 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateGmailUI(email: String?) {
-        if (email != null) {
-            tvGmailAccount.text = email
-            btnGmail.text = "Sign Out"
-        } else {
-            tvGmailAccount.text = "Not signed in"
-            btnGmail.text = "Sign In"
+    private fun refreshAccountsUI() {
+        accountsList.removeAllViews()
+        val accounts = Prefs.getGmailAccounts(this)
+        if (accounts.isEmpty()) {
+            val tv = TextView(this).apply {
+                text = "No accounts. Tap \"Add Account\" to sign in."
+                setPadding(0, 8, 0, 8)
+            }
+            accountsList.addView(tv)
+            return
         }
+        for (email in accounts) {
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                setPadding(0, 8, 0, 8)
+            }
+            val emailView = TextView(this).apply {
+                text = email
+                textSize = 15f
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+                    gravity = android.view.Gravity.CENTER_VERTICAL
+                }
+            }
+            val removeBtn = ImageButton(this).apply {
+                setImageResource(android.R.drawable.ic_menu_delete)
+                background = null
+                contentDescription = "Remove account"
+                setOnClickListener { confirmRemoveAccount(email) }
+            }
+            row.addView(emailView)
+            row.addView(removeBtn)
+            accountsList.addView(row)
+        }
+    }
+
+    private fun confirmRemoveAccount(email: String) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Remove account?")
+            .setMessage("Stop syncing emails from $email?")
+            .setPositiveButton("Remove") { _, _ ->
+                Prefs.removeGmailAccount(this, email)
+                refreshAccountsUI()
+                Toast.makeText(this, "Removed $email", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun updateLastSyncUI() {
@@ -110,21 +145,14 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun startGmailSignIn() {
+        // Sign out current Google client first to force the account picker
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
             .requestScopes(Scope("https://www.googleapis.com/auth/gmail.readonly"))
             .build()
-        signInLauncher.launch(GoogleSignIn.getClient(this, gso).signInIntent)
-    }
-
-    private fun signOut() {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail()
-            .build()
-        GoogleSignIn.getClient(this, gso).signOut().addOnCompleteListener {
-            Prefs.setGmailAccount(this, null)
-            updateGmailUI(null)
-            Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show()
+        val client = GoogleSignIn.getClient(this, gso)
+        client.signOut().addOnCompleteListener {
+            signInLauncher.launch(client.signInIntent)
         }
     }
 }

@@ -31,6 +31,7 @@ class EmailSelectorActivity : AppCompatActivity() {
     private var nextPageToken: String? = null
     private var isLoading = false
     private var currentQuery: String? = null
+    private var currentAccount: String? = null
 
     private val signInLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -38,7 +39,10 @@ class EmailSelectorActivity : AppCompatActivity() {
         try {
             val account = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 .getResult(ApiException::class.java)
-            Prefs.setGmailAccount(this, account.email ?: "")
+            val email = account.email ?: ""
+            Prefs.addGmailAccount(this, email)
+            currentAccount = email
+            supportActionBar?.subtitle = email
             loadEmails(reset = true)
         } catch (e: ApiException) {
             Toast.makeText(this, "Sign-in failed: ${e.statusCode}", Toast.LENGTH_LONG).show()
@@ -91,12 +95,28 @@ class EmailSelectorActivity : AppCompatActivity() {
 
         btnProcess.setOnClickListener { watchAndProcess() }
 
-        val account = Prefs.getGmailAccount(this)
-        if (account != null) {
-            loadEmails(reset = true)
-        } else {
-            startSignIn()
+        val accounts = Prefs.getGmailAccounts(this)
+        when {
+            accounts.isEmpty() -> startSignIn()
+            accounts.size == 1 -> {
+                currentAccount = accounts.first()
+                supportActionBar?.subtitle = currentAccount
+                loadEmails(reset = true)
+            }
+            else -> pickAccount(accounts.toList())
         }
+    }
+
+    private fun pickAccount(accounts: List<String>) {
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle("Browse which account?")
+            .setItems(accounts.toTypedArray()) { _, which ->
+                currentAccount = accounts[which]
+                supportActionBar?.subtitle = currentAccount
+                loadEmails(reset = true)
+            }
+            .setOnCancelListener { finish() }
+            .show()
     }
 
     private fun startSignIn() {
@@ -108,11 +128,12 @@ class EmailSelectorActivity : AppCompatActivity() {
     }
 
     private fun loadEmails(reset: Boolean) {
-        val account = Prefs.getGmailAccount(this)
+        val account = currentAccount ?: Prefs.getGmailAccount(this)
         if (account == null) {
             startSignIn()
             return
         }
+        currentAccount = account
 
         if (isLoading) return
         isLoading = true
@@ -126,6 +147,7 @@ class EmailSelectorActivity : AppCompatActivity() {
                 val page = GmailClient.fetchEmails(
                     accessToken!!, query = currentQuery, pageToken = pageToken
                 )
+                page.emails.forEach { it.accountEmail = account }
                 nextPageToken = page.nextPageToken
 
                 if (reset) {
@@ -179,7 +201,7 @@ class EmailSelectorActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 // Refresh Gmail token in case it expired while browsing
-                val account = Prefs.getGmailAccount(this@EmailSelectorActivity)!!
+                val account = currentAccount ?: Prefs.getGmailAccount(this@EmailSelectorActivity)!!
                 val freshToken = GmailClient.getAccessToken(this@EmailSelectorActivity, account)
                 accessToken = freshToken
 
@@ -213,7 +235,8 @@ class EmailSelectorActivity : AppCompatActivity() {
                             reminderType = if (eventAt != null) "both" else null,
                             sourceGmailId = email.gmailId,
                             sourceRfc822Id = email.rfc822MsgId,
-                            sourceEmailSummary = summary
+                            sourceEmailSummary = summary,
+                            sourceAccount = email.accountEmail ?: currentAccount
                         )
                         db.todoDao().insert(todo)
                         if (eventAt != null) AlarmScheduler.schedule(applicationContext, todo)

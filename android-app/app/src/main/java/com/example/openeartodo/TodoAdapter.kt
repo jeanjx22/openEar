@@ -59,6 +59,7 @@ class TodoAdapter(
         if (hasNotify) parts.add("🔔 Notification: ${timeFmt.format(Date(item.reminderAt!!))}")
         if (hasAlarm) parts.add("⏰ Alarm: ${timeFmt.format(Date(item.alarmAt!!))}")
         if (item.recurrence != null) parts.add("🔁 Repeats ${item.recurrence}")
+        if (item.sourceAccount != null) parts.add("✉️ ${item.sourceAccount}")
 
         if (parts.isNotEmpty()) {
             holder.ivAlarm.alpha = if (hasNotify || hasAlarm) 1.0f else 0.6f

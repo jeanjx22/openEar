@@ -25,7 +25,8 @@ object EmailProcessor {
 
     suspend fun processNewEmails(context: Context, lookbackOverride: String? = null): SyncReport {
         val emptyReport = SyncReport("", 0, 0, 0, 0, 0, emptyMap())
-        val account = Prefs.getGmailAccount(context) ?: return emptyReport
+        val accounts = Prefs.getGmailAccounts(context)
+        if (accounts.isEmpty()) return emptyReport
         val apiKey = Prefs.getLlmApiKey(context)
         if (apiKey.isBlank()) return emptyReport
 
@@ -34,82 +35,86 @@ object EmailProcessor {
         val senders = db.allowedSenderDao().getAllSync()
         if (senders.isEmpty()) return emptyReport
 
-        val token = try {
-            GmailClient.getAccessToken(context, account)
-        } catch (e: UserRecoverableAuthException) {
-            return emptyReport.copy(authError = true)
-        } catch (e: Exception) {
-            return emptyReport.copy(authError = true)
-        }
-
         val lookback = lookbackOverride ?: getLookbackQuery(context)
         val query = buildGmailQuery(senders.map { it.pattern }, lookback)
-        var pageToken: String? = null
+
         val breakdown = mutableMapOf<String, SenderStats>()
         var totalFetched = 0
         var alreadyProcessed = 0
         var newProcessed = 0
         var todosExtracted = 0
         var errors = 0
+        var authError = false
 
-        do {
-            val page = GmailClient.fetchEmails(token, query = query, pageToken = pageToken)
-            for (email in page.emails) {
-                totalFetched++
-                val senderKey = extractSenderPattern(email.sender)
-                val stats = breakdown.getOrPut(senderKey) { SenderStats() }
-                stats.fetched++
-
-                if (db.processedEmailDao().isProcessed(email.gmailId)) {
-                    alreadyProcessed++
-                    stats.skipped++
-                    continue
-                }
-
-                try {
-                    val body = GmailClient.fetchEmailBody(token, email.gmailId)
-                    val result = LlmClient.extractTodosWithSummary(
-                        apiKey, provider, email.sender, email.subject, body
-                    )
-                    val summary = "From: ${email.sender}\nSubject: ${email.subject}\n\n${result.summary}\n\n--- Full Email ---\n${body.take(5000)}"
-                    for (extracted in result.todos) {
-                        val eventAt = ReminderDefaults.parseEventTime(extracted.eventTime)
-                        val todo = TodoItem(
-                            text = extracted.text,
-                            eventAt = eventAt,
-                            reminderAt = eventAt?.let { ReminderDefaults.defaultNotificationTime(it) },
-                            alarmAt = eventAt?.let { ReminderDefaults.defaultAlarmTime(it) },
-                            reminderType = if (eventAt != null) "both" else null,
-                            sourceGmailId = email.gmailId,
-                            sourceRfc822Id = email.rfc822MsgId,
-                            sourceEmailSummary = summary
-                        )
-                        db.todoDao().insert(todo)
-                        if (eventAt != null) AlarmScheduler.schedule(context, todo)
-                    }
-                    db.processedEmailDao().insert(ProcessedEmail(gmailId = email.gmailId))
-                    newProcessed++
-                    stats.processed++
-                    todosExtracted += result.todos.size
-                    stats.todos += result.todos.size
-                } catch (_: Exception) {
-                    errors++
-                    kotlinx.coroutines.delay(2000)
-                }
+        for (account in accounts) {
+            val token = try {
+                GmailClient.getAccessToken(context, account)
+            } catch (_: Exception) {
+                authError = true
+                continue
             }
-            pageToken = page.nextPageToken
-        } while (pageToken != null)
 
-        // Phase 2: auto-discover — classify new senders from recent emails
-        val discoveredTodos = autoDiscoverNewSenders(context, token, apiKey, provider, db, lookback)
-        todosExtracted += discoveredTodos
+            var pageToken: String? = null
+            do {
+                val page = GmailClient.fetchEmails(token, query = query, pageToken = pageToken)
+                page.emails.forEach { it.accountEmail = account }
+                for (email in page.emails) {
+                    totalFetched++
+                    val senderKey = extractSenderPattern(email.sender)
+                    val stats = breakdown.getOrPut(senderKey) { SenderStats() }
+                    stats.fetched++
+
+                    if (db.processedEmailDao().isProcessed(email.gmailId)) {
+                        alreadyProcessed++
+                        stats.skipped++
+                        continue
+                    }
+
+                    try {
+                        val body = GmailClient.fetchEmailBody(token, email.gmailId)
+                        val result = LlmClient.extractTodosWithSummary(
+                            apiKey, provider, email.sender, email.subject, body
+                        )
+                        val summary = "From: ${email.sender}\nSubject: ${email.subject}\n\n${result.summary}\n\n--- Full Email ---\n${body.take(5000)}"
+                        for (extracted in result.todos) {
+                            val eventAt = ReminderDefaults.parseEventTime(extracted.eventTime)
+                            val todo = TodoItem(
+                                text = extracted.text,
+                                eventAt = eventAt,
+                                reminderAt = eventAt?.let { ReminderDefaults.defaultNotificationTime(it) },
+                                alarmAt = eventAt?.let { ReminderDefaults.defaultAlarmTime(it) },
+                                reminderType = if (eventAt != null) "both" else null,
+                                sourceGmailId = email.gmailId,
+                                sourceRfc822Id = email.rfc822MsgId,
+                                sourceEmailSummary = summary,
+                                sourceAccount = email.accountEmail
+                            )
+                            db.todoDao().insert(todo)
+                            if (eventAt != null) AlarmScheduler.schedule(context, todo)
+                        }
+                        db.processedEmailDao().insert(ProcessedEmail(gmailId = email.gmailId))
+                        newProcessed++
+                        stats.processed++
+                        todosExtracted += result.todos.size
+                        stats.todos += result.todos.size
+                    } catch (_: Exception) {
+                        errors++
+                        kotlinx.coroutines.delay(2000)
+                    }
+                }
+                pageToken = page.nextPageToken
+            } while (pageToken != null)
+
+            // Auto-discover new senders for this account
+            todosExtracted += autoDiscoverNewSenders(context, token, account, apiKey, provider, db, lookback)
+        }
 
         Prefs.setLastSyncTime(context, System.currentTimeMillis())
-        return SyncReport(query, totalFetched, alreadyProcessed, newProcessed, todosExtracted, errors, breakdown)
+        return SyncReport(query, totalFetched, alreadyProcessed, newProcessed, todosExtracted, errors, breakdown, authError = authError)
     }
 
     private suspend fun autoDiscoverNewSenders(
-        context: Context, token: String, apiKey: String, provider: String,
+        context: Context, token: String, account: String, apiKey: String, provider: String,
         db: TodoDatabase, lookback: String
     ): Int {
         val tracked = db.allowedSenderDao().getAllSync().map { it.pattern }
@@ -117,6 +122,7 @@ object EmailProcessor {
         val knownPatterns = tracked + ignored
 
         val page = GmailClient.fetchEmails(token, query = lookback, maxResults = 20)
+        page.emails.forEach { it.accountEmail = account }
         val newSenderEmails = mutableMapOf<String, GmailClient.EmailInfo>()
 
         for (email in page.emails) {

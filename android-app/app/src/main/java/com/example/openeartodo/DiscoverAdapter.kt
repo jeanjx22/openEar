@@ -22,7 +22,8 @@ data class DiscoverEmail(
     val sender: String,
     val todos: List<LlmClient.ExtractedTodo>,
     val summary: String,
-    val body: String
+    val body: String,
+    val account: String? = null
 )
 
 class DiscoverAdapter(
